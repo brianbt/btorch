@@ -1,3 +1,5 @@
+import copy
+from re import L
 import torch
 from torch import nn
 
@@ -23,6 +25,9 @@ class Module(nn.Module):
         - self._config (default:dict)[optional]
     You can set them to be a pytorch instance or a dictionary (for advanced uses)
     The default guideline is only for the default highlevel functions.
+
+    All the classmethods in this class can be taken out and use them alone. 
+    They are a good starter code for traditional PyTorch training.
     """
     def __init__(self) -> None:
         super(Module, self).__init__()
@@ -40,7 +45,8 @@ class Module(nn.Module):
     @classmethod
     def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, config=None):
         """Standard PyTorch training loop. Override this function when necessary.
-
+        It uses .train_epoch() and .test_epoch()
+        
         Args:
             net ([type]): [description]
             criterion ([type]): [description]
@@ -59,7 +65,7 @@ class Module(nn.Module):
         resume_path = config.get("resume", None)
 
         if resume_path is not None:
-            start_epoch = resume(resume_path,  net, optimizer, lr_scheduler)
+            start_epoch = resume(resume_path, net, optimizer, lr_scheduler)
 
         train_loss_data = []
         test_loss_data = []
@@ -126,6 +132,28 @@ class Module(nn.Module):
                 train_loss += loss.item()
         return train_loss/(batch_idx+1)
 
+    @classmethod
+    def overfit_small_batch(cls, net, criterion, loader, optimizer):
+        """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
+        It uses .train_epoch().
+        """
+        net_test = copy.deepcopy(net)
+        if loader.batch_size > 5:
+            loader = btorch.utils.change_batch_size(loader, 5)
+        loss_history = []
+        for epoch in range(100):
+            train_loss = cls.train_epoch(net_test, criterion, loader, optimizer, epoch)
+            loss_history.append(train_loss)
+        print(loss_history)
+        del net_test
+        try:
+            last_loss = loss_history[-1].item()
+            if last_loss < 1e-5:
+                print("It looks like your model is working. Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
+        except:
+            pass
+        print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
+            
     
     # @property
     # def _lossfn(self):
