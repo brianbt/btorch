@@ -8,6 +8,8 @@ setup(
     version='0.0.1',
     author="Chan Cheong",
     author_email='brianchan.xd@gmail.com',
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
     description='an advanced pytorch library',
     long_description=long_description,
     url='https://github.com/brianbt/btorch',
