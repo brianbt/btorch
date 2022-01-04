@@ -55,7 +55,6 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=Non
     if isinstance(h_w, torch.Tensor):
         out += list(h_w.shape[:-2])
         h_w = h_w.shape[-2:]
-        print(out)
     elif isinstance(h_w, tuple) or isinstance(h_w, list):
         out += h_w[:-2]
         h_w = h_w[-2:]
@@ -103,7 +102,6 @@ def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, mod
     if isinstance(h_w, torch.Tensor):
         out += list(h_w.shape[:-2])
         h_w = h_w.shape[-2:]
-        print(out)
     elif isinstance(h_w, tuple) or isinstance(h_w, list):
         out += h_w[:-2]
         h_w = h_w[-2:]
