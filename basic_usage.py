@@ -24,7 +24,7 @@ class ResNet(bnn.Module):
 transform = transforms.Compose(
     [transforms.ToTensor()])
 batch_size = 4
-trainset = datasets.MNIST(root=''./data', train=True,
+trainset = datasets.MNIST(root='./data', train=True,
                                         download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                           shuffle=True)

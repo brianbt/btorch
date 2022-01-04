@@ -10,8 +10,6 @@ setup(
     author_email='brianchan.xd@gmail.com',
     description='an advanced pytorch library',
     long_description=long_description,
-    packages=find_packages('btorch'),
-    package_dir={'': 'btorch'},
     url='https://github.com/brianbt/btorch',
     license='MIT',
     install_requires=['torch', 'torchvision', 'numpy', 'pandas'],
