@@ -56,12 +56,8 @@ class ChannelGate(nn.Module):
                 channel_att_sum = channel_att_raw
             else:
                 channel_att_sum = channel_att_sum + channel_att_raw
-        # print(channel_att_sum.shape)
 
-        scale = torch.sigmoid(channel_att_sum).unsqueeze(
-            2).unsqueeze(3).expand_as(x)
-        # print(scale.shape)
-        # print(x.shape)
+        scale = torch.sigmoid(channel_att_sum).unsqueeze(2).unsqueeze(3).expand_as(x)
         return x * scale
 
 
@@ -82,8 +78,7 @@ class SpatialGate(nn.Module):
         super(SpatialGate, self).__init__()
         kernel_size = 7
         self.compress = ChannelPool()
-        self.spatial = BasicConv(2, 1, kernel_size, stride=1, padding=(
-            kernel_size-1) // 2, relu=False)
+        self.spatial = BasicConv(2, 1, kernel_size, stride=1, padding=(kernel_size-1) // 2, relu=False)
 
     def forward(self, x):
         x_compress = self.compress(x)
@@ -99,8 +94,7 @@ class CBAM(nn.Module):
 
     def __init__(self, in_channels, reduction_ratio=16, pool_types=['avg', 'max'], no_spatial=False, dropout=0.0):
         super(CBAM, self).__init__()
-        self.ChannelGate = ChannelGate(
-            in_channels, reduction_ratio, pool_types)
+        self.ChannelGate = ChannelGate(in_channels, reduction_ratio, pool_types)
         self.no_spatial = no_spatial
         if not no_spatial:
             self.SpatialGate = SpatialGate()

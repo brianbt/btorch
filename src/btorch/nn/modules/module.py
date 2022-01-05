@@ -1,10 +1,12 @@
 import copy
 import warnings
 from re import L
+from tqdm import tqdm
 import torch
 from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
+from sklearn.model_selection import train_test_split
 
-from tqdm import tqdm
 import btorch
 from btorch.utils.load_save import save_model, resume
 
@@ -37,9 +39,75 @@ class Module(nn.Module):
         self._lr_scheduler = None
         self._config = dict()
 
-    def fit(self, train_loader, eval_loader=None):
+    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
+            validation_split=0.0, validation_data=None, validation_batch_size=None, validation_freq=1,
+            initial_epoch=None, workers=1):
         if self._lossfn is None or self._optimizer is None:
-            raise ValueError("Print set `self._lossfn` and `self._optimizer`")
+            raise ValueError("`self._lossfn` and `self._optimizer` is not set.")
+
+        self._config['max_epoch'] = epochs if epochs is not None else 10
+        self._config['start_epoch'] = initial_epoch if initial_epoch is not None else 0
+        self._config['val_freq'] = validation_freq
+
+        pin_memory = True if self._config.get('device', 'cpu')=='cuda' else False
+        x_eval = None
+        eval_loader = None
+
+        # Pre-process train_loader
+        if isinstance(x, torch.utils.data.DataLoader):
+            train_loader = x
+        else:
+            if isinstance(x, torch.Tensor):
+                if y is None:
+                    raise ValueError(f"x is {type(x)}, expected y to be torch.Tensor")
+                if validation_split != 0:
+                    x, x_eval, y, y_eval = train_test_split(x, y, test_size=validation_split)
+                    x_eval = TensorDataset(x_eval, y_eval)
+                x = TensorDataset(x,y)
+            elif isinstance(x, (tuple, list)):
+                if isinstance(y, (tuple, list)):
+                    if validation_split != 0:
+                        splited = train_test_split(*x, *y, test_size=validation_split)
+                        x = []
+                        x_eval = []
+                        for i in range(len(splited)):
+                            if i%0==0:
+                                x.append(splited[i])
+                            else:
+                                x_eval.append(splited[i])
+                        x = TensorDataset(*x)
+                        x_eval = TensorDataset(x_eval)
+                    else:
+                        x = TensorDataset(*x, *y)
+                else:
+                    if validation_split != 0:
+                        splited = train_test_split(*x, y, test_size=validation_split)
+                        x = []
+                        x_eval = []
+                        for i in range(len(splited)):
+                            if i%0==0:
+                                x.append(splited[i])
+                            else:
+                                x_eval.append(splited[i])
+                        x = TensorDataset(*x)
+                        x_eval = TensorDataset(*x_eval)
+                    else:
+                        x = TensorDataset(*x, y)
+            train_loader = DataLoader(x, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
+                                      pin_memory=pin_memory, drop_last=drop_last)
+        # Pre-process eval_loader
+        if validation_data is not None:
+            if isinstance(validation_data, (tuple, list)):
+                x_eval = TensorDataset(*validation_data)
+            elif isinstance(validation_data, torch.utils.data.Dataset):
+                x_eval = validation_data
+            elif not isinstance(validation_data, torch.utils.data.DataLoader):
+                raise ValueError(f"validation_data doesn't support {type(validation_data)}")
+        if x_eval is not None:
+            eval_loader = DataLoader(x_eval, batch_size=validation_batch_size, num_workers=workers,
+                                     pin_memory=pin_memory, drop_last=drop_last)
+
+
         self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
                    trainloader=train_loader, testloader=eval_loader, lr_scheduler=self._lr_scheduler, config=self._config)
 
@@ -64,6 +132,7 @@ class Module(nn.Module):
         device = config.get("device", "cpu")
         save_path = config.get("save", None)
         resume_path = config.get("resume", None)
+        val_freq = config.get("val_freq", 1)
 
         net.to(device)
         if resume_path is not None:
@@ -76,7 +145,7 @@ class Module(nn.Module):
             train_loss = cls.train_epoch(
                 net, criterion, trainloader, optimizer, epoch, device)
             train_loss_data.append(train_loss)
-            if testloader is not None:
+            if testloader is not None and epoch%val_freq==0:
                 test_loss = cls.test_epoch(net, criterion, testloader, device)
                 test_loss_data.append(test_loss)
             if save_path is not None:
@@ -167,8 +236,9 @@ class Module(nn.Module):
         self.to('cpu')
         
     def auto_gpu(self, parallel='auto', on=None):
-        device, _ = btorch.utils.auto_gpu(self, parallel, on)
+        device, _ = btorch.utils.trainer.auto_gpu(self, parallel, on)
         self._config['device'] = device
+        
     # @property
     # def _lossfn(self):
     #     return self.__lossfn
