@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 class UnNormalize(object):
     def __init__(self, mean, std):
@@ -26,9 +27,10 @@ class UnNormalize(object):
         Args:
             tensor (Tensor): Accept (N,C,H,W), (N,H,W,C), (C,H,W) and (H,W,C)
         Returns:
-            Tensor: Normalized image (N,H,W,C).
+            Tensor: Normalized image (N,H,W,C). Will be on CPU
         """
         # Turn CHW to HWC
+        tensor = tensor.to('cpu')
         if len(tensor.shape) == 3 and tensor.shape[2] != 3 and tensor.shape[0] == 3:
             tensor = tensor.permute(1, 2, 0)
         elif len(tensor.shape) == 4 and tensor.shape[3] != 3 and tensor.shape[1] == 3:
@@ -81,7 +83,6 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=Non
     out.append(w)
     return tuple(out)
 
-
 def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
     """
     Utility function for computing output of transposed convolutions. This function did not calculate out_channels 
@@ -126,3 +127,46 @@ def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, mod
     out.append(h)
     out.append(w)
     return tuple(out)
+
+def high_pass_filter(img, method='3'):
+    """apply high-pass filter on image
+
+    Args:
+        img (np.ndarray): (C,H,W)
+        method (str, optional): either `gaussian`, `3` or `5`. Defaults to '3'.
+
+    Returns:
+        np.ndarray: (C,H,W)
+    """
+    from scipy import ndimage
+    # Gaussian high pass
+    if method.lower() == 'gaussian':
+        lowpass = ndimage.gaussian_filter(img, 3)
+        highpass = img - lowpass
+        highpass[highpass <= 0.03] = 0
+        highpass[highpass > 0.03] = 1
+        return highpass
+    if method == '3':
+        # 3x3 high pass
+        kernel = np.array([[-1, -1, -1],
+                        [-1,  8, -1],
+                        [-1, -1, -1]])
+    elif method == '5':
+        # 5X5 high pass
+        kernel = np.array([[-1, -1, -1, -1, -1], [-1, 1, 2, 1, -1], [-1, 2, 4, 2, -1],
+                        [-1, 1, 2, 1, -1], [-1, -1, -1, -1, -1]])
+    elif method == 'fun':
+        kernel = np.array([[-1, -1, -1, -1, -1, -1, -1],
+                        [-1,  1,  2,  3,  2,  1, -1],
+                        [-1,  2,  3,  4,  3,  2, -1],
+                        [-1,  3,  4,  5,  4,  3, -1],
+                        [-1,  2,  3,  4,  3,  2, -1],
+                        [-1,  1,  2,  3,  2,  1, -1],
+                        [-1, -1, -1, -1, -1, -1, -1]])
+    else:
+        raise ValueError(f"Not support method ({method})")
+    kernel = kernel[:, :, None]
+    highpass = ndimage.convolve(img, kernel)
+    highpass[highpass <= 0.03] = 0
+    highpass[highpass > 0.03] = 1
+    return highpass
