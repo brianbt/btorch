@@ -18,3 +18,11 @@ The high-level methods are
 - .test_epoch()  
 
 Override them when necessary and train your model by just calling `.fit()`
+
+## Inherent Library
+You can import below library and use that as pyTorch
+```
+from btorch import nn
+import btorch.nn.functional as F
+from btorch.vision import models
+```
