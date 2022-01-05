@@ -1,4 +1,5 @@
 import copy
+import warnings
 from re import L
 import torch
 from torch import nn
@@ -34,7 +35,7 @@ class Module(nn.Module):
         self._lossfn = None
         self._optimizer = None
         self._lr_scheduler = None
-        self._config = None
+        self._config = dict()
 
     def fit(self, train_loader, eval_loader=None):
         if self._lossfn is None or self._optimizer is None:
@@ -64,6 +65,7 @@ class Module(nn.Module):
         save_path = config.get("save", None)
         resume_path = config.get("resume", None)
 
+        net.to(device)
         if resume_path is not None:
             start_epoch = resume(resume_path, net, optimizer, lr_scheduler)
 
@@ -154,7 +156,19 @@ class Module(nn.Module):
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
             
-    
+    def set_gpu(self):
+        if not torch.cuda.is_available():
+            warnings.warn("Cuda is not available but you are setting the model to GPU mode.")
+        self._config['device'] = 'cuda'
+        self.to('cuda')
+
+    def set_cpu(self):
+        self._config['device'] = 'cpu'
+        self.to('cpu')
+        
+    def auto_gpu(self, parallel='auto', on=None):
+        device, _ = btorch.utils.auto_gpu(self, parallel, on)
+        self._config['device'] = device
     # @property
     # def _lossfn(self):
     #     return self.__lossfn
