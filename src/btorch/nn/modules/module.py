@@ -1,4 +1,5 @@
 import copy
+from enum import auto
 import warnings
 from re import L
 from tqdm import tqdm
@@ -25,7 +26,13 @@ class Module(nn.Module):
         - self._lossfn (default:pytorch Loss Func)[required]
         - self._optimizer (default:pytorch Optimizer)[required]
         - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
-        - self._config (default:dict)[optional]
+        - self._config (default:dict)[optional]. For defaults usage, tt accepts:
+            start_epoch = start_epoch
+            max_epoch = max_epoch
+            device = either cuda or cpu or auto
+            save: save model path
+            resume: resume model path. Override start_epoch
+            val_freq = freq of running validation
     You can set them to be a pytorch instance or a dictionary (for advanced uses)
     The default guideline is only for the default highlevel functions.
 
@@ -37,11 +44,54 @@ class Module(nn.Module):
         self._lossfn = None
         self._optimizer = None
         self._lr_scheduler = None
-        self._config = dict()
+        self._config = {
+                        "start_epoch": 0,
+                        "max_epoch": 10,
+                        "device": "cpu",
+                        "save": None,
+                        "resume": None,
+                        "val_freq": 1
+                        }
 
-    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
-            validation_split=0.0, validation_data=None, validation_batch_size=None, validation_freq=1,
+    def fit(self, x=None, y=None, batch_size=8, epochs=10, shuffle=True, drop_last=False,
+            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
             initial_epoch=None, workers=1):
+        """Keras like fit method. All arguments follows Keras usage.
+        https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit
+        It uses .train_net()
+
+        Args:
+            X: Input data. It could be:
+              - torch.tensor
+              - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+            y: Target data. Like the input data `x`,
+              it should be torch.tensor.
+              If `x` is a dataset, generator or dataloader, `y` should
+              not be specified (since targets will be obtained from `x`).
+            batch_size (int, optional): Defaults to 10.
+            epochs (int, optional): Defaults to 1.
+            shuffle (bool, optional): Defaults to True.
+            drop_last (bool, optional): Shuffle the data or not. 
+            validation_split (optional): Float between 0 and 1.
+              Fraction of the training data to be used as validation data.
+              The model will set apart this fraction of the training data,
+              will not train on it. This argument is
+              not supported when `x` is a Dataset or Dataloader.
+              Defaults to 0.
+            validation_data (optional): Data on which to evaluate the loss 
+              and any model metrics at the end of each epoch. 
+              The model will not be trained on this data. Defaults to None.
+              `validation_data` will override `validation_split`. 
+              `validation_data` could be:
+                - tuple of torch.tensor, tuple(X, y)
+                - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
+                - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+            validation_batch_size (optional): batch size of validation data
+            validation_freq (optional): runs validation every x epochs.
+            initial_epoch (optional): start epoch. Return from `btorch.utils.load_save.resume`
+            workers (optional): num_workers for dataloader
+        """
         if self._lossfn is None or self._optimizer is None:
             raise ValueError("`self._lossfn` and `self._optimizer` is not set.")
 
@@ -101,7 +151,10 @@ class Module(nn.Module):
                 x_eval = TensorDataset(*validation_data)
             elif isinstance(validation_data, torch.utils.data.Dataset):
                 x_eval = validation_data
-            elif not isinstance(validation_data, torch.utils.data.DataLoader):
+            elif isinstance(validation_data, torch.utils.data.DataLoader):
+                eval_loader = validation_data
+                x_eval = None
+            else:
                 raise ValueError(f"validation_data doesn't support {type(validation_data)}")
         if x_eval is not None:
             eval_loader = DataLoader(x_eval, batch_size=validation_batch_size, num_workers=workers,
@@ -133,6 +186,9 @@ class Module(nn.Module):
         save_path = config.get("save", None)
         resume_path = config.get("resume", None)
         val_freq = config.get("val_freq", 1)
+
+        if device == 'auto':
+            device, net = btorch.utils.trainer.auto_gpu(net)
 
         net.to(device)
         if resume_path is not None:
@@ -204,13 +260,15 @@ class Module(nn.Module):
         return train_loss/(batch_idx+1)
 
     @classmethod
-    def overfit_small_batch(cls, net, criterion, loader, optimizer):
+    def overfit_small_batch(cls, net, criterion, dataset, optimizer):
         """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
         It uses .train_epoch().
         """
+        if not isinstance(dataset, torch.utils.data.Dataset):
+            raise ValueError("Currently only support Dataset as input")
         net_test = copy.deepcopy(net)
-        if loader.batch_size > 5:
-            loader = btorch.utils.change_batch_size(loader, 5)
+        dataset = torch.utils.data.Subset(dataset, [0,1,2,3,4])
+        loader = DataLoader(dataset,5)
         loss_history = []
         for epoch in range(100):
             train_loss = cls.train_epoch(net_test, criterion, loader, optimizer, epoch)
@@ -220,7 +278,7 @@ class Module(nn.Module):
         try:
             last_loss = loss_history[-1].item()
             if last_loss < 1e-5:
-                print("It looks like your model is working. Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
+                print("It looks like your model is working. Please double check the loss_history to see whether it is overfitting. Expected to be overfit.")
         except:
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
