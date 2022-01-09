@@ -18,21 +18,26 @@ def change_batch_size(loader, batch_size):
     return torch.utils.data.DataLoader(**tmp)
 
 
-def rolling_window(a, shape):
+def rolling_window(a, shape, stride=1):
     """ Rolling window on np.array.
 
     Args:
         a (np.ndarray): Target array
         shape (tuple or int): the rolling windows size.
-          if int -> roll the last dimension. (*,D) -> (*,D-shape+1,shape)
+          if int -> For ND -> roll the last dimension. (*,D) -> (*,D-shape+1,shape)
+                 -> For 2D -> roll the second dimension. (N,D) -> (N-shape+1,shape,D) [use for time series]
           if tuple -> roll the last len(tuple) dim. It works like conv.
+        stride (int, optional): timestep for rolling on first dim. [only meaning fulling when 1D or 2D]
 
     Returns:
         (np.ndarray): Rolled Array
 
+    Notes:
+        Usually for deal with 1D or 2D data (especially in time series),
+        shape should be `int`
     Usages:
         >>> # For 1D array
-        >>> arr = np.arange(10)
+        >>> arr = np.arange(10) #(10,)
         >>> # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         >>> rolling_window(arr, 7)  #(4,7)
         >>> # array([[0, 1, 2, 3, 4, 5, 6],
@@ -40,7 +45,7 @@ def rolling_window(a, shape):
         >>> #        [2, 3, 4, 5, 6, 7, 8],
         >>> #        [3, 4, 5, 6, 7, 8, 9]])
         >>> # For 2D array
-        >>> arr = np.linspace((1,2,3,4,5),(16,17,18,19,20),4)
+        >>> arr = np.linspace((1,2,3,4,5),(16,17,18,19,20),4) #(4,5)
         >>> # array([[ 1.,  2.,  3.,  4.,  5.],
         >>> #        [ 6.,  7.,  8.,  9., 10.],
         >>> #        [11., 12., 13., 14., 15.],
@@ -49,7 +54,7 @@ def rolling_window(a, shape):
         >>> # array([[[ 1.,  2.,  3.,  4.,  5.],
         >>> #         [ 6.,  7.,  8.,  9., 10.],
         >>> #         [11., 12., 13., 14., 15.]],
-        >>> #         [[ 6.,  7.,  8.,  9., 10.],
+        >>> #        [[ 6.,  7.,  8.,  9., 10.],
         >>> #         [11., 12., 13., 14., 15.],
         >>> #         [16., 17., 18., 19., 20.]]])
         >>> # For 3D array
@@ -76,6 +81,8 @@ def rolling_window(a, shape):
     import numpy as np
     if isinstance(a, pd.DataFrame):
         a = a.to_numpy()
+    if isinstance(a, torch.Tensor):
+        a = a.numpy()
     # Args Check
     if not isinstance(shape, int) and len(shape) == 1:
         shape = shape[0]
@@ -87,4 +94,5 @@ def rolling_window(a, shape):
     else:   # rolling window for any dim
         s = (a.shape[0] - shape[0] + 1,) + (a.shape[1] - shape[1] + 1,) + shape
         strides = a.strides + a.strides
-    return np.lib.stride_tricks.as_strided(a, shape=s, strides=strides).squeeze()
+    out = torch.tensor(np.lib.stride_tricks.as_strided(a, shape=s, strides=strides).squeeze())
+    return out[::stride]
