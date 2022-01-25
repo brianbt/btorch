@@ -17,7 +17,6 @@ def change_batch_size(loader, batch_size):
     tmp['batch_size'] = batch_size
     return torch.utils.data.DataLoader(**tmp)
 
-
 def rolling_window(a, shape, stride=1):
     """ Rolling window on np.array.
 
@@ -96,3 +95,11 @@ def rolling_window(a, shape, stride=1):
         strides = a.strides + a.strides
     out = torch.tensor(np.lib.stride_tricks.as_strided(a, shape=s, strides=strides).squeeze())
     return out[::stride]
+
+def accuracy_score(y_pred, y, normalize=True, sample_weight=None):
+    from sklearn.metrics import accuracy_score
+    return accuracy_score(y_true=y, y_pred=y_pred, normalize=normalize, sample_weight=sample_weight)
+
+
+
+

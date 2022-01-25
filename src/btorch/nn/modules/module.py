@@ -14,26 +14,42 @@ from btorch.utils.load_save import save_model, resume
 
 class Module(nn.Module):
     """Base class for all neural network modules.
+
     Your models should also subclass this class.
     btorch.nn.Module is inhernet from pytorch.nn, hence, all syntax is same as pytorch
+    You can replace your `from torch import nn` as `from btorch import nn`
     This class provides some highlevel training method like Keras:
         - .fit()
+        - .evaluate()
+        - .predict()
+        - .overfit_small_batch()
+    These highlevel method will use the core class methods which should be overrided for advanced use.
+    The core class methods are:
         - .train_net()
         - .train_epoch()
         - .test_epoch()
-    You can override these class for your own usage. Just put your training loop here.
-    All classmethod can be overrided at your need. 
-    You should call classmethod like instance method.
+        - .predict_()
+        - .overfit_small_batch_()
+    All of above classmethods can be overrided at your need. 
+    Notice:
+        When overriding instance method, call classmethod via `self.`
+        When overriding class method, remember to put `@classmethod`
+        If you want to use core class method directly in real use case, use as follow:
+        >>> class Model(nn.Module):
+        >>>     ...
+        >>> mod = Model()
+        >>> mod.train_net(...)   # correct
+        >>> Model.train_net(...) # wrong
 
     If you decided to use the highlevel training loop. Please set 
         - self._lossfn (default:pytorch Loss Func)[required]
         - self._optimizer (default:pytorch Optimizer)[required]
         - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
         - self._config (default:dict)[optional]. Contains all setting parameters for training loops
-            For Defaults usage, tt accepts:
-            start_epoch = start_epoch
-            max_epoch = max_epoch
-            device = either cuda or cpu or auto
+          For Defaults usage, it accepts:
+            start_epoch: start_epoch idx
+            max_epoch: max number of epoch
+            device: either `cuda` or `cpu` or `auto`
             save: save model path
             resume: resume model path. Override start_epoch
             val_freq = freq of running validation
@@ -41,8 +57,16 @@ class Module(nn.Module):
     You can set them to be a pytorch instance or a dictionary (for advanced uses)
     The default guideline is only for the default highlevel functions.
 
+    Other high level utils methods are:
+        - .set_gpu()
+        - .set_cpu()
+        - .auto_gpu()
+        - .save()
+        - .load()
+        - .summary()
+
     All the classmethods in this class can be taken out and use them alone. 
-    They are a good starter code for traditional PyTorch training.
+    They are a good starter code for traditional PyTorch training code.
     """
     def __init__(self) -> None:
         super(Module, self).__init__()
