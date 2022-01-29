@@ -447,3 +447,32 @@ def coco_ann2Mask(img, annotations, return_dict=False):
         else:
             out.append(mask)
     return out
+
+
+def smartRotate(image):
+    """Fix the rotation error when PIL.Image.open()
+
+    Sometimes, when we open an image that is taken by our cell phone,
+    The rotation maybe wrong, this function helps to fix that error
+
+    Args:
+        image (PIL.Image): Python Image
+
+    Returns:
+        PIL.Image: Python Image
+    """
+    from PIL import ImageOps
+    image = image
+    exif = image.getexif()
+    # Remove all exif tags
+    for k in exif.keys():
+        if k != 0x0112:
+            exif[
+                k] = None  # If I don't set it to None first (or print it) the del fails for some reason.
+            del exif[k]
+    # Put the new exif object in the original image
+    new_exif = exif.tobytes()
+    image.info["exif"] = new_exif
+    # Rotate the image
+    transposed = ImageOps.exif_transpose(image)
+    return transposed

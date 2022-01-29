@@ -56,40 +56,43 @@ def finetune(
     """ This is something call per-parameter options
 
     Separate out the finetune parameters with a learning rate for each layers of parameters
-    This function only support setting a different learning rate for each parameter.
-    Depending on the optimizer, you can set extra parameter for optmizer. See Notes
+    This function only support setting a different learning rate for each layer's arameter.
+    Depending on the optimizer, you can set extra parameter for that layer for the optmizer -> See Notes 
+    If you freeze layer using this function and want to unfreeze it later:
+    See https://discuss.pytorch.org/t/correct-way-to-freeze-layers/26714/2
 
     Args:
         model (nn.Module): Pytorch Model
-        base_lr (float): learning rate of all parameters
+        base_lr (float): learning rate of all layers
         groups (Dict[str, float]): key is `name` of layers, value is the `extra_lr` (or False).
-          all layers that contains that `name` will have `lr` of base_lr*lr.
-          Using fnmatch|regex to do check whether a layer contains that `name`.
+          all layers that contains that `name` will have `lr` of base_lr*extra_lr.
+          it uses fnmatch|regex to check whether a layer contains that `name`.
           fnmatch is matching structure like `layer1*`, `layer?.conv?.`, `*conv2*`, etc...
-          Hence, `name` here is either fnmatch or regex expression if using raw_query.
           regex is the comman regex matching.
+          Hence, `name` here is either fnmatch or regex expression if using raw_query.
           If `float` is False: those layers with `name` will be freeze. 
-          In particular, not include in the return output and require_grad will be set to False
-        ignore_the_rest (bool, optional): Include the final FC layers if True. Defaults to False.
-        raw_query (bool, optional): Modify the keys of `groups` as f'*{key}*' if False
+          In particular, they will not be included in the return output and require_grad will be set to False
+        ignore_the_rest (bool, optional): Include the remaining layer that are not stated in `grouprs` or not. Defaults to False.
+        raw_query (bool, optional): Modify the keys of `groups` as f'*{key}*' if False. Only useful when `regex=False`
           Do not do any modification to the keys of `groups` if True. Defaults to False.
         regex (bool, optional): Use regex instead of fnmatch on keys of groups. Defaults to False.
           This will overrride raw_query to True. 
-          regex=False is depracted
+          Notice: `regex=False` is depracted
 
     Returns:
         List[Dict[str, Union[float, Iterable]]]: list of dict that has two or more key-value pair.
           The first one is feature generation layers. [those layers must start with `features` name] <usually is backbone>
             is a dict['params':list(model.parameters()), 'names':list(`layer's name`), 'query':query, 'lr':base_lr*groups[groups.keys()]]
-          The second is all others layer. [all others params, if ignore_the_rest = False]
+          The remaining are all others layer. [all others params for last one, if ignore_the_rest = False]
             is a dict['params':list(model.parameters()), 'names':list(`layer's name`), 'lr':base_lr]
 
     Examples:
         >>> model = models.resnet50()
-        >>> # all layers that has name start with `layer1, layer2 and layer3` will have learning rate `0.001*0.01`
+        >>> # all layers that has name start with `layer1 and layer2` will have learning rate `0.001*0.01`
+        >>> # all layers that has name start with `layer3` will be froozen`
         >>> # all layers that has name start with `layer4` will have learning rate `0.001*0.001`
         >>> # for all other layers will have the base_lr `0.001`
-        >>> model_params = finetune(model, base_lr=0.001, groups={'^layer[1-3].*': 0.01, '^layer4.*': 0.001}, regex=True)
+        >>> model_params = finetune(model, base_lr=0.001, groups={'^layer[1-2].*': 0.01, '^layer3.*': False, '^layer4.*': 0.001}, regex=True)
         >>> # setting extra parameter (other than learning rate) for that optimizer
         >>> # the second param_group `layer4` will have weight_decay 1e-2
         >>> model_params[1]['weight_decay'] = 1e-2
@@ -99,12 +102,14 @@ def finetune(
     if regex:
         raw_query = True
     else:
-        warnings.warn("regex=False is deprecated; use regex=True", warnings.DeprecationWarning)
+        warnings.warn("regex=False is deprecated; use regex=True", DeprecationWarning)
     # Deal with Freeze Later
     freeze_group = dict()
+    freeze = False
     for k,v in groups.items():
         if v is False:
             freeze_group[k] = 1
+            freeze=True
     for k in freeze_group.keys():
         del groups[k]
     freeze_group = "(" + ")|(".join(freeze_group) + ")"
@@ -119,7 +124,7 @@ def finetune(
     rest_parameters = dict(params=[], names=[], lr=base_lr, initial_lr=base_lr)
     for k, v in model.named_parameters():
         rest = 0
-        if regex and re.match(freeze_group, k):
+        if freeze and regex and re.match(freeze_group, k):
             v.requires_grad = False
             continue
         for group in parameters:

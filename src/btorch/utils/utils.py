@@ -20,6 +20,8 @@ def change_batch_size(loader, batch_size):
 def rolling_window(a, shape, stride=1):
     """ Rolling window on np.array.
 
+    Notice: Are you looking for `torch.Tensor.unfold`? usage is a bit different (to this function) for 2D .
+
     Args:
         a (np.ndarray): Target array
         shape (tuple or int): the rolling windows size.
@@ -99,7 +101,3 @@ def rolling_window(a, shape, stride=1):
 def accuracy_score(y_pred, y, normalize=True, sample_weight=None):
     from sklearn.metrics import accuracy_score
     return accuracy_score(y_true=y, y_pred=y_pred, normalize=normalize, sample_weight=sample_weight)
-
-
-
-
