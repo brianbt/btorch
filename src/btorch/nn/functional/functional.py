@@ -100,6 +100,7 @@ def multi_hot(ls, num_classes=-1):
     """Take in List and turn it to multi-hot encoding
     
     See https://pytorch.org/docs/stable/generated/torch.nn.functional.one_hot.html for details
+    This function is similar to sklearn.preprocessing.MultiLabelBinarizer
     
     Args:
         ls (List[int or List[int]]): List contains the class(es) of that element

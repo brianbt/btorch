@@ -467,8 +467,7 @@ def smartRotate(image):
     # Remove all exif tags
     for k in exif.keys():
         if k != 0x0112:
-            exif[
-                k] = None  # If I don't set it to None first (or print it) the del fails for some reason.
+            exif[k] = None  # If I don't set it to None first (or print it) the del fails for some reason.
             del exif[k]
     # Put the new exif object in the original image
     new_exif = exif.tobytes()
@@ -476,3 +475,31 @@ def smartRotate(image):
     # Rotate the image
     transposed = ImageOps.exif_transpose(image)
     return transposed
+
+def img_MinMaxScaler(img, feature_range=(0, 1)):
+    """MinMaxScaler for img data, it support 3D and 4D(batch) data.
+    
+    sklearn.MinMaxScaler only works for 2D. 
+    Usually used when visualizing the image data extracted from hidden layers.
+    The visualized may look like `UnNormalize()`, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
+    To perform un-normalization, please use `UnNormalize()` instead.
+
+    Args:
+        img (Tensor): pytorch Tensor. (C,H,W) or (N,C,H,W)
+        feature_range (tuple, optional): Defaults to (0, 1).
+
+    Returns:
+        Tensor: scaled Image, same shape as input. dtype can be int or float depends on the feature_range.
+    """
+    min_v, max_v = feature_range
+    if len(img.shape)==3:
+        X_std = (img-img.amin((-2,-1)).view(3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(3,1).unsqueeze(-1).expand(img.shape))
+    elif len(img.shape)==4:
+        X_std = (img-img.amin((-2,-1)).view(-1,3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(-1,3,1).unsqueeze(-1).expand(img.shape))
+    else:
+        raise ValueError("img must be either (C,H,W) or (N,C,H,W)")
+    X_scaled = X_std * (max_v - min_v) + min_v
+    if max_v == 1 and min_v == 0:
+        return X_scaled
+    else:
+        return X_scaled.int()

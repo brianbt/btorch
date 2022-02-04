@@ -1,7 +1,4 @@
-import copy
-from enum import auto
 import warnings
-from re import L
 from tqdm import tqdm
 from torchinfo import summary
 import torch
@@ -40,12 +37,30 @@ class Module(nn.Module):
         >>> mod = Model()
         >>> mod.train_net(...)   # correct
         >>> Model.train_net(...) # wrong
+        When overriding class method and if you want to use instance method (eg. fit),
+        you should keep the exact SAME signature in the class method. 
+
+    Hierarchy View:
+    .fit
+    └── @train_net -> {train_loss, test_loss}
+        ├── @train_epoch -> train_loss
+        └── @test_epoch -> test_loss
+
+    .evaluate -> test_loss
+    └── @test_epoch -> test_loss
+
+    .predict -> prediction
+    └── @predict_ -> prediction
+
+    .overfit_small_batch
+    └── @overfit_small_batch_
+        └── @train_epoch -> train_loss
 
     If you decided to use the highlevel training loop. Please set 
         - self._lossfn (default:pytorch Loss Func)[required]
         - self._optimizer (default:pytorch Optimizer)[required]
         - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
-        - self._config (default:dict)[optional]. Contains all setting parameters for training loops
+        - self._config (default:dict)[optional]. Contains all setting and hyper-parameters for training loops
           For Defaults usage, it accepts:
             start_epoch: start_epoch idx
             max_epoch: max number of epoch
@@ -54,7 +69,7 @@ class Module(nn.Module):
             resume: resume model path. Override start_epoch
             val_freq = freq of running validation
         - self._history (default:dict)[optional]. All loss, evaluation metric should be here.
-    You can set them to be a pytorch instance or a dictionary (for advanced uses)
+    You can set them to be a pytorch instance (or a dictionary, for advanced uses)
     The default guideline is only for the default highlevel functions.
 
     Other high level utils methods are:
@@ -321,7 +336,7 @@ class Module(nn.Module):
                 if epoch % 20 == 0:
                     save_model(net, f"{save_path}_{epoch}.pt",
                             to_save, optimizer, lr_scheduler)
-            print(f"Training loss: {train_loss}. Testing loss: {test_loss}")
+            print(f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
             if lr_scheduler is not None:
                 lr_scheduler.step()
         return dict(train_loss_data=train_loss_data,
@@ -422,12 +437,8 @@ class Module(nn.Module):
         Args:
             filepath (str): PATH
         """
-        to_save_optim = None
-        to_save_lrs = None
-        if include_optimizer:
-            to_save_optim = self._optimizer
-        if include_lr_scheduler:
-            to_save_lrs = self._lr_scheduler
+        to_save_optim = self._optimizer if include_optimizer else None
+        to_save_lrs = self._lr_scheduler if include_lr_scheduler else None
         save_model(self, filepath, self._history, optimizer=to_save_optim,
                    lr_scheduler=to_save_lrs)
 
