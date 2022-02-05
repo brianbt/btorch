@@ -1,5 +1,5 @@
-btorch package
-==============
+btorch.nn package
+=================
 
 Subpackages
 -----------
@@ -7,16 +7,13 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   btorch.datasets
-   btorch.metrics
-   btorch.nn
-   btorch.utils
-   btorch.vision
+   btorch.nn.functional
+   btorch.nn.modules
 
 Module contents
 ---------------
 
-.. automodule:: btorch
+.. automodule:: btorch.nn
    :members:
    :undoc-members:
    :show-inheritance:

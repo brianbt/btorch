@@ -1,16 +1,16 @@
 btorch.vision package
 =====================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   btorch.vision.models
+
 Submodules
 ----------
-
-btorch.vision.models module
----------------------------
-
-.. automodule:: btorch.vision.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 btorch.vision.utils module
 --------------------------
