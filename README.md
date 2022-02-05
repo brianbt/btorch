@@ -1,4 +1,5 @@
 # BTorch
+[![Documentation Status](https://readthedocs.org/projects/btorch/badge/?version=latest)](https://btorch.readthedocs.io/en/latest/?badge=latest)  
 BTorch is a PyTorch's useful utils library
 
 ## Requiements
