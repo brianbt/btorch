@@ -1,5 +1,5 @@
 import math
-from btorch import nn
+from torch import nn
 
 class DepthPointWiseConv2d(nn.Module):
     def __init__(self, in_channels, out_channels, s1=1, s2=1, kernel_size=3, multiplier=1, **kwargs):
@@ -27,3 +27,34 @@ class DepthPointWiseConv2d(nn.Module):
         x=self.batchnorm2(x)
         x=self.relu(x)
         return x
+
+class Conv2dBlock(nn.Module):
+    """Typical ConvNet Block
+
+    -> Conv2d -> BN -> ReLU ->
+    """
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size=3,
+                 padding=1,
+                 use_batchnorm=True,
+                 use_relu=True,
+                 **kwargs): 
+        super(Conv2dBlock, self).__init__()
+        self.use_batchnorm = use_batchnorm
+        self.use_relu = use_relu
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, padding=padding,
+                              bias=False if use_batchnorm else True, **kwargs)
+        if use_batchnorm:
+            self.batchnorm = nn.BatchNorm2d(out_channels)
+        if use_relu:
+            self.relu = nn.ReLU()
+    def forward(self, x):
+        out=self.conv(x)
+        if self.use_batchnorm:
+            out=self.batchnorm(out)
+        if self.use_relu:
+            out=self.relu(out)
+        return out
+ 
