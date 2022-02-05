@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     url='https://github.com/brianbt/btorch',
     license='MIT',
-    install_requires=['torch', 'torchvision', 'numpy',
+    install_requires=['torch', 'torchvision', 'numpy>=1.21',
                       'pandas', 'torchinfo', 'opencv-python',
                       'scikit-learn', 'matplotlib', 'tqdm', 'scipy'],
 )

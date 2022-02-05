@@ -6,7 +6,7 @@ BTorch is a PyTorch's useful utils library
 PyTorch ≥ 1.10
 
 ## Install
-pip install git+https://github.com/brianbt/btorch
+`pip install git+https://github.com/brianbt/btorch`
 ## High Level Module (nn.Module)
 You can use `btorch.nn` as normal `torch.nn` with more useful functions.  
 You can define your model by subclassing it from `btorch.nn.Module` and everythings will be same as subclassing from `torch.nn.Module`.  
