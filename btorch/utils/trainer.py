@@ -147,3 +147,18 @@ def finetune(
     for group in parameters:
         group['params'] = iter(group['params'])
     return parameters
+
+def L1Regularizer(model, lambda_=1e-4):
+    """
+    Add L1 regularization to the model. Notice: weight_decay is L2 reg.
+
+    Examples:
+        >>> optimizer.zero_grad()
+        >>> predicted = net(inputs)
+        >>> loss = criterion(predicted, targets)
+        >>> loss += L1Regularizer(net)  ## add L1 regularization
+        >>> loss.backward()
+        >>> optimizer.step()
+    """
+    return lambda_*sum(p.norm(p=1) for p in model.parameters() if p.requires_grad)
+

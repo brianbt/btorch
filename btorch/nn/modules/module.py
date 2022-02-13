@@ -327,7 +327,8 @@ class Module(nn.Module):
                 test_loss_data.append(test_loss)
             if save_path is not None:
                 to_save = dict(train_loss_data=train_loss_data,
-                            test_loss_data=test_loss_data)
+                            test_loss_data=test_loss_data,
+                            config=config)
                 if test_loss <= min(test_loss_data, default=999):
                     save_model(net, f"{save_path}_best.pt",
                             to_save, optimizer, lr_scheduler)
@@ -456,34 +457,13 @@ class Module(nn.Module):
         """
         return summary(self, *args, **kwargs)
 
-    # @property
-    # def _lossfn(self):
-    #     return self.__lossfn
+class GridSearchCV():
+    def __init__(self, model, base_config, param_grid_config):
+        self.model = model
+        self.base_config = base_config
+        self.param_grid_config = param_grid_config
+        raise NotImplementedError()
+    def init_model(self, curr_config, *args, **kwargs):
+        return self.model()
 
-    # @_lossfn.setter
-    # def _lossfn(self, __lossfn):
-    #     self.__lossfn = __lossfn
-
-    # @property
-    # def _optimizer(self):
-    #     return self.__optimizer
-
-    # @_optimizer.setter
-    # def _optimizer(self, __optimizer):
-    #     self.__optimizer = __optimizer
-
-    # @property
-    # def _lr_scheduler(self):
-    #     return self.__lr_scheduler
-
-    # @_lr_scheduler.setter
-    # def _lr_scheduler(self, __lr_scheduler):
-    #     self.__lr_scheduler = __lr_scheduler
-
-    # @property
-    # def _config(self):
-    #     return self.__config
-
-    # @_config.setter
-    # def _config(self, __config):
-    #     self.__config = __config
+    

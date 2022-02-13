@@ -13,9 +13,9 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
           Must reserve key ``model``
           Defaults to None.
         optimizer (torch.optim, optional): pytorch optimizer.
-          You can also put optim.state_dict() under extra instead of using this arg.
+          You can also put optim.state_dict() under `extra` instead of using this arg.
         lr_scheduler (torch.optim, optional): pytorch lr schedular.
-          You can also put lr_s.state_dict() under extra instead of using this arg.
+          You can also put lr_s.state_dict() under `extra` instead of using this arg.
     """
     try:
         state_dict = model.module.state_dict()
@@ -41,7 +41,7 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
     torch.save(to_save, path)
 
 
-def resume(path, model, optimizer, lr_scheduler=None):
+def resume(path, model, optimizer=None, lr_scheduler=None):
     """Load all components for resume training. It load everything by reference
 
     Args:
@@ -54,9 +54,10 @@ def resume(path, model, optimizer, lr_scheduler=None):
         int: epoch (use it as start_epoch)
     """
     state = torch.load(path)
-    epoch = len(state['test_TP_data'])
+    epoch = state['epoch'] if 'epoch' in state else len(state['train_loss_data'])
     model.load_state_dict(state['model'])
-    optimizer.load_state_dict(state['optimizer'])
+    if optimizer is not None:
+        optimizer.load_state_dict(state['optimizer'])
     if lr_scheduler is not None:
         if 'lr_scheduler' in state:
             for i in range(state['lr_scheduler']['last_epoch'], epoch, state['lr_scheduler']['_step_count']):

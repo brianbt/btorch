@@ -448,8 +448,7 @@ def coco_ann2Mask(img, annotations, return_dict=False):
             out.append(mask)
     return out
 
-
-def smartRotate(image):
+def smart_rotate(image):
     """Fix the rotation error when PIL.Image.open()
 
     Sometimes, when we open an image that is taken by our cell phone,
@@ -490,6 +489,12 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
 
     Returns:
         Tensor: scaled Image, same shape as input. dtype can be int or float depends on the feature_range.
+
+    Note:
+        >>> plt.imshow(img.permute(1,2,0))
+        >>> # If have warning `Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).`
+        >>> # You can try do the following, beware that the visualized output will look like UnNormalized.
+        >>> plt.imshow(img_MinMaxScaler(img).permute(1,2,0))
     """
     min_v, max_v = feature_range
     if len(img.shape)==3:
