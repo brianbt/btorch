@@ -21,7 +21,7 @@ The high-level methods are
 Override them when necessary and train your model by just calling `.fit()`
 
 ### Usage  
-```
+```python
 class ResNet(nn.Module):
     def __init__(self, num_classes) -> None:
         super(ResNet, self).__init__()
