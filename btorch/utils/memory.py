@@ -166,6 +166,12 @@ class MemTracker(object):
 
 def memory_summary(device=None, return_unit='bytes'):
     """Print the memory usage of the current device.
+
+    Note:
+        This function is helpful for debugging memory leaks.
+        Put this function at the top of the training loop. Then look at your training loop, 
+        add a continue statement right below the first line and run the training loop. 
+        If your memory usage holds steady, move the continue to the next line and so on until you find the leak.
     
     Args:
         device (int, optional): see https://pytorch.org/docs/stable/generated/torch.cuda.max_memory_allocated.html
@@ -231,7 +237,11 @@ def model_size(model, input, type_size=4):
 
 
 def del_gpu(ls=None, release_gpu=True):
-    """Delete objects and release GPU memory"""
+    """Delete objects and release GPU memory
+    
+    Note:
+        Usually this function won't help you to solve cuda out of memory problem.
+    """
     if ls is not None:
         if isinstance(ls, (list, tuple)):
             for i in ls:

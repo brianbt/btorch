@@ -1,5 +1,29 @@
+import warnings
+import numpy as np
+import random
 import torch
 import torch.nn.functional as F
+
+def to_tensor(a):
+    """Turns any object into a tensor.
+    """
+    import pandas as pd
+    if isinstance(a, pd.DataFrame):
+        a = torch.tensor(a.to_numpy())
+    if isinstance(a, list) and isinstance(a[0], np.ndarray):
+        a = torch.stack([torch.tensor(x) for x in a])
+    if isinstance(a, list) and isinstance(a[0], torch.Tensor):
+        a = torch.stack(a)
+    if not isinstance(a, torch.Tensor):
+        a = torch.tensor(a)
+    return a
+
+def seed_everythin(seed):
+    """set seed on everything"""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 def change_batch_size(loader, batch_size):
     """Change the batch_size of a dataloader
@@ -17,10 +41,87 @@ def change_batch_size(loader, batch_size):
     tmp['batch_size'] = batch_size
     return torch.utils.data.DataLoader(**tmp)
 
-def rolling_window(a, shape, stride=1):
+def rolling_window(a, shape, stride=1, step=1, dim=0, safe_check=False):
+    """Rolling window for Tensor
+
+    Returns a *view* of the original tensor when *step=1*, otherwise returns a *new* tensor.
+    Only maintain when `a` is 1D or 2D.
+
+    Args:
+        a (Tensor): Pytorch Tensor
+        shape (int): Window Size
+        stride (int, optional): 
+          stride within Window, ONLY useful when dim=-1. 
+          If dm!=-1, stride is same as step. For example, if stride and step are both 2, the final step size will be 2*2=4.
+          Defaults to 1.
+        step (int, optional):
+          select every `step` slices after rolling window.
+          Defaults to 1.
+        dim (int, optional): dimension in which rolling window happens. Defaults to 0.
+        safe_check (bool, optional): `a` can be numpy array, Pandas, list, etc. This may affect performance.
+
+    Returns:
+        Tensor: PyTorch Tensor
+
+    Examples:
+        >>> # For 1D case
+        >>> arr = torch.arange(10, dtype=torch.float32)
+        >>> tensor([0., 1., 2., 3., 4., 5., 6., 7., 8., 9.])
+        >>> rolling_window(arr, 3)
+        >>> tensor([[0., 1., 2.],
+        >>>         [1., 2., 3.],
+        >>>         [2., 3., 4.],
+        >>>         [3., 4., 5.],
+        >>>         [4., 5., 6.],
+        >>>         [5., 6., 7.],
+        >>>         [6., 7., 8.],
+        >>>         [7., 8., 9.]])
+        >>> rolling_window(arr, 4, 2, 2)
+        >>> tensor([[0., 2.],
+        >>>         [2., 4.],
+        >>>         [4., 6.],
+        >>>         [6., 8.]])
+        >>> # For 2D case
+        >>> arr = torch.arange(1, 21, dtype=torch.float32).view(4,-1)
+        >>> tensor([[ 1.,  2.,  3.,  4.,  5.],
+        >>>         [ 6.,  7.,  8.,  9., 10.],
+        >>>         [11., 12., 13., 14., 15.],
+        >>>         [16., 17., 18., 19., 20.]])
+        >>> rolling_window(arr, 2, 1, 1)
+        >>> tensor([[[ 1.,  2.,  3.,  4.,  5.],
+        >>>          [ 6.,  7.,  8.,  9., 10.]],
+        >>>         [[ 6.,  7.,  8.,  9., 10.],
+        >>>          [11., 12., 13., 14., 15.]],
+        >>>         [[11., 12., 13., 14., 15.],
+        >>>          [16., 17., 18., 19., 20.]]])
+        >>> rolling_window(arr, 2, 1, 2)
+        >>> tensor([[[ 1.,  2.,  3.,  4.,  5.],
+        >>>          [ 6.,  7.,  8.,  9., 10.]],
+        >>>         [[11., 12., 13., 14., 15.],
+        >>>          [16., 17., 18., 19., 20.]]])
+        >>> rolling_window(arr, 4, 2, 1, 1)
+        >>> tensor([[[ 1.,  3.],
+        >>>          [ 2.,  4.]],
+        >>>         [[ 6.,  8.],
+        >>>          [ 7.,  9.]],
+        >>>         [[11., 13.],
+        >>>          [12., 14.]],
+        >>>         [[16., 18.],
+        >>>          [17., 19.]]])
+    """
+    if safe_check:
+        a = to_tensor(a)
+    if a.dim()-dim == 1:
+        shape = a.shape[-1] - shape + 1
+    out = a.unfold(dim, shape, stride).transpose(-2, -1)
+    if step != 1:
+        out = torch.index_select(out, dim, torch.arange(0, out.shape[dim], step))
+    return out
+
+def rolling_window_old(a, shape, stride=1):
     """ Rolling window on np.array.
 
-    Notice: Are you looking for `torch.Tensor.unfold`? usage is a bit different (to this function) for 2D .
+    Notice: This function is deprecated. Use `rolling_window()` instead.
 
     Args:
         a (np.ndarray): Target array
@@ -41,6 +142,7 @@ def rolling_window(a, shape, stride=1):
         >>> arr = np.arange(10) #(10,)
         >>> # [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         >>> rolling_window(arr, 7)  #(4,7)
+        >>> arr.unfold(0, 4, 1).transpose(1, 0)     #SAME results 
         >>> # array([[0, 1, 2, 3, 4, 5, 6],
         >>> #        [1, 2, 3, 4, 5, 6, 7],
         >>> #        [2, 3, 4, 5, 6, 7, 8],
@@ -52,6 +154,7 @@ def rolling_window(a, shape, stride=1):
         >>> #        [11., 12., 13., 14., 15.],
         >>> #        [16., 17., 18., 19., 20.]])
         >>> arr = rolling_window(arr, 3) #(2, 3, 5)
+        >>> arr.unfold(0, 3, 1).transpose(2,1)      #SAME results
         >>> # array([[[ 1.,  2.,  3.,  4.,  5.],
         >>> #         [ 6.,  7.,  8.,  9., 10.],
         >>> #         [11., 12., 13., 14., 15.]],
@@ -78,6 +181,7 @@ def rolling_window(a, shape, stride=1):
         >>> #           [17., 18., 19., 20.,  1.]]]]])
 
     """
+    warnings.warn("rolling_window_old() is deprecated; use rolling_window()", DeprecationWarning)
     import pandas as pd
     import numpy as np
     if isinstance(a, pd.DataFrame):

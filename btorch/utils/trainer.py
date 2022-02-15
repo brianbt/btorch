@@ -1,4 +1,3 @@
-from pyrsistent import freeze
 import torch
 from torch import nn
 import warnings

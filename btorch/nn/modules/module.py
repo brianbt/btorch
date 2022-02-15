@@ -98,7 +98,7 @@ class Module(nn.Module):
                         }
         self._history = None
 
-    def fit(self, x=None, y=None, batch_size=8, epochs=10, shuffle=True, drop_last=False,
+    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
             initial_epoch=None, workers=1):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
@@ -144,7 +144,7 @@ class Module(nn.Module):
         if self._lossfn is None or self._optimizer is None:
             raise ValueError("`self._lossfn` and `self._optimizer` is not set.")
 
-        self._config['max_epoch'] = epochs if epochs is not None else 10
+        self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else 0
         self._config['val_freq'] = validation_freq
 
@@ -273,9 +273,10 @@ class Module(nn.Module):
             dataset = TensorDataset(x, _y)
         elif isinstance(x, torch.utils.data.Dataset):
             dataset = x
-        elif isinstance(x, torch.utils.data.Dataloader):
-            pass
-        loader = DataLoader(dataset, batch_size)
+        if isinstance(x, torch.utils.data.DataLoader):
+            loader = x
+        else:
+            loader = DataLoader(dataset, batch_size)
         out = self.predict_(self, loader, device=self._config.get('device', 'cpu'))
         if return_combined:
             return torch.cat(out)
