@@ -109,9 +109,9 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             y: Target data. Like the input data `x`,
               it should be torch.tensor.
               If `x` is a dataset, generator or dataloader, `y` should
@@ -222,9 +222,9 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             y: Target data. Like the input data `x`,
               it should be torch.tensor.
               If `x` is a dataset, generator or dataloader, `y` should
@@ -260,10 +260,11 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, _)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             batch_size (int, optional). Defaults to 8.
+            return_combined (bool, optional). Apply torch.cat() on the output from .predict_(). Make sure the outputs are tensor.
 
         Returns:
             List[Tensor] or Tensor if return_combined 
@@ -398,11 +399,11 @@ class Module(nn.Module):
     @classmethod
     def overfit_small_batch_(cls, net, criterion, dataset, optimizer, config=None):
         """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
+        Note: This function will affect the model weights and all other training-related setting/parameters.
         It uses .train_epoch().
         """
         if not isinstance(dataset, torch.utils.data.Dataset):
             raise ValueError("Currently only support Dataset as input")
-        # net_test = copy.deepcopy(net)
         dataset = torch.utils.data.Subset(dataset, [0,1,2,3])
         loader = DataLoader(dataset,2)
         loss_history = []

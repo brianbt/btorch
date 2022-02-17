@@ -1,5 +1,8 @@
+from matplotlib import use
 import torch
 import torch.nn.functional as F
+from ...vision.utils import conv_kernel_shape
+from ...utils import conv_window2d
 
 def adaptive_pad1d(x, shape, mode='constant', value=0.0):
     """pad a 1D Tensor to desire shape, pad right first if shape is odd. 
@@ -94,6 +97,30 @@ def adaptive_pad3d(x, shape, mode='constant', value=0.0):
         to_pad.append(new_d3 // 2 + 1)
     out = F.pad(x, to_pad, mode, value)
     return out
+
+def adaptive_avg_pool2d_threshold(input, output_size, threshold=0.0000001, use_abs=False):
+    """Avg Pool 2D threshold version. Only the values that are larger than threshold will be used to calc the avgerage value.
+
+    Args:
+        input, output_size: same as `F.adaptive_avg_pool2d()`
+        threshold (float, optional): Defaults to 0.0000001.
+        use_abs (bool, optional):
+          only `torch.abs(input)>threshold` will be used to calc the average value, if True.
+          only `input>threshold` will be used to calc the average value, if False.
+    """
+    # calc the kernel_size and stride used by adaptive_avg_pool2d
+    stride = (input.shape[-2]//output_size[-2], input.shape[-1]//output_size[-1])
+    kernel_size = torch.tensor(conv_kernel_shape(input, output_size, stride=stride))
+    rolling_window = conv_window2d(input, kernel_size, stride=stride)
+    if use_abs:
+        nz = torch.count_nonzero(torch.abs(rolling_window) > threshold, dim=(-2,-1))
+        input = torch.where(torch.abs(input) <= threshold, torch.zeros_like(input), input)
+    else:
+        nz = torch.count_nonzero(rolling_window > threshold, dim=(-2,-1))
+        input = torch.where(input <= threshold, torch.zeros_like(input), input)
+    ans = F.adaptive_avg_pool2d(input, output_size)
+    demon = kernel_size.prod()
+    return ans*demon/nz
 
 
 def multi_hot(ls, num_classes=-1):

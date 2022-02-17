@@ -7,6 +7,15 @@ PyTorch ≥ 1.10
 
 ## Install
 `pip install git+https://github.com/brianbt/btorch`
+
+## Import Library
+You can import below library and use them as PyTorch.
+```
+from btorch import nn
+import btorch.nn.functional as F
+from btorch.vision import models
+```
+
 ## High Level Module (nn.Module)
 You can use `btorch.nn` as normal `torch.nn` with more useful functions.  
 You can define your model by subclassing it from `btorch.nn.Module` and everythings will be same as subclassing from `torch.nn.Module`.  
@@ -18,7 +27,25 @@ The high-level methods are
 - .train_epoch()  
 - .test_epoch()  
 
-Override them when necessary and train your model by just calling `.fit()`
+Hierarchy View (method_name -> return_value):  
+```
+    .fit  
+    └── @train_net -> {train_loss, test_loss}  
+        ├── @train_epoch -> train_loss  
+        └── @test_epoch -> test_loss  
+  
+    .evaluate -> test_loss  
+    └── @test_epoch -> test_loss  
+  
+    .predict -> prediction  
+    └── @predict_ -> prediction  
+  
+    .overfit_small_batch  
+    └── @overfit_small_batch_  
+        └── @train_epoch -> train_loss  
+```
+Override the @classmethod when necessary and train your model by just calling `.fit()`  
+**Notice: if you are using the default high level methods, you should keep the signiture of the @classmethod the same as the default one.**
 
 ### Usage  
 ```python
@@ -67,11 +94,4 @@ for i in testloader:
     break
 net.predict(i[0])
 net.predict(testloader)
-```
-## Inherent Library
-You can import below library and use that as pyTorch
-```
-from btorch import nn
-import btorch.nn.functional as F
-from btorch.vision import models
 ```

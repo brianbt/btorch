@@ -118,25 +118,54 @@ def rolling_window(a, shape, stride=1, step=1, dim=0, safe_check=False):
         out = torch.index_select(out, dim, torch.arange(0, out.shape[dim], step))
     return out
 
-def rolling_window_old(a, shape, stride=1):
+def conv_window2d(a, window, stride=None):
+    """Convolution like rolling windows for 2D
+
+    Args:
+        a (Tensor): Tensor. Support (N, C, H, W) and (H, W)
+        window (int or Tuple(int)): kernel size
+        stride (int, optional): Defaults to `window`
+    """
+    batch_mode = True
+    if a.dim() == 2:
+        a = a.unsqueeze(0).unsqueeze(0)
+        batch_mode = False
+    elif a.dim() != 4:
+        raise ValueError("Only support (N, C, H, W) and (H, W)")
+    if isinstance(window, int):
+        kernel_h, kernel_w = window, window
+    else:
+        kernel_h, kernel_w = window[-2], window[-1]
+    stride = (kernel_h, kernel_w) if stride is None else stride
+    if isinstance(stride, int):
+        stride = (stride, stride)
+    patches = a.unfold(2, kernel_h, stride[0]).unfold(3, kernel_w, stride[1])
+    if not batch_mode:
+        patches = patches.squeeze(0).squeeze(0)
+    return patches
+
+def adaptive_conv_window(a, shape, stride=1, dim=0):
     """ Rolling window on np.array.
 
-    Notice: This function is deprecated. Use `rolling_window()` instead.
+    This function is not well developed yet. This function is slow.
 
     Args:
         a (np.ndarray): Target array
-        shape (tuple or int): the rolling windows size.
+        shape (tuple or int): the output size.
           if int -> For ND -> roll the last dimension. (*,D) -> (*,D-shape+1,shape)
                  -> For 2D -> roll the second dimension. (N,D) -> (N-shape+1,shape,D) [use for time series]
           if tuple -> roll the last len(tuple) dim. It works like conv.
         stride (int, optional): timestep for rolling on first dim. [only meaning fulling when 1D or 2D]
+        dim (int, optional): dimension in which rolling window happens. Defaults to 0.
 
     Returns:
         (np.ndarray): Rolled Array
 
     Notes:
-        Usually for deal with 1D or 2D data (especially in time series),
-        shape should be `int`
+        use `rolling_window()` when dealing with 1D or 2D time series data, 
+        `rolling_window()` is roll the entire dimension.
+        This function is a roll like a convolution.
+
     Usages:
         >>> # For 1D array
         >>> arr = np.arange(10) #(10,)
