@@ -420,11 +420,18 @@ class Module(nn.Module):
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
 
+    def cuda(self, device=None):
+        self._config['device'] = 'cuda'
+        return self._apply(lambda t: t.cuda(device))
+
     def set_gpu(self):
         if not torch.cuda.is_available():
             warnings.warn("Cuda is not available but you are setting the model to GPU mode.")
         self._config['device'] = 'cuda'
         self.to('cuda')
+
+    def cpu(self):
+        self.set_cpu()
 
     def set_cpu(self):
         self._config['device'] = 'cpu'
@@ -433,6 +440,9 @@ class Module(nn.Module):
     def auto_gpu(self, parallel='auto', on=None):
         device, _ = btorch.utils.trainer.auto_gpu(self, parallel, on)
         self._config['device'] = device
+    
+    def device(self):
+        return next(self.parameters()).device
 
     def save(self, filepath, include_optimizer=True, include_lr_scheduler=True):
         """Saves the model.state_dict and self._history.
@@ -458,6 +468,11 @@ class Module(nn.Module):
         """Prints a string summary of network. https://github.com/TylerYep/torchinfo
         """
         return summary(self, *args, **kwargs)
+    
+    def number_parameters(self, exclude_freeze=False):
+        """Returns the number of parameters in the model.
+        """
+        return btorch.utils.number_params(self, exclude_freeze)
 
 class GridSearchCV():
     def __init__(self, model, base_config, param_grid_config):

@@ -163,10 +163,10 @@ def conv_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    h = (output_size[0]*stride[0] - stride[0] - input_size[0] - 2*pad[0] + 1) // -dilation[0] + 1
-    w = (output_size[1]*stride[1] - stride[1] - input_size[1] - 2*pad[1] + 1) // -dilation[1] + 1
-    out.append(h)
-    out.append(w)
+    k_h = (output_size[0]*stride[0] - stride[0] - input_size[0] - 2*pad[0] + 1) // -dilation[0] + 1
+    k_w = (output_size[1]*stride[1] - stride[1] - input_size[1] - 2*pad[1] + 1) // -dilation[1] + 1
+    out.append(k_h)
+    out.append(k_w)
     return tuple(out)
 
 def convtransp_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
@@ -297,7 +297,7 @@ def replace_part(img, part, loc, handle_transparent=False):
     Args:
         img (Tensor or ndarray): either (N,C,H,W) or (C,H,W)
         part (Tensor or ndarray): used to replace. (C,H,W)
-        loc (List[int]): [x_min, x_max], the topLeft coordinate.
+        loc (List[int]): [x_min, x_max], the topLeft coordinate of img to be replaced.
         handle_transparent (bool): if the pixel that has zero value (transparent) will be replaced or not.
 
     Returns:
@@ -554,15 +554,16 @@ def smart_rotate(image):
     return transposed
 
 def img_MinMaxScaler(img, feature_range=(0, 1)):
-    """MinMaxScaler for img data, it support 3D and 4D(batch) data.
+    """MinMaxScaler for img data, it support 2D(gray), 3D and 4D(batch) data.
     
     sklearn.MinMaxScaler only works for 2D. 
     Usually used when visualizing the image data extracted from hidden layers.
     The visualized may look like `UnNormalize()`, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
     To perform un-normalization, please use `UnNormalize()` instead.
+    It can also be used to rescale the pixel value to the given range.
 
     Args:
-        img (Tensor): pytorch Tensor. (C,H,W) or (N,C,H,W)
+        img (Tensor): pytorch Tensor. (H,W) or (C,H,W) or (N,C,H,W)
         feature_range (tuple, optional): Defaults to (0, 1).
 
     Returns:
@@ -575,14 +576,45 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
         >>> plt.imshow(img_MinMaxScaler(img).permute(1,2,0))
     """
     min_v, max_v = feature_range
-    if len(img.shape)==3:
+    if len(img.shape)==2:
+        X_std = (img-img.amin((-2,-1)).view(1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(1).unsqueeze(-1).expand(img.shape))
+    elif len(img.shape)==3:
         X_std = (img-img.amin((-2,-1)).view(3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(3,1).unsqueeze(-1).expand(img.shape))
     elif len(img.shape)==4:
         X_std = (img-img.amin((-2,-1)).view(-1,3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(-1,3,1).unsqueeze(-1).expand(img.shape))
     else:
-        raise ValueError("img must be either (C,H,W) or (N,C,H,W)")
+        raise ValueError("img must be either (H,W) or (C,H,W) or (N,C,H,W)")
     X_scaled = X_std * (max_v - min_v) + min_v
     if max_v == 1 and min_v == 0:
         return X_scaled
     else:
         return X_scaled.int()
+
+
+def flood_fill(img, target_value, fill_value, start_point, flags=4):
+    """cv2.flood_fill() wrapper
+
+    This function uses cv2 and numpy, is slow and not differentiable
+    See https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html?highlight=floodfill#floodfill
+    See https://stackoverflow.com/questions/19839947/flood-fill-in-python
+
+    Args:
+        img (torch.Tensor): pytorch Tensor, dtype should be int. Support (H,W)
+        target_value (int): Value that need to change
+        fill_value (int): target_value will change to this value
+        start_point (tuple(int, int)): starting point for flood fill.
+        flags (int, optional):
+          4 means that the four nearest neighbor pixels. (vertically and horizontally)
+          8 means that the eight nearest neighbor pixels. (vertically, horizontally and diagonally)
+
+    Returns:
+        torch.Tensor: same shape as input.
+    """
+    assert len(start_point) == 2, 'Starting point should be a tuple of length 2 (x, y)'
+    matrix_np = np.asarray(img).copy()
+    numeric_matrix = np.where(matrix_np==target_value, 255, 0).astype(np.uint8)
+    mask = np.zeros(np.asarray(numeric_matrix.shape)+2, dtype=np.uint8)
+    cv2.floodFill(numeric_matrix, mask, start_point, 255, flags=flags)
+    mask = mask[1:-1, 1:-1]
+    matrix_np[mask==1] = fill_value
+    return torch.tensor(matrix_np, dtype=img.dtype, device=img.device)

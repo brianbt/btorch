@@ -3,6 +3,7 @@ import numpy as np
 import random
 import torch
 import torch.nn.functional as F
+from packaging.version import parse
 
 def to_tensor(a):
     """Turns any object into a tensor.
@@ -18,12 +19,22 @@ def to_tensor(a):
         a = torch.tensor(a)
     return a
 
-def seed_everythin(seed):
+def seed_everything(seed):
     """set seed on everything"""
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+
+def is_differentiable(func, *args, **kwargs):
+    """Check if a function is differentiable.
+    """
+    try:
+        func(torch.ones(1, requires_grad=True), *args, **kwargs).grad_fn
+        return True
+    except Exception as e:
+        print('error message:', e)
+        return False
 
 def change_batch_size(loader, batch_size):
     """Change the batch_size of a dataloader
@@ -234,3 +245,120 @@ def adaptive_conv_window(a, shape, stride=1, dim=0):
 def accuracy_score(y_pred, y, normalize=True, sample_weight=None):
     from sklearn.metrics import accuracy_score
     return accuracy_score(y_true=y, y_pred=y_pred, normalize=normalize, sample_weight=sample_weight)
+
+#https://discuss.pytorch.org/t/nested-list-of-variable-length-to-a-tensor/38699/21?u=brianbt
+def ints_to_tensor(ints, pad=0):
+    """Converts a nested list of integers to a padded tensor, with padding value `pad`
+
+    Args:
+        ints (list[]): A nested list of integers or Tensor
+        pad (int, optional): The padding value. Defaults to 0.
+    
+    Notes:
+        If you need to limit the length of the dimension, do `output[:, :max_len]`.
+    """
+    if isinstance(ints, torch.Tensor):
+        return ints
+    if isinstance(ints, list):
+        if isinstance(ints[0], int):
+            return torch.LongTensor(ints)
+        if isinstance(ints[0], torch.Tensor):
+            return pad_tensors_(ints, pad)
+        if isinstance(ints[0], list):
+            return ints_to_tensor([ints_to_tensor(inti) for inti in ints], pad)
+def pad_tensors_(tensors, pad):
+    """helper function of `ints_to_tensor()`
+    Takes a list of `N` M-dimensional tensors (M<4) and returns a padded tensor.
+
+    The padded tensor is `M+1` dimensional with size `N, S1, S2, ..., SM`
+    where `Si` is the maximum value of dimension `i` amongst all tensors.
+    """
+    rep = tensors[0]
+    padded_dim = []
+    for dim in range(rep.dim()):
+        max_dim = max([tensor.size(dim) for tensor in tensors])
+        padded_dim.append(max_dim)
+    padded_dim = [len(tensors)] + padded_dim
+    padded_tensor = torch.zeros(padded_dim) + pad
+    padded_tensor = padded_tensor.type_as(rep)
+    for i, tensor in enumerate(tensors):
+        size = list(tensor.size())
+        if len(size) == 1:
+            padded_tensor[i, :size[0]] = tensor
+        elif len(size) == 2:
+            padded_tensor[i, :size[0], :size[1]] = tensor
+        elif len(size) == 3:
+            padded_tensor[i, :size[0], :size[1], :size[2]] = tensor
+        else:
+            raise ValueError('Padding is supported for upto 3D tensors at max.')
+    return padded_tensor
+
+def freeze(model):
+    """Freeze all layers of a model."""
+    for param in model.parameters():
+        param.requires_grad = False
+
+def unfreeze(model):
+    """Freeze all layers of a model."""
+    for param in model.parameters():
+        param.requires_grad = True
+
+def number_params(model, exclude_freeze=False):
+    """calculate the number of parameters in a model
+
+    Args:
+        model (nn.Module): PyTorch model
+        exclude_freeze (bool, optional): Wether to count the frozen layer. Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
+    pp = 0
+    for p in list(model.parameters()):
+        if exclude_freeze and p.requires_grad is False:
+          continue
+        nn = 1
+        for s in list(p.size()):
+            nn = nn*s
+        pp += nn
+    return pp
+
+def digit_version(version_str, length = 4):
+    """Convert a version string into a tuple of integers.
+
+    This method is usually used for comparing two versions. 
+    `digit_version("1.6.7") > digit_version("1.8")` will return False.
+    For pre-release versions: alpha < beta < rc.
+
+    Args:
+        version_str (str): The version string.
+        length (int): The maximum number of version levels. Default: 4.
+
+    Returns:
+        tuple[int]: The version info in digits (integers).
+    """
+    version = parse(version_str)
+    assert version.release, f'failed to parse version {version_str}'
+    release = list(version.release)
+    release = release[:length]
+    if len(release) < length:
+        release = release + [0] * (length - len(release))
+    if version.is_prerelease:
+        mapping = {'a': -3, 'b': -2, 'rc': -1}
+        val = -4
+        # version.pre can be None
+        if version.pre:
+            if version.pre[0] not in mapping:
+                warnings.warn(f'unknown prerelease version {version.pre[0]}, '
+                              'version checking may go wrong')
+            else:
+                val = mapping[version.pre[0]]
+            release.extend([val, version.pre[-1]])
+        else:
+            release.extend([val, 0])
+
+    elif version.is_postrelease:
+        release.extend([1, version.post])
+    else:
+        release.extend([0, 0])
+    return tuple(release)
