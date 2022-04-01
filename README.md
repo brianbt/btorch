@@ -4,28 +4,30 @@ BTorch is a PyTorch's useful utils library
 
 ## Requiements
 PyTorch ≥ 1.10
-
+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
 ## Install
-`pip install git+https://github.com/brianbt/btorch`
+`pip install git+https://github.com/brianbt/btorch`  
+Below link expires on Thu, Jun 30 2022, [renew](https://docs.readthedocs.io/en/stable/guides/private-python-packages.html). This link should NOT be shared with anyone.   
+`pip install git+https://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@github.com/brianbt/btorch`
 
-## Import Library
+# Import Library
 You can import below library and use them as PyTorch.
-```
+```python
 from btorch import nn
 import btorch.nn.functional as F
 from btorch.vision import models
 ```
 
-## High Level Module (nn.Module)
+# High Level Module (nn.Module)
 You can use `btorch.nn` as normal `torch.nn` with more useful functions.  
 You can define your model by subclassing it from `btorch.nn.Module` and everythings will be same as subclassing from `torch.nn.Module`.  
 `btorch.nn.Module` provides you high-level training loop that you can define by yourself. Making the code more clean while maintain the flexibilityof PyTorch.  
 
 The high-level methods are  
 - .fit()  
-- .train_net()  
-- .train_epoch()  
-- .test_epoch()  
+- .evaluate()  
+- .predict()  
+- .overfit_small_batch()  
 
 Hierarchy View (method_name -> return_value):  
 ```
@@ -45,9 +47,9 @@ Hierarchy View (method_name -> return_value):
         └── @train_epoch -> train_loss  
 ```
 Override the @classmethod when necessary and train your model by just calling `.fit()`  
-**Notice: if you are using the default high level methods, you should keep the signiture of the @classmethod the same as the default one.**
+**Note: if you are using the default high level methods, you should keep the signiture of the @classmethod the same as the default one.**
 
-### Usage  
+## Usage  
 ```python
 class ResNet(nn.Module):
     def __init__(self, num_classes) -> None:
@@ -94,4 +96,15 @@ for i in testloader:
     break
 net.predict(i[0])
 net.predict(testloader)
+```
+Other common useful methods are
+- .save()
+- .load()
+- .summary()
+- .auto_gpu()
+# Commonly used functions
+```python
+btorch.utils.trainer.finetune()
+btorch.vision.utils.conv_output_shape()
+btorch.vision.utils.conv_kernel_shape()
 ```

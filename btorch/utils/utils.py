@@ -3,7 +3,7 @@ import numpy as np
 import random
 import torch
 import torch.nn.functional as F
-from packaging.version import parse
+from packaging.version import parse as _parse
 
 def to_tensor(a):
     """Turns any object into a tensor.
@@ -263,10 +263,10 @@ def ints_to_tensor(ints, pad=0):
         if isinstance(ints[0], int):
             return torch.LongTensor(ints)
         if isinstance(ints[0], torch.Tensor):
-            return pad_tensors_(ints, pad)
+            return _pad_tensors(ints, pad)
         if isinstance(ints[0], list):
             return ints_to_tensor([ints_to_tensor(inti) for inti in ints], pad)
-def pad_tensors_(tensors, pad):
+def _pad_tensors(tensors, pad):
     """helper function of `ints_to_tensor()`
     Takes a list of `N` M-dimensional tensors (M<4) and returns a padded tensor.
 
@@ -293,30 +293,17 @@ def pad_tensors_(tensors, pad):
             raise ValueError('Padding is supported for upto 3D tensors at max.')
     return padded_tensor
 
-def freeze(model):
-    """Freeze all layers of a model."""
-    for param in model.parameters():
-        param.requires_grad = False
-
-def unfreeze(model):
-    """Freeze all layers of a model."""
-    for param in model.parameters():
-        param.requires_grad = True
-
 def number_params(model, exclude_freeze=False):
     """calculate the number of parameters in a model
 
     Args:
         model (nn.Module): PyTorch model
-        exclude_freeze (bool, optional): Wether to count the frozen layer. Defaults to False.
-
-    Returns:
-        _type_: _description_
+        exclude_freeze (bool, optional): Whether to count the frozen layer. Defaults to False.
     """
     pp = 0
     for p in list(model.parameters()):
         if exclude_freeze and p.requires_grad is False:
-          continue
+            continue
         nn = 1
         for s in list(p.size()):
             nn = nn*s
@@ -337,7 +324,7 @@ def digit_version(version_str, length = 4):
     Returns:
         tuple[int]: The version info in digits (integers).
     """
-    version = parse(version_str)
+    version = _parse(version_str)
     assert version.release, f'failed to parse version {version_str}'
     release = list(version.release)
     release = release[:length]
@@ -362,3 +349,89 @@ def digit_version(version_str, length = 4):
     else:
         release.extend([0, 0])
     return tuple(release)
+
+def get_class_weight(a, method='inverse_size', total_nu_class=None):
+    """For auto generate class weight for imbalanced dataset. Only support multi-class classification.
+
+    Note: Are you looking for https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html
+    Args:
+        a (list or Tensor): The target labels. This should be your `y_train`.
+        method (str, optional): See Examples
+         Support either ['sklearn','inverse_size', 'inverse_sqrt_size', 'inverse_proba', 'inverse_sqrt_proba', 'inverse_softmax', 'inverse_sqrt_softmax']
+         Defaults to 'sklearn'.
+         'sklearn' is same as `balanced`. https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html
+        total_nu_class (int, optional): Total number of class.
+          If `a` does not contains all possible class label, you should set this parameter.
+          Assume the first class is 0, the second class is 1, and so on.
+          Defaults to None.
+
+    Returns:
+       (Tensor, Tensor): 
+          The first element is the order of each class.
+          The second element is the weight for each class for that order.
+
+    Examples:
+    >>> a = [0,1,1,1,1,4,4,2]
+    >>> # unique -> (tensor([0, 1, 2, 4]), tensor([1, 4, 1, 2]))
+    >>> print(get_class_weight(a, 'sklearn'))
+    >>> print(get_class_weight(a, 'inverse_size'))
+    >>> print(get_class_weight(a, 'inverse_sqrt_size'))
+    >>> print(get_class_weight(a, 'inverse_proba'))
+    >>> print(get_class_weight(a, 'inverse_sqrt_proba'))
+    >>> print(get_class_weight(a, 'inverse_softmax'))
+    >>> print(get_class_weight(a, 'inverse_sqrt_softmax'))
+    >>> print(get_class_weight(a, total_nu_class=6))
+    >>> # Output:
+    >>> sklearn -> (tensor([0, 1, 2, 4]), tensor([2.0000, 0.5000, 2.0000, 1.0000]))
+    >>> inverse_size -> (tensor([0, 1, 2, 4]), tensor([1.0000, 0.2500, 1.0000, 0.5000]))
+    >>> inverse_sqrt_size -> (tensor([0, 1, 2, 4]), tensor([1.0000, 0.5000, 1.0000, 0.7071]))
+    >>> inverse_proba -> (tensor([0, 1, 2, 4]), tensor([8., 2., 8., 4.]))
+    >>> inverse_sqrt_proba -> (tensor([0, 1, 2, 4]), tensor([2.8284, 0.7071, 2.8284, 1.4142]))
+    >>> inverse_softmax -> (tensor([0, 1, 2, 4]), tensor([24.8038,  1.2349, 24.8038,  9.1248]))
+    >>> inverse_sqrt_softmax -> (tensor([0, 1, 2, 4]), tensor([4.9803, 1.1113, 4.9803, 3.0207]))
+    >>> (tensor([0, 1, 2, 3, 4, 5]), tensor([2.0000, 0.5000, 2.0000, 0.0000, 1.0000, 0.0000]))
+        
+    """
+    if not isinstance(a, torch.Tensor):
+        a = torch.tensor(a)
+    unique, counts = a.unique(return_counts=True)
+    if method =='sklearn':
+        weights = len(a) / (len(a.unique()) * torch.bincount(a))
+    if method == 'inverse_size':
+        weights = 1 / counts
+    elif method == 'inverse_sqrt_size':
+        weights = 1 / counts.sqrt()
+    elif method == 'inverse_proba':
+        weights = 1 / (counts / counts.sum())
+    elif method == 'inverse_sqrt_proba':
+        weights = 1 / (counts / counts.sum().sqrt())
+    elif method == 'inverse_softmax':
+        weights = 1 / torch.softmax(counts.float(), 0)
+    else:
+        raise ValueError(f"method {method} is not supported")
+    if total_nu_class is not None:
+        full_weights = torch.zeros(total_nu_class)
+        for i in range(len(unique)):
+            full_weights[unique[i]] = weights[i]
+        weights = full_weights
+        unique = torch.arange(total_nu_class)
+    return unique, weights
+
+def model_keys(model):
+    """Get the first-level layer name of the model.
+
+    Args:
+        model (nn.Module): PyTorch model.
+
+    Returns:
+        list: The keys of the model in order.
+
+    Examples:
+    >>> keys = model_keys(model)
+    >>> for i in keys:
+    >>>     getattr(model, i)
+    """
+    out = []
+    for k,v in model.named_children():
+        out.append(k)
+    return out
