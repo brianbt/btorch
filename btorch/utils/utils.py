@@ -350,7 +350,7 @@ def digit_version(version_str, length = 4):
         release.extend([0, 0])
     return tuple(release)
 
-def get_class_weight(a, method='inverse_size', total_nu_class=None):
+def get_class_weight(a, method='sklearn', total_nu_class=None):
     """For auto generate class weight for imbalanced dataset. Only support multi-class classification.
 
     Note: Are you looking for https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html
@@ -368,7 +368,8 @@ def get_class_weight(a, method='inverse_size', total_nu_class=None):
     Returns:
        (Tensor, Tensor): 
           The first element is the order of each class.
-          The second element is the weight for each class for that order.
+          The second element is the weight for each class for that order. 
+            This can be used as `weight` in `nn.CrossEntropyLoss()`.
 
     Examples:
     >>> a = [0,1,1,1,1,4,4,2]
@@ -395,22 +396,24 @@ def get_class_weight(a, method='inverse_size', total_nu_class=None):
     if not isinstance(a, torch.Tensor):
         a = torch.tensor(a)
     unique, counts = a.unique(return_counts=True)
-    if method =='sklearn':
+    if method == 'sklearn':
         weights = len(a) / (len(a.unique()) * torch.bincount(a))
-    if method == 'inverse_size':
+    elif method == 'inverse_size':
         weights = 1 / counts
     elif method == 'inverse_sqrt_size':
         weights = 1 / counts.sqrt()
     elif method == 'inverse_proba':
         weights = 1 / (counts / counts.sum())
     elif method == 'inverse_sqrt_proba':
-        weights = 1 / (counts / counts.sum().sqrt())
+        weights = 1 / (counts / counts.sum()).sqrt()
     elif method == 'inverse_softmax':
-        weights = 1 / torch.softmax(counts.float(), 0)
+        weights = 1 / (torch.softmax(counts.float()/ counts.max(), 0))
+    elif method == 'inverse_sqrt_softmax':
+        weights = 1 / (torch.softmax(counts.float()/ counts.max(), 0)).sqrt()
     else:
         raise ValueError(f"method {method} is not supported")
     if total_nu_class is not None:
-        full_weights = torch.zeros(total_nu_class)
+        full_weights = torch.zeros(total_nu_class, device=a.device)
         for i in range(len(unique)):
             full_weights[unique[i]] = weights[i]
         weights = full_weights

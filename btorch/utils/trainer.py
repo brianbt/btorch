@@ -8,6 +8,65 @@ import re
 from fnmatch import fnmatch
 from typing import Tuple, List, Union, Dict, Iterable
 
+class twoOptim():
+    """Auto change the optimizer base on number on `.step()` called
+
+    Args:
+        optim1 (pytorch.optim): first optimizer
+        optim2 (pytorch.optim): second optimizer
+        change_step (int): number of `.step()` required to change optimizer
+
+    Examples:
+        >>> optim1 = torch.optim.Adam(model.parameters(), lr=0.01)
+        >>> optim2 = torch.optim.SGD(model.parameters(), lr=1e-4, weight_decay=1e-3)
+        >>> optim = btorch.utils.trainer.twoOptim(optim1, optim2, 3)
+        >>> optim.step()
+    
+    Note:
+        This can be nested, you can wrap a `twoOptim` as `optim1` or `optim2`
+    """
+    def __init__(self, optim1, optim2, change_step):
+        self.optim1 = optim1
+        self.optim2 = optim2
+        self.change_step = change_step
+        self.step_cnt = 0
+        self.current = optim1
+        self.changed =False
+    def change_optim(self):
+        if not self.changed:
+            self.current = self.optim2
+            self.changed
+
+    def state_dict(self, *args, **kwargs):
+        return self.current.state_dict(*args, **kwargs)
+
+    def load_state_dict(self, *args, **kwargs):
+        self.current.load_state_dict(*args, **kwargs)
+
+    def zero_grad(self, *args, **kwargs):
+        self.current.zero_grad(*args, **kwargs)
+
+    def step(self, *args, **kwargs):
+        self.current.step(*args, **kwargs)
+        self.step_cnt += 1
+        if self.step_cnt == self.change_step:
+            self.change_optim()
+    
+    def add_param_group(self, *args, **kwargs):
+        self.current.add_param_group(*args, **kwargs)
+
+    def __repr__(self):
+        format_string = self.__class__.__name__ + ' ('
+        format_string += '\n'
+        format_string += f'{self.optim1.__repr__()}'
+        format_string += '\n'
+        format_string += f'{self.optim2.__repr__()}'
+        format_string += '\nUsing-----\n'
+        format_string += f'{self.current.__repr__()}'
+        format_string += '\n'
+        format_string += ')'
+        return format_string
+
 def get_freer_gpu():
     """return the idx of the first available gpu"""
     os.system('nvidia-smi -q -d Memory |grep -A4 GPU|grep Free >tmp')

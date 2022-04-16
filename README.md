@@ -4,7 +4,7 @@ BTorch is a PyTorch's useful utils library
 
 ## Requiements
 PyTorch ≥ 1.10
-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
+
 ## Install
 `pip install git+https://github.com/brianbt/btorch`  
 Below link expires on Thu, Jun 30 2022, [renew](https://docs.readthedocs.io/en/stable/guides/private-python-packages.html). This link should NOT be shared with anyone.   
@@ -105,6 +105,7 @@ Other common useful methods are
 # Commonly used functions
 ```python
 btorch.utils.trainer.finetune()
+btorch.utils.trainer.twoOptim()
 btorch.vision.utils.conv_output_shape()
 btorch.vision.utils.conv_kernel_shape()
 ```
