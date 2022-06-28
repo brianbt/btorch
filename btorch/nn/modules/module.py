@@ -474,13 +474,52 @@ class Module(nn.Module):
         """
         return btorch.utils.number_params(self, exclude_freeze)
 
-class GridSearchCV():
-    def __init__(self, model, base_config, param_grid_config):
+class GridSearch():
+    def __init__(self, model, base_config, param_grid, scoring=None, **kwargs):
         self.model = model
         self.base_config = base_config
-        self.param_grid_config = param_grid_config
-        raise NotImplementedError()
+        self.param_grid = param_grid
+        self.scoring = scoring
+        if self.scoring is None:
+            self.scoring = btorch.utils.accuracy_score
+        self.log = {}
+        self.best_model = None
+        self.best_score = None
+        if kwargs['_lossfn'] is None or kwargs['_optimizer'] is None:
+            raise Exception('`_lossfn` and `_optimizer` is not set.')
+        self._lossfn = kwargs['_lossfn']
+        self._optimizer = kwargs['_optimizer']
+        if kwargs['_lr_scheduler']:
+            self._lr_scheduler = kwargs['_lr_scheduler']
+        else:
+            self._lr_scheduler = None
+
     def init_model(self, curr_config, *args, **kwargs):
-        return self.model()
+        model = self.model(**{**self.base_config, **curr_config})
+        model._lossfn = self._lossfn
+        model._optimizer = self._optimizer
+        model._lr_scheduler = self._lr_scheduler
+
+
+    def score(self, net, x, y):
+        y_pred = net.predict(x, return_combined=True)
+        return self.scoring(y_pred, y)
+
+    def fit(self, x=None, y=None, **kwargs):
+        for curr_config in self.param_grid:
+            curr_model = self.init_model(curr_config)
+            curr_model.fit(x, y, **kwargs)
+            score = self.score(curr_model, x, y)
+            self.log[str({**self.base_config, **curr_config})] = score
+            if self.best_score is None:
+                self.best_model = curr_model
+                self.best_score = score
+            elif score > self.best_score:
+                self.best_model = curr_model
+                self.best_score = score
+
+                        
+
+
 
     

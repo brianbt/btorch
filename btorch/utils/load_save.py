@@ -38,6 +38,8 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
         to_save['lr_scheduler'] = lr_scheduler.state_dict()
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
+    if 'epoch' not in to_save:
+        warnings.warn("`epoch` is not in ``extra``, consider adding it to keep track of which epoch you are saving.")
     torch.save(to_save, path)
 
 
