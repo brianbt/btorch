@@ -98,7 +98,7 @@ def auto_gpu(model=None, parallel='auto', on=None):
         else:
             device = 'cuda'
         torch.backends.cudnn.benchmark = True
-        print("auto_gpu: using GPU")
+        print(f"auto_gpu: using GPU ({torch.cuda.get_device_name()})")
     else:
         device = 'cpu'
         print("auto_gpu: using CPU")
