@@ -629,7 +629,7 @@ def pplot(x):
         for i in range(x.shape[0]):
             plot_3dim(x[i])
     elif len(x.shape) == 3:
-        plot_3dim(x[i])
+        plot_3dim(x)
     elif len(x.shape) == 2:
         plt.imshow(x.detach().cpu())
         plt.show()

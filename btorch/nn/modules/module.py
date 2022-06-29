@@ -60,7 +60,7 @@ class Module(nn.Module):
     └── @overfit_small_batch_
         └── @train_epoch -> train_loss
 
-    If you decided to use the highlevel training loop. Please set 
+    If you decided to use the highlevel training loop. Please set the following instance attributes: 
         - self._lossfn (default:pytorch Loss Func)[required]
         - self._optimizer (default:pytorch Optimizer)[required]
         - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
@@ -100,7 +100,7 @@ class Module(nn.Module):
                         "resume": None,
                         "val_freq": 1
                         }
-        self._history = None
+        self._history = []
 
     def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
@@ -214,8 +214,8 @@ class Module(nn.Module):
                                      pin_memory=pin_memory, drop_last=drop_last)
 
 
-        self._history = self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
-                        trainloader=train_loader, testloader=eval_loader, lr_scheduler=self._lr_scheduler, config=self._config)
+        self._history.append(self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
+                             trainloader=train_loader, testloader=eval_loader, lr_scheduler=self._lr_scheduler, config=self._config))
 
     def evaluate(self, x=None, y=None, batch_size=None, drop_last=False, workers=1, **kwargs):
         """Returns the loss value & metrics values for the model in test mode.
@@ -253,7 +253,7 @@ class Module(nn.Module):
                     x = TensorDataset(*x, y)
             test_loader = DataLoader(x, batch_size=batch_size, num_workers=workers,
                                         pin_memory=pin_memory, drop_last=drop_last)
-        return self.test_epoch(self, self._lossfn, test_loader, self._config.get("device", "cpu"))
+        return self.test_epoch(self, self._lossfn, test_loader, 0, self._config.get("device", "cpu"))
 
     def predict(self, x, batch_size=8, return_combined=False):
         """Generates output predictions for input samples.
@@ -271,9 +271,10 @@ class Module(nn.Module):
               - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             batch_size (int, optional). Defaults to 8.
             return_combined (bool, optional). 
-                if return from `self.predict_` is a list. Combine them into a single object.
-                Apply torch.cat() on the output from .predict_() if return is list of tensor.
-                Defaults to False.
+              - if return from `self.predict_` is a list. Combine them into a single object.
+              - if return is list of tensor: Apply torch.cat() on the output from .predict_() .
+              - if return is list of dict: combined them into one big dict.
+              - Defaults to False.
 
         Returns:
             List[Tensor] or Tensor if return_combined 
@@ -283,6 +284,10 @@ class Module(nn.Module):
             dataset = TensorDataset(x, _y)
         elif isinstance(x, torch.utils.data.Dataset):
             dataset = x
+        elif isinstance(x, torch.utils.data.DataLoader):
+            pass
+        else:
+            raise ValueError("x should be `Tensor`, `Dataset` or `DataLoader`")
         if isinstance(x, torch.utils.data.DataLoader):
             loader = x
         else:
@@ -350,7 +355,7 @@ class Module(nn.Module):
             train_loss_data.append(train_loss)
             test_loss = "Not Provided"
             if testloader is not None and epoch%val_freq==0:
-                test_loss = cls.test_epoch(net, criterion, testloader, device, config)
+                test_loss = cls.test_epoch(net, criterion, testloader, epoch, device, config)
                 test_loss_data.append(test_loss)
             if save_path is not None:
                 to_save = dict(train_loss_data=train_loss_data,
@@ -394,7 +399,7 @@ class Module(nn.Module):
         return train_loss/(batch_idx+1)
 
     @classmethod
-    def test_epoch(cls, net, criterion, testloader, device='cuda', config=None):
+    def test_epoch(cls, net, criterion, testloader, epoch_idx=0, device='cuda', config=None):
         """This is the very basic evaluating function for one epoch. Override this function when necessary
             
         Returns:
