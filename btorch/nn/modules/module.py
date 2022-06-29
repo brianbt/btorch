@@ -30,7 +30,7 @@ class Module(nn.Module):
     All of above classmethods can be overrided at your need. 
     Notice:
         When overriding instance method, call classmethod via `self.`
-        When overriding class method, remember to put `@classmethod`
+        When overriding class method, remember to put `@classmethod`.
         If you want to use core class method directly in real use case, use as follow:
         >>> class Model(nn.Module):
         >>>     ...
@@ -39,6 +39,10 @@ class Module(nn.Module):
         >>> Model.train_net(...) # wrong
         When overriding class method and if you want to use instance method (eg. fit),
         you should keep the exact SAME signature in the class method. 
+        Inside class method:
+            -> call instance variable via `net.`
+            -> call instance method via `net.`
+            -> call class method via `cls.`
 
     Hierarchy View:
     .fit
@@ -258,12 +262,17 @@ class Module(nn.Module):
         https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict
         It uses .predict_()
 
+        TODO: handle when the .predict_() return dict
+
         Args:
             X: Input data. It could be:
               - torch.tensor
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, _)`
               - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
             batch_size (int, optional). Defaults to 8.
+            return_combined (bool, optional). 
+                if return from `self.predict_` is a list. Combine them into a single object.
+                Defaults to False.
 
         Returns:
             List[Tensor] or Tensor if return_combined 
@@ -278,9 +287,25 @@ class Module(nn.Module):
         loader = DataLoader(dataset, batch_size)
         out = self.predict_(self, loader, device=self._config.get('device', 'cpu'))
         if return_combined:
-            return torch.cat(out)
+            if isinstance(out, list):
+                if isinstance(out[0], dict):
+                    tmp = {}
+                    for dd in out:
+                        for item in dd.keys():
+                            if item not in tmp:
+                                tmp[item] = []
+                            tmp[item].append(dd[item])
+                    return tmp
+                elif isinstance(out[0], torch.Tensor):
+                    return torch.cat(out)
+                else:
+                    raise NotImplementedError(f"Please manually handle the output type from `self.predict_`, got {type(out[0])}. You can also turn off `return_combined`.")
+            else:
+                warnings.warn(f"The output type from `self.predict_` is {type(out)}, return_combined only useful when it is `list`")
+                return out
         else:
             return out
+        
 
     def overfit_small_batch(self, x):
         self.overfit_small_batch_(self, self._lossfn, x, self._optimizer, self._config)
@@ -291,13 +316,13 @@ class Module(nn.Module):
         It uses .train_epoch() and .test_epoch()
         
         Args:
-            net ([type]): [description]
-            criterion ([type]): [description]
-            optimizer ([type]): [description]
-            trainloader ([type]): [description]
-            testloader ([type], optional): [description]. Defaults to None.
-            lr_scheduler ([type], optional): [description]. Defaults to None.
-            config ([type], optional): [description]. Defaults to None.
+            net (nn.Module): this is equivalent to `self` or `forward`
+            criterion (any): can be a loss function or a list/dict of loss functions. It will be used in `@train_epoch`
+            optimizer ([type]): can be a optimizer or a list/dict of optimizers. It will be used in `@train_epoch`
+            trainloader (torch.utils.data.Dataloader): can be a dataloader or a list/dict of dataloaders. It will be used in `@train_epoch`
+            testloader (torch.utils.data.Dataloader, optional): can be a dataloader or a list/dict of dataloaders. It will be used in `@train_epoch`. Defaults to None.
+            lr_scheduler (torch.optim.lr_scheduler, optional): Defaults to None.
+            config (dict, optional): Config for training. Defaults to None.
         """
         if config is None:
             config = dict()
@@ -348,7 +373,7 @@ class Module(nn.Module):
         """This is the very basic training function for one epoch. Override this function when necessary
             
         Returns:
-            (float): train_loss
+            (float or dict): train_loss
         """
         net.train()
         train_loss = 0
@@ -371,20 +396,25 @@ class Module(nn.Module):
         """This is the very basic evaluating function for one epoch. Override this function when necessary
             
         Returns:
-            (float): eval_loss
+            (float or dict): eval_loss
         """
         net.eval()
-        train_loss = 0
+        test_loss = 0
         with torch.inference_mode():
             for batch_idx, (inputs, targets) in enumerate(testloader):
                 inputs, targets = inputs.to(device), targets.to(device)
                 predicted = net(inputs)
                 loss = criterion(predicted, targets)
-                train_loss += loss.item()
-        return train_loss/(batch_idx+1)
+                test_loss += loss.item()
+        return test_loss/(batch_idx+1)
 
     @classmethod
     def predict_(cls, net, loader, device='cuda', config=None):
+        """This is the very basic predicting function. Override this function when necessary
+            
+        Returns:
+            (list or dict): predict results
+        """
         net.to(device)
         net.eval()
         out = []

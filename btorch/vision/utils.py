@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import warnings
 import cv2
+from matplotlib import pyplot as plt
 
 class UnNormalize(object):
     def __init__(self, mean, std):
@@ -48,19 +49,25 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=Non
         h_w (Tuple[] or Tensor): (*,H,W) -> Must be at least two dimension, OR, int when H=W.
         model (nn.Conv2d): get the parameter from the given model. Override all other parameters.
     """
+    out_channels = None
     if model is not None:
         kernel_size = model.kernel_size
         stride = model.stride
         pad = model.padding
         dilation = model.dilation
+        out_channels = model.out_channels
         if isinstance(pad, str):
             raise ValueError(f"model.pad is str ({pad}). Only support int.")
     out = []
     if isinstance(h_w, torch.Tensor):
         out += list(h_w.shape[:-2])
+        if out_channels is not None:
+            out[-1] = out_channels
         h_w = h_w.shape[-2:]
     elif isinstance(h_w, tuple) or isinstance(h_w, list):
         out += h_w[:-2]
+        if out_channels is not None:
+            out[-1] = out_channels
         h_w = h_w[-2:]
     elif not isinstance(h_w, tuple) and not isinstance(h_w, list):
         h_w = (h_w, h_w)
@@ -93,20 +100,25 @@ def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, mod
         h_w (Tuple[] or Tensor): (*,H,W) -> Must be at least two dimension, OR, int when H=W.
         model (nn.ConvTranspose2d): get the parameter from the given model. Override all other parameters.
     """
-
+    out_channels = None
     if model is not None:
         kernel_size = model.kernel_size
         stride = model.stride
         pad = model.padding
         dilation = model.dilation
+        out_channels = model.out_channels
         if isinstance(pad, str):
             raise ValueError(f"model.pad is str ({pad}). Only support int.")
     out = []
     if isinstance(h_w, torch.Tensor):
         out += list(h_w.shape[:-2])
+        if out_channels is not None:
+            out[-1] = out_channels
         h_w = h_w.shape[-2:]
     elif isinstance(h_w, tuple) or isinstance(h_w, list):
         out += h_w[:-2]
+        if out_channels is not None:
+            out[-1] = out_channels
         h_w = h_w[-2:]
     elif not isinstance(h_w, tuple) and not isinstance(h_w, list):
         h_w = (h_w, h_w)
@@ -508,3 +520,39 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
         return X_scaled
     else:
         return X_scaled.int()
+
+def pplot(x):
+    """Smart plot for pytorch tensor.
+
+    It handle every possible shape of tensor.
+
+    Args:
+        x (tensor): accept (N,C,H,W), (N,H,W,C), (C,H,W), (H,W,C), (H,W)
+    """
+    def plot_3dim(x):
+        if (x.shape[0] !=1 and x.shape[0] !=3) and (x.shape[-1] != 1 and x.shape[-1] !=3):
+            raise ValueError('This is not a RGB or gray-scale image')
+        if x.shape[0] == 3:
+            plt.imshow(x.detach().cpu().permute(1,2,0))
+            plt.show()
+        elif x.shape[0] == 1:
+            plt.imshow(x.detach().cpu()[0], cmap='gray')
+            plt.show()
+        if x.shape[-1] == 3:
+            plt.imshow(x.detach().cpu())
+            plt.show()
+        elif x.shape[-1] == 1:
+            plt.imshow(x.detach().cpu()[:,:,0], cmap='gray')
+            plt.show()
+    if len(x.shape) == 4:
+        for i in range(x.shape[0]):
+            plot_3dim(x[i])
+    elif len(x.shape) == 3:
+        plot_3dim(x[i])
+    elif len(x.shape) == 2:
+        plt.imshow(x.detach().cpu())
+        plt.show()
+    else:
+        raise ValueError('This is not a RGB or gray-scale image')
+        
+        
