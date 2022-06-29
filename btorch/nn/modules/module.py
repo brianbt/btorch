@@ -102,7 +102,7 @@ class Module(nn.Module):
                         }
         self._history = None
 
-    def fit(self, x=None, y=None, batch_size=8, epochs=10, shuffle=True, drop_last=False,
+    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
             initial_epoch=None, workers=1):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
@@ -113,9 +113,9 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             y: Target data. Like the input data `x`,
               it should be torch.tensor.
               If `x` is a dataset, generator or dataloader, `y` should
@@ -148,7 +148,7 @@ class Module(nn.Module):
         if self._lossfn is None or self._optimizer is None:
             raise ValueError("`self._lossfn` and `self._optimizer` is not set.")
 
-        self._config['max_epoch'] = epochs if epochs is not None else 10
+        self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else 0
         self._config['val_freq'] = validation_freq
 
@@ -226,9 +226,9 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, targets)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             y: Target data. Like the input data `x`,
               it should be torch.tensor.
               If `x` is a dataset, generator or dataloader, `y` should
@@ -266,12 +266,13 @@ class Module(nn.Module):
 
         Args:
             X: Input data. It could be:
-              - torch.tensor
+              - torch.tensor in batch node, starting with (N, *)
               - a `torch.utils.data.Dataset` dataset. Should return a tuple of `(inputs, _)`
-              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored.
+              - a `torch.utils.data.Dataloader`. All other dataset related argument will be ignored, if provided.
             batch_size (int, optional). Defaults to 8.
             return_combined (bool, optional). 
                 if return from `self.predict_` is a list. Combine them into a single object.
+                Apply torch.cat() on the output from .predict_() if return is list of tensor.
                 Defaults to False.
 
         Returns:
@@ -282,9 +283,10 @@ class Module(nn.Module):
             dataset = TensorDataset(x, _y)
         elif isinstance(x, torch.utils.data.Dataset):
             dataset = x
-        elif isinstance(x, torch.utils.data.Dataloader):
-            pass
-        loader = DataLoader(dataset, batch_size)
+        if isinstance(x, torch.utils.data.DataLoader):
+            loader = x
+        else:
+            loader = DataLoader(dataset, batch_size)
         out = self.predict_(self, loader, device=self._config.get('device', 'cpu'))
         if return_combined:
             if isinstance(out, list):
@@ -427,11 +429,11 @@ class Module(nn.Module):
     @classmethod
     def overfit_small_batch_(cls, net, criterion, dataset, optimizer, config=None):
         """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
+        Note: This function will affect the model weights and all other training-related setting/parameters.
         It uses .train_epoch().
         """
         if not isinstance(dataset, torch.utils.data.Dataset):
             raise ValueError("Currently only support Dataset as input")
-        # net_test = copy.deepcopy(net)
         dataset = torch.utils.data.Subset(dataset, [0,1,2,3])
         loader = DataLoader(dataset,2)
         loss_history = []
@@ -448,11 +450,18 @@ class Module(nn.Module):
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
 
+    def cuda(self, device=None):
+        self._config['device'] = 'cuda'
+        return self._apply(lambda t: t.cuda(device))
+
     def set_gpu(self):
         if not torch.cuda.is_available():
             warnings.warn("Cuda is not available but you are setting the model to GPU mode.")
         self._config['device'] = 'cuda'
         self.to('cuda')
+
+    def cpu(self):
+        self.set_cpu()
 
     def set_cpu(self):
         self._config['device'] = 'cpu'
@@ -461,6 +470,9 @@ class Module(nn.Module):
     def auto_gpu(self, parallel='auto', on=None):
         device, _ = btorch.utils.trainer.auto_gpu(self, parallel, on)
         self._config['device'] = device
+    
+    def device(self):
+        return next(self.parameters()).device
 
     def save(self, filepath, include_optimizer=True, include_lr_scheduler=True):
         """Saves the model.state_dict and self._history.
@@ -486,14 +498,58 @@ class Module(nn.Module):
         """Prints a string summary of network. https://github.com/TylerYep/torchinfo
         """
         return summary(self, *args, **kwargs)
+    
+    def number_parameters(self, exclude_freeze=False):
+        """Returns the number of parameters in the model.
+        """
+        return btorch.utils.number_params(self, exclude_freeze)
 
-class GridSearchCV():
-    def __init__(self, model, base_config, param_grid_config):
+class GridSearch():
+    def __init__(self, model, base_config, param_grid, scoring=None, **kwargs):
         self.model = model
         self.base_config = base_config
-        self.param_grid_config = param_grid_config
-        raise NotImplementedError()
+        self.param_grid = param_grid
+        self.scoring = scoring
+        if self.scoring is None:
+            self.scoring = btorch.utils.accuracy_score
+        self.log = {}
+        self.best_model = None
+        self.best_score = None
+        if kwargs['_lossfn'] is None or kwargs['_optimizer'] is None:
+            raise Exception('`_lossfn` and `_optimizer` is not set.')
+        self._lossfn = kwargs['_lossfn']
+        self._optimizer = kwargs['_optimizer']
+        if kwargs['_lr_scheduler']:
+            self._lr_scheduler = kwargs['_lr_scheduler']
+        else:
+            self._lr_scheduler = None
+
     def init_model(self, curr_config, *args, **kwargs):
-        return self.model()
+        model = self.model(**{**self.base_config, **curr_config})
+        model._lossfn = self._lossfn
+        model._optimizer = self._optimizer
+        model._lr_scheduler = self._lr_scheduler
+
+
+    def score(self, net, x, y):
+        y_pred = net.predict(x, return_combined=True)
+        return self.scoring(y_pred, y)
+
+    def fit(self, x=None, y=None, **kwargs):
+        for curr_config in self.param_grid:
+            curr_model = self.init_model(curr_config)
+            curr_model.fit(x, y, **kwargs)
+            score = self.score(curr_model, x, y)
+            self.log[str({**self.base_config, **curr_config})] = score
+            if self.best_score is None:
+                self.best_model = curr_model
+                self.best_score = score
+            elif score > self.best_score:
+                self.best_model = curr_model
+                self.best_score = score
+
+                        
+
+
 
     

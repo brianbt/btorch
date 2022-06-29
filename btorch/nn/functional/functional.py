@@ -1,5 +1,8 @@
+from matplotlib import use
 import torch
 import torch.nn.functional as F
+from ...vision.utils import conv_kernel_shape
+from ...utils import conv_window2d
 
 def adaptive_pad1d(x, shape, mode='constant', value=0.0):
     """pad a 1D Tensor to desire shape, pad right first if shape is odd. 
@@ -95,6 +98,33 @@ def adaptive_pad3d(x, shape, mode='constant', value=0.0):
     out = F.pad(x, to_pad, mode, value)
     return out
 
+def adaptive_avg_pool2d_threshold(input, output_size, threshold=1e-8, use_abs=True):
+    """Avg Pool 2D threshold version. Only the values that are larger than threshold will be used to calc the avgerage value.
+
+    Args:
+        input, output_size: same as `F.adaptive_avg_pool2d()`
+        threshold (float, optional): Defaults to 1e-8.
+        use_abs (bool, optional):
+          only `torch.abs(input)>threshold` will be used to calc the average value, if True.
+          only `input>threshold` will be used to calc the average value, if False.
+
+    Note:
+        `adaptive_avg_pool2d_threshold(*, threshold=0)` should be same as `F.adaptive_avg_pool2d(*)`
+    """
+    # calc the kernel_size and stride used by adaptive_avg_pool2d
+    stride = (input.shape[-2]//output_size[-2], input.shape[-1]//output_size[-1])
+    kernel_size = torch.tensor(conv_kernel_shape(input, output_size, stride=stride))
+    rolling_window = conv_window2d(input, kernel_size, stride=stride)
+    if use_abs:
+        nz = torch.count_nonzero(torch.abs(rolling_window) > threshold, dim=(-2,-1))
+        input = torch.where(torch.abs(input) <= threshold, torch.zeros_like(input), input)
+    else:
+        nz = torch.count_nonzero(rolling_window > threshold, dim=(-2,-1))
+        input = torch.where(input <= threshold, torch.zeros_like(input), input)
+    ans = F.adaptive_avg_pool2d(input, output_size)
+    demon = kernel_size[-2:].prod()
+    return ans * demon / (nz+1e-5)
+
 
 def multi_hot(ls, num_classes=-1):
     """Take in List and turn it to multi-hot encoding
@@ -139,3 +169,19 @@ def multi_hot(ls, num_classes=-1):
         for w in ls[fix]:
             label[fix][w] = 1
     return label
+
+def approx_where(a, condition, x, y, eps=1e-3):
+    """differentiable version of torch.where()
+
+    Usage same torch.where(a>condition, x, y)
+    The closer `eps` to zero, the more accurate on cell that are a<=condition (replaced by y)
+    a>condition (replaced by x) does not guarantee, try increase eps to find the balance
+    `eps` should be > 0
+    """
+    return (torch.sigmoid(a - condition) * eps) * (x - y) + y
+
+def approx_count_nonzero(x, ell=1e-3):
+    """differentiable version of torch.count_nonzero()"""
+    # https://discuss.pytorch.org/t/gradient-flow-through-torch-count-nonzero/112022/5
+    narrow_guassian = torch.exp(-0.5 * (x / ell)**2)
+    return len(x) - narrow_guassian.sum(dim=-1)

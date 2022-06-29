@@ -1,12 +1,77 @@
-from pyrsistent import freeze
+import os
 import torch
 from torch import nn
+import numpy as np
 import warnings
 
 import re
 from fnmatch import fnmatch
 from typing import Tuple, List, Union, Dict, Iterable
 
+class twoOptim():
+    """Auto change the optimizer base on number on `.step()` called
+
+    Args:
+        optim1 (pytorch.optim): first optimizer
+        optim2 (pytorch.optim): second optimizer
+        change_step (int): number of `.step()` required to change optimizer
+
+    Examples:
+        >>> optim1 = torch.optim.Adam(model.parameters(), lr=0.01)
+        >>> optim2 = torch.optim.SGD(model.parameters(), lr=1e-4, weight_decay=1e-3)
+        >>> optim = btorch.utils.trainer.twoOptim(optim1, optim2, 3)
+        >>> optim.step()
+    
+    Note:
+        This can be nested, you can wrap a `twoOptim` as `optim1` or `optim2`
+    """
+    def __init__(self, optim1, optim2, change_step):
+        self.optim1 = optim1
+        self.optim2 = optim2
+        self.change_step = change_step
+        self.step_cnt = 0
+        self.current = optim1
+        self.changed =False
+    def change_optim(self):
+        if not self.changed:
+            self.current = self.optim2
+            self.changed
+
+    def state_dict(self, *args, **kwargs):
+        return self.current.state_dict(*args, **kwargs)
+
+    def load_state_dict(self, *args, **kwargs):
+        self.current.load_state_dict(*args, **kwargs)
+
+    def zero_grad(self, *args, **kwargs):
+        self.current.zero_grad(*args, **kwargs)
+
+    def step(self, *args, **kwargs):
+        self.current.step(*args, **kwargs)
+        self.step_cnt += 1
+        if self.step_cnt == self.change_step:
+            self.change_optim()
+    
+    def add_param_group(self, *args, **kwargs):
+        self.current.add_param_group(*args, **kwargs)
+
+    def __repr__(self):
+        format_string = self.__class__.__name__ + ' ('
+        format_string += '\n'
+        format_string += f'{self.optim1.__repr__()}'
+        format_string += '\n'
+        format_string += f'{self.optim2.__repr__()}'
+        format_string += '\nUsing-----\n'
+        format_string += f'{self.current.__repr__()}'
+        format_string += '\n'
+        format_string += ')'
+        return format_string
+
+def get_freer_gpu():
+    """return the idx of the first available gpu"""
+    os.system('nvidia-smi -q -d Memory |grep -A4 GPU|grep Free >tmp')
+    memory_available = [int(x.split()[2]) for x in open('tmp', 'r').readlines()]
+    return np.argmax(memory_available)
 
 def auto_gpu(model=None, parallel='auto', on=None):
     """turn model to gpu if possible and nn.DataParallel
@@ -33,16 +98,18 @@ def auto_gpu(model=None, parallel='auto', on=None):
         else:
             device = 'cuda'
         torch.backends.cudnn.benchmark = True
-        print("using GPU")
+        print(f"auto_gpu: using GPU ({torch.cuda.get_device_name()})")
     else:
         device = 'cpu'
-        print("using CPU")
+        print("auto_gpu: using CPU")
     if model is None:
         return device
     model = model.to(device)
     if 'cuda' in device and parallel == 'auto' and torch.cuda.device_count() > 1:
+        print(f"auto_gpu: using nn.DataParallel on {torch.cuda.device_count()}GPU, consider increase batch size {torch.cuda.device_count()} times")
         model = nn.DataParallel(model, device_ids=on)
     elif 'cuda' in device and parallel is True:
+        print("auto_gpu: using nn.DataParallel, consider increase batch size")
         model = nn.DataParallel(model, device_ids=on)
     return device, model
 
@@ -97,6 +164,8 @@ def finetune(
         >>> # the second param_group `layer4` will have weight_decay 1e-2
         >>> model_params[1]['weight_decay'] = 1e-2
         >>> # init optimizer with the above setting
+        >>> # the argument under `torch.optim.SGD` will be overrided by finetune() if they exist.
+        >>> # For example, all model_params will have weight_decay=5e-3 except model_params[1]
         >>> optimizer = torch.optim.SGD(model_params, momentum=0.9, lr=0.1, weight_decay=5e-3)
     """
     if regex:
@@ -148,6 +217,18 @@ def finetune(
         group['params'] = iter(group['params'])
     return parameters
 
+
+def freeze(model):
+    """Freeze all layers of a model."""
+    for param in model.parameters():
+        param.requires_grad = False
+
+
+def unfreeze(model):
+    """Freeze all layers of a model."""
+    for param in model.parameters():
+        param.requires_grad = True
+
 def L1Regularizer(model, lambda_=1e-4):
     """
     Add L1 regularization to the model. Notice: weight_decay is L2 reg.
@@ -161,4 +242,3 @@ def L1Regularizer(model, lambda_=1e-4):
         >>> optimizer.step()
     """
     return lambda_*sum(p.norm(p=1) for p in model.parameters() if p.requires_grad)
-

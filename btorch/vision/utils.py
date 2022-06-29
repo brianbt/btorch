@@ -41,12 +41,12 @@ class UnNormalize(object):
         tensor = ((tensor * self.std) + self.mean)
         return tensor
 
-def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
+def conv_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
     """
     Utility function for computing output of convolutions. This function did not calculate out_channels 
     
     Args:
-        h_w (Tuple[] or Tensor): (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+        input_size (Tuple[] or Tensor): Input Tensor shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
         model (nn.Conv2d): get the parameter from the given model. Override all other parameters.
     """
     out_channels = None
@@ -59,18 +59,18 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=Non
         if isinstance(pad, str):
             raise ValueError(f"model.pad is str ({pad}). Only support int.")
     out = []
-    if isinstance(h_w, torch.Tensor):
-        out += list(h_w.shape[:-2])
+    if isinstance(input_size, torch.Tensor):
+        out += list(input_size.shape[:-2])
         if out_channels is not None:
             out[-1] = out_channels
-        h_w = h_w.shape[-2:]
-    elif isinstance(h_w, tuple) or isinstance(h_w, list):
-        out += h_w[:-2]
+        input_size = input_size.shape[-2:]
+    elif isinstance(input_size, tuple) or isinstance(input_size, list):
+        out += input_size[:-2]
         if out_channels is not None:
             out[-1] = out_channels
-        h_w = h_w[-2:]
-    elif not isinstance(h_w, tuple) and not isinstance(h_w, list):
-        h_w = (h_w, h_w)
+        input_size = input_size[-2:]
+    elif not isinstance(input_size, tuple) and not isinstance(input_size, list):
+        input_size = (input_size, input_size)
 
 
     if not isinstance(kernel_size, tuple) and not isinstance(kernel_size, list):
@@ -85,19 +85,18 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=Non
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    # print(h_w, kernel_size, stride, pad, dilation)
-    h = (h_w[0] + (2 * pad[0]) - dilation[0]*(kernel_size[0]-1) - 1) // stride[0] + 1
-    w = (h_w[1] + (2 * pad[1]) - dilation[0]*(kernel_size[1]-1) - 1) // stride[1] + 1
+    h = (input_size[0] + (2 * pad[0]) - dilation[0]*(kernel_size[0]-1) - 1) // stride[0] + 1
+    w = (input_size[1] + (2 * pad[1]) - dilation[0]*(kernel_size[1]-1) - 1) // stride[1] + 1
     out.append(h)
     out.append(w)
     return tuple(out)
 
-def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
+def convtransp_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
     """
     Utility function for computing output of transposed convolutions. This function did not calculate out_channels 
     
     Args:
-        h_w (Tuple[] or Tensor): (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+        input_size (Tuple[] or Tensor): Input Tensor shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
         model (nn.ConvTranspose2d): get the parameter from the given model. Override all other parameters.
     """
     out_channels = None
@@ -110,18 +109,18 @@ def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, mod
         if isinstance(pad, str):
             raise ValueError(f"model.pad is str ({pad}). Only support int.")
     out = []
-    if isinstance(h_w, torch.Tensor):
-        out += list(h_w.shape[:-2])
+    if isinstance(input_size, torch.Tensor):
+        out += list(input_size.shape[:-2])
         if out_channels is not None:
             out[-1] = out_channels
-        h_w = h_w.shape[-2:]
-    elif isinstance(h_w, tuple) or isinstance(h_w, list):
-        out += h_w[:-2]
+        input_size = input_size.shape[-2:]
+    elif isinstance(input_size, tuple) or isinstance(input_size, list):
+        out += input_size[:-2]
         if out_channels is not None:
             out[-1] = out_channels
-        h_w = h_w[-2:]
-    elif not isinstance(h_w, tuple) and not isinstance(h_w, list):
-        h_w = (h_w, h_w)
+        input_size = input_size[-2:]
+    elif not isinstance(input_size, tuple) and not isinstance(input_size, list):
+        input_size = (input_size, input_size)
 
     if not isinstance(kernel_size, tuple) and not isinstance(
             kernel_size, list):
@@ -136,10 +135,90 @@ def convtransp_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1, mod
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    h = (h_w[0] - 1) * stride[0] - 2 * pad[0] + dilation[0]*(kernel_size[0]-1) + pad[0] + 1
-    w = (h_w[1] - 1) * stride[1] - 2 * pad[1] + dilation[1]*(kernel_size[1]-1) + pad[1] + 1
+    h = (input_size[0] - 1) * stride[0] - 2 * pad[0] + dilation[0]*(kernel_size[0]-1) + pad[0] + 1
+    w = (input_size[1] - 1) * stride[1] - 2 * pad[1] + dilation[1]*(kernel_size[1]-1) + pad[1] + 1
     out.append(h)
     out.append(w)
+    return tuple(out)
+
+def conv_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
+    """
+    Utility function for computing kernel size of convolutions using the expected output size. This function ignores channels 
+    
+    Args:
+        input_size (Tuple[] or Tensor): Input Tensor shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+        output_size (Tuple[] or Tensor): Expected output shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+    """
+    out = []
+    if isinstance(input_size, torch.Tensor):
+        out += list(input_size.shape[:-2])
+        input_size = input_size.shape[-2:]
+    elif isinstance(input_size, tuple) or isinstance(input_size, list):
+        out += input_size[:-2]
+        input_size = input_size[-2:]
+    elif not isinstance(input_size, tuple) and not isinstance(input_size, list):
+        input_size = (input_size, input_size)
+
+    if isinstance(output_size, torch.Tensor):
+        output_size = list(output_size.shape[-2:])
+    elif isinstance(output_size, tuple) or isinstance(output_size, list):
+        output_size = output_size[-2:]
+    elif not isinstance(output_size, tuple) and not isinstance(output_size, list):
+        output_size = (output_size, output_size)
+
+    if not isinstance(stride, tuple) and not isinstance(stride, list):
+        stride = (stride, stride)
+
+    if not isinstance(pad, tuple) and not isinstance(pad, list):
+        pad = (pad, pad)
+
+    if not isinstance(dilation, tuple) and not isinstance(dilation, list):
+        dilation = (dilation, dilation)
+
+    k_h = (output_size[0]*stride[0] - stride[0] - input_size[0] - 2*pad[0] + 1) // -dilation[0] + 1
+    k_w = (output_size[1]*stride[1] - stride[1] - input_size[1] - 2*pad[1] + 1) // -dilation[1] + 1
+    out.append(k_h)
+    out.append(k_w)
+    return tuple(out)
+
+def convtransp_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
+    """
+    Utility function for computing kernel size of transposed convolutions using the expected output size. This function ignores channels 
+    
+    Args:
+        input_size (Tuple[] or Tensor): Input Tensor shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+        output_size (Tuple[] or Tensor): Expected output shape. (*,H,W) -> Must be at least two dimension, OR, int when H=W.
+    """
+    out = []
+    if isinstance(input_size, torch.Tensor):
+        out += list(input_size.shape[:-2])
+        input_size = input_size.shape[-2:]
+    elif isinstance(input_size, tuple) or isinstance(input_size, list):
+        out += input_size[:-2]
+        input_size = input_size[-2:]
+    elif not isinstance(input_size, tuple) and not isinstance(input_size, list):
+        input_size = (input_size, input_size)
+
+    if isinstance(output_size, torch.Tensor):
+        output_size = list(output_size.shape[-2:])
+    elif isinstance(output_size, tuple) or isinstance(output_size, list):
+        output_size = output_size[-2:]
+    elif not isinstance(output_size, tuple) and not isinstance(output_size, list):
+        output_size = (output_size, output_size)
+
+    if not isinstance(stride, tuple) and not isinstance(stride, list):
+        stride = (stride, stride)
+
+    if not isinstance(pad, tuple) and not isinstance(pad, list):
+        pad = (pad, pad)
+
+    if not isinstance(dilation, tuple) and not isinstance(dilation, list):
+        dilation = (dilation, dilation)
+
+    k_h = (output_size[0] - stride[0]*(input_size[0]-1) + pad[0] - 1) // dilation[0] + 1
+    k_w = (output_size[1] - stride[1]*(input_size[1]-1) + pad[1] - 1) // dilation[1] + 1
+    out.append(k_h)
+    out.append(k_w)
     return tuple(out)
 
 def high_pass_filter(img, method='3'):
@@ -230,7 +309,7 @@ def replace_part(img, part, loc, handle_transparent=False):
     Args:
         img (Tensor or ndarray): either (N,C,H,W) or (C,H,W)
         part (Tensor or ndarray): used to replace. (C,H,W)
-        loc (List[int]): [x_min, x_max], the topLeft coordinate.
+        loc (List[int]): [x_min, x_max], the topLeft coordinate of img to be replaced.
         handle_transparent (bool): if the pixel that has zero value (transparent) will be replaced or not.
 
     Returns:
@@ -404,7 +483,6 @@ def get_COCO_paper_class_dict(include_background=False, reverse=False):
     else:
         return out
 
-
 def coco_ann2Mask(img, annotations, return_dict=False):
     """Generate Mask for each object on COCO dataset
 
@@ -488,15 +566,16 @@ def smart_rotate(image):
     return transposed
 
 def img_MinMaxScaler(img, feature_range=(0, 1)):
-    """MinMaxScaler for img data, it support 3D and 4D(batch) data.
+    """MinMaxScaler for img data, it support 2D(gray), 3D and 4D(batch) data.
     
     sklearn.MinMaxScaler only works for 2D. 
     Usually used when visualizing the image data extracted from hidden layers.
     The visualized may look like `UnNormalize()`, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
     To perform un-normalization, please use `UnNormalize()` instead.
+    It can also be used to rescale the pixel value to the given range.
 
     Args:
-        img (Tensor): pytorch Tensor. (C,H,W) or (N,C,H,W)
+        img (Tensor): pytorch Tensor. (H,W) or (C,H,W) or (N,C,H,W)
         feature_range (tuple, optional): Defaults to (0, 1).
 
     Returns:
@@ -509,12 +588,14 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
         >>> plt.imshow(img_MinMaxScaler(img).permute(1,2,0))
     """
     min_v, max_v = feature_range
-    if len(img.shape)==3:
+    if len(img.shape)==2:
+        X_std = (img-img.amin((-2,-1)).view(1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(1).unsqueeze(-1).expand(img.shape))
+    elif len(img.shape)==3:
         X_std = (img-img.amin((-2,-1)).view(3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(3,1).unsqueeze(-1).expand(img.shape))
     elif len(img.shape)==4:
         X_std = (img-img.amin((-2,-1)).view(-1,3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(-1,3,1).unsqueeze(-1).expand(img.shape))
     else:
-        raise ValueError("img must be either (C,H,W) or (N,C,H,W)")
+        raise ValueError("img must be either (H,W) or (C,H,W) or (N,C,H,W)")
     X_scaled = X_std * (max_v - min_v) + min_v
     if max_v == 1 and min_v == 0:
         return X_scaled
@@ -556,3 +637,31 @@ def pplot(x):
         raise ValueError('This is not a RGB or gray-scale image')
         
         
+
+def flood_fill(img, target_value, fill_value, start_point, flags=4):
+    """cv2.flood_fill() wrapper
+
+    This function uses cv2 and numpy, is slow and not differentiable
+    See https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html?highlight=floodfill#floodfill
+    See https://stackoverflow.com/questions/19839947/flood-fill-in-python
+
+    Args:
+        img (torch.Tensor): pytorch Tensor, dtype should be int. Support (H,W)
+        target_value (int): Value that need to change
+        fill_value (int): target_value will change to this value
+        start_point (tuple(int, int)): starting point for flood fill.
+        flags (int, optional):
+          4 means that the four nearest neighbor pixels. (vertically and horizontally)
+          8 means that the eight nearest neighbor pixels. (vertically, horizontally and diagonally)
+
+    Returns:
+        torch.Tensor: same shape as input.
+    """
+    assert len(start_point) == 2, 'Starting point should be a tuple of length 2 (x, y)'
+    matrix_np = np.asarray(img).copy()
+    numeric_matrix = np.where(matrix_np==target_value, 255, 0).astype(np.uint8)
+    mask = np.zeros(np.asarray(numeric_matrix.shape)+2, dtype=np.uint8)
+    cv2.floodFill(numeric_matrix, mask, start_point, 255, flags=flags)
+    mask = mask[1:-1, 1:-1]
+    matrix_np[mask==1] = fill_value
+    return torch.tensor(matrix_np, dtype=img.dtype, device=img.device)

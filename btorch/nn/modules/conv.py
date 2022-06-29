@@ -37,7 +37,7 @@ class Conv2dBlock(nn.Module):
                  in_channels,
                  out_channels,
                  kernel_size=3,
-                 padding=1,
+                 padding=0,
                  use_batchnorm=True,
                  use_relu=True,
                  **kwargs): 
