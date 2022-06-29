@@ -353,7 +353,7 @@ class Module(nn.Module):
         test_loss_data = []
 
         for epoch in range(start_epoch, max_epoch):
-            cls.after_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
+            cls.before_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
             train_loss = cls.train_epoch(net, criterion, trainloader, optimizer, epoch, device, config)
             train_loss_data.append(train_loss)
             test_loss = "Not Provided"
