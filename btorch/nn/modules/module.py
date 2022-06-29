@@ -47,8 +47,10 @@ class Module(nn.Module):
     Hierarchy View:
     .fit
     └── @train_net -> {train_loss, test_loss}
+        ├── @before_each_train_epoch [optional]
         ├── @train_epoch -> train_loss
-        └── @test_epoch -> test_loss
+        ├── @after_each_train_epoch [optional]
+        └── @test_epoch -> test_loss [optional]
 
     .evaluate -> test_loss
     └── @test_epoch -> test_loss
@@ -103,7 +105,7 @@ class Module(nn.Module):
         self._history = []
 
     def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
-            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
+            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
             initial_epoch=None, workers=1):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
         
@@ -150,7 +152,7 @@ class Module(nn.Module):
 
         self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else 0
-        self._config['val_freq'] = validation_freq
+        self._config['val_freq'] = validation_freq if epochs is not None else self._config['val_freq']
 
         pin_memory = True if self._config.get('device', 'cpu')=='cuda' else False
         x_eval = None
@@ -323,7 +325,7 @@ class Module(nn.Module):
         It uses .train_epoch() and .test_epoch()
         
         Args:
-            net (nn.Module): this is equivalent to `self` or `forward`
+            net (nn.Module): this is equivalent to `self` or `forward()`. Use to access instance variables.
             criterion (any): can be a loss function or a list/dict of loss functions. It will be used in `@train_epoch`
             optimizer ([type]): can be a optimizer or a list/dict of optimizers. It will be used in `@train_epoch`
             trainloader (torch.utils.data.Dataloader): can be a dataloader or a list/dict of dataloaders. It will be used in `@train_epoch`
@@ -351,6 +353,7 @@ class Module(nn.Module):
         test_loss_data = []
 
         for epoch in range(start_epoch, max_epoch):
+            cls.after_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
             train_loss = cls.train_epoch(net, criterion, trainloader, optimizer, epoch, device, config)
             train_loss_data.append(train_loss)
             test_loss = "Not Provided"
@@ -372,6 +375,7 @@ class Module(nn.Module):
             print(f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
             if lr_scheduler is not None:
                 lr_scheduler.step()
+            cls.after_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
         return dict(train_loss_data=train_loss_data,
                     test_loss_data=test_loss_data)
 
@@ -414,6 +418,28 @@ class Module(nn.Module):
                 loss = criterion(predicted, targets)
                 test_loss += loss.item()
         return test_loss/(batch_idx+1)
+
+
+    @classmethod
+    def before_each_train_epoch(cls, net, criterion, optimizer, trainloader, testloader=None, epoch=0, lr_scheduler=None, config=None):
+        """You can override this function to do something before each epoch.
+        Note that this does not return things. Use `config` to return by reference if needed.
+
+        Args:
+            net (nn.Module): this is equivalent to `self` or `forward()`. Use to access instance variables.
+        """
+        pass
+
+    @classmethod
+    def after_each_train_epoch(cls, net, criterion, optimizer, trainloader, testloader=None, epoch=0, lr_scheduler=None, config=None):
+        """You can override this function to do something after each epoch.
+        Note that this does not return things. Use `config` to return by reference if needed.
+
+        Args:
+            net (nn.Module): this is equivalent to `self` or `forward()`. Use to access instance variables.
+        """
+        pass
+
 
     @classmethod
     def predict_(cls, net, loader, device='cuda', config=None):
