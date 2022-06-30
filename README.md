@@ -6,9 +6,7 @@ BTorch is a PyTorch's useful utils library
 PyTorch ≥ 1.10
 
 ## Install
-`pip install git+https://github.com/brianbt/btorch`  
-Below link expires on Thu, Jun 30 2022, [renew](https://docs.readthedocs.io/en/stable/guides/private-python-packages.html). This link should NOT be shared with anyone.   
-`pip install git+https://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@github.com/brianbt/btorch`
+`pip install git+https://github.com/brianbt/btorch`
 
 # Import Library
 You can import below library and use them as PyTorch.
