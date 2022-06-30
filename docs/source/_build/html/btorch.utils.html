@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>btorch.utils package &mdash; btorch latest documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> btorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">btorch.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-btorch.utils.load_save">btorch.utils.load_save module</a></li>
+<li><a class="reference internal" href="#module-btorch.utils.trainer">btorch.utils.trainer module</a></li>
+<li><a class="reference internal" href="#module-btorch.utils.utils">btorch.utils.utils module</a></li>
+<li><a class="reference internal" href="#module-btorch.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">btorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>btorch.utils package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/btorch.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="btorch-utils-package">
+<h1>btorch.utils package<a class="headerlink" href="#btorch-utils-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-btorch.utils.load_save">
+<span id="btorch-utils-load-save-module"></span><h2>btorch.utils.load_save module<a class="headerlink" href="#module-btorch.utils.load_save" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.load_save.resume">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.load_save.</span></span><span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.load_save.resume" title="Permalink to this definition"></a></dt>
+<dd><p>Load all components for resume training. It load everything by reference</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Load path. Must contains [‘model’] and [‘optimizer’]</p></li>
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Pytorch Model</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim</em>) – Pytorch Optimizer
+It accept list or dict of optimizer.
+Note that the order of list must be same as the order when you save it.</p></li>
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim</em>) – Pytorch Lr Scheduler</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>epoch (use it as start_epoch)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.load_save.save_model">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.load_save.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.load_save.save_model" title="Permalink to this definition"></a></dt>
+<dd><p>torch.save enhanced. Will auto handle nn.DataParallel(model)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – pytorch model</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – saving_path</p></li>
+<li><p><strong>extra</strong> (<em>dict</em><em>, </em><em>optional</em>) – Extra things that want to save.
+Must reserve key <code class="docutils literal notranslate"><span class="pre">model</span></code>
+Defaults to None.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim</em><em>, </em><em>optional</em>) – pytorch optimizer.
+You can also put optim.state_dict() under <cite>extra</cite> instead of using this arg.
+It accept list or dict of optimizer.</p></li>
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim</em><em>, </em><em>optional</em>) – pytorch lr schedular.
+You can also put lr_s.state_dict() under <cite>extra</cite> instead of using this arg.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-btorch.utils.trainer">
+<span id="btorch-utils-trainer-module"></span><h2>btorch.utils.trainer module<a class="headerlink" href="#module-btorch.utils.trainer" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.L1Regularizer">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">L1Regularizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.L1Regularizer" title="Permalink to this definition"></a></dt>
+<dd><p>Add L1 regularization to the model. Notice: weight_decay is L2 reg.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">predicted</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">predicted</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span> <span class="o">+=</span> <span class="n">L1Regularizer</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>  <span class="c1">## add L1 regularization</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.auto_gpu">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">auto_gpu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.auto_gpu" title="Permalink to this definition"></a></dt>
+<dd><p>turn model to gpu if possible and nn.DataParallel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parallel</strong> (<em>str</em><em> or </em><em>bool</em>) – either <code class="docutils literal notranslate"><span class="pre">auto</span></code>, True, False
+remember to increase batch size if using <cite>parallel</cite></p></li>
+<li><p><strong>on</strong> (<em>List</em><em>[</em><em>int</em><em>] or </em><em>None</em>) – Only useful if using <cite>parallel</cite>
+if None -&gt; use all available GPU
+else -&gt; use only the gpu listed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>either <code class="docutils literal notranslate"><span class="pre">cuda</span></code> or <code class="docutils literal notranslate"><span class="pre">cpu</span></code> if no input arguments.
+(str, nn.Module): if have input arguments</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p>Examples:
+&gt;&gt;&gt; device = auto_gpu()
+&gt;&gt;&gt; device, model = auto_gpu(model)
+&gt;&gt;&gt; device, model = auto_gpu(model, on=[0,2])</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.finetune">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">finetune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_lr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_the_rest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.finetune" title="Permalink to this definition"></a></dt>
+<dd><p>This is something call per-parameter options</p>
+<p>Separate out the finetune parameters with a learning rate for each layers of parameters
+This function only support setting a different learning rate for each layer’s arameter.
+Depending on the optimizer, you can set extra parameter for that layer for the optmizer -&gt; See Notes
+If you freeze layer using this function and want to unfreeze it later:
+See <a class="reference external" href="https://discuss.pytorch.org/t/correct-way-to-freeze-layers/26714/2">https://discuss.pytorch.org/t/correct-way-to-freeze-layers/26714/2</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Pytorch Model</p></li>
+<li><p><strong>base_lr</strong> (<em>float</em>) – learning rate of all layers</p></li>
+<li><p><strong>groups</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – key is <cite>name</cite> of layers, value is the <cite>extra_lr</cite> (or False).
+all layers that contains that <cite>name</cite> will have <cite>lr</cite> of base_lr*extra_lr.
+it uses fnmatch|regex to check whether a layer contains that <cite>name</cite>.
+fnmatch is matching structure like <cite>layer1*</cite>, <cite>layer?.conv?.</cite>, <cite>*conv2*</cite>, etc…
+regex is the comman regex matching.
+Hence, <cite>name</cite> here is either fnmatch or regex expression if using raw_query.
+If <cite>float</cite> is False: those layers with <cite>name</cite> will be freeze.
+In particular, they will not be included in the return output and require_grad will be set to False</p></li>
+<li><p><strong>ignore_the_rest</strong> (<em>bool</em><em>, </em><em>optional</em>) – Include the remaining layer that are not stated in <cite>grouprs</cite> or not. Defaults to False.</p></li>
+<li><p><strong>raw_query</strong> (<em>bool</em><em>, </em><em>optional</em>) – Modify the keys of <cite>groups</cite> as f’<em>{key}</em>’ if False. Only useful when <cite>regex=False</cite>
+Do not do any modification to the keys of <cite>groups</cite> if True. Defaults to False.</p></li>
+<li><p><strong>regex</strong> (<em>bool</em><em>, </em><em>optional</em>) – Use regex instead of fnmatch on keys of groups. Defaults to False.
+This will overrride raw_query to True.
+Notice: <cite>regex=False</cite> is depracted</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>list of dict that has two or more key-value pair.</dt><dd><dl class="simple">
+<dt>The first one is feature generation layers. [those layers must start with <cite>features</cite> name] &lt;usually is backbone&gt;</dt><dd><p>is a dict[‘params’:list(model.parameters()), ‘names’:list(<cite>layer’s name</cite>), ‘query’:query, ‘lr’:base_lr*groups[groups.keys()]]</p>
+</dd>
+<dt>The remaining are all others layer. [all others params for last one, if ignore_the_rest = False]</dt><dd><p>is a dict[‘params’:list(model.parameters()), ‘names’:list(<cite>layer’s name</cite>), ‘lr’:base_lr]</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Dict[str, Union[float, Iterable]]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">resnet50</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># all layers that has name start with `layer1 and layer2` will have learning rate `0.001*0.01`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># all layers that has name start with `layer3` will be froozen`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># all layers that has name start with `layer4` will have learning rate `0.001*0.001`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># for all other layers will have the base_lr `0.001`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_params</span> <span class="o">=</span> <span class="n">finetune</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">base_lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;^layer[1-2].*&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;^layer3.*&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;^layer4.*&#39;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">},</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># setting extra parameter (other than learning rate) for that optimizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the second param_group `layer4` will have weight_decay 1e-2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_params</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;weight_decay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># init optimizer with the above setting</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># the argument under `torch.optim.SGD` will be overrided by finetune() if they exist.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For example, all model_params will have weight_decay=5e-3 except model_params[1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model_params</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.freeze">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">freeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.freeze" title="Permalink to this definition"></a></dt>
+<dd><p>Freeze all layers of a model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.get_freer_gpu">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">get_freer_gpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.get_freer_gpu" title="Permalink to this definition"></a></dt>
+<dd><p>return the idx of the first available gpu</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">twoOptim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optim1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_step</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Auto change the optimizer base on number on <cite>.step()</cite> called</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optim1</strong> (<em>pytorch.optim</em>) – first optimizer</p></li>
+<li><p><strong>optim2</strong> (<em>pytorch.optim</em>) – second optimizer</p></li>
+<li><p><strong>change_step</strong> (<em>int</em>) – number of <cite>.step()</cite> required to change optimizer</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">optim1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optim2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">weight_decay</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optim</span> <span class="o">=</span> <span class="n">btorch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">twoOptim</span><span class="p">(</span><span class="n">optim1</span><span class="p">,</span> <span class="n">optim2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This can be nested, you can wrap a <cite>twoOptim</cite> as <cite>optim1</cite> or <cite>optim2</cite></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.add_param_group">
+<span class="sig-name descname"><span class="pre">add_param_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.add_param_group" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.change_optim">
+<span class="sig-name descname"><span class="pre">change_optim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.change_optim" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.load_state_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.state_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.utils.trainer.twoOptim.zero_grad">
+<span class="sig-name descname"><span class="pre">zero_grad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.twoOptim.zero_grad" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.trainer.unfreeze">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.trainer.</span></span><span class="sig-name descname"><span class="pre">unfreeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.trainer.unfreeze" title="Permalink to this definition"></a></dt>
+<dd><p>Freeze all layers of a model.</p>
+</dd></dl>
+
+</section>
+<section id="module-btorch.utils.utils">
+<span id="btorch-utils-utils-module"></span><h2>btorch.utils.utils module<a class="headerlink" href="#module-btorch.utils.utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.accuracy_score">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">accuracy_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.accuracy_score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.adaptive_conv_window">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">adaptive_conv_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.adaptive_conv_window" title="Permalink to this definition"></a></dt>
+<dd><p>Rolling window on np.array.</p>
+<p>This function is not well developed yet. This function is slow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>np.ndarray</em>) – Target array</p></li>
+<li><p><strong>shape</strong> (<em>tuple</em><em> or </em><em>int</em>) – <p>the output size.
+if int -&gt; For ND -&gt; roll the last dimension. (<em>,D) -&gt; (</em>,D-shape+1,shape)</p>
+<blockquote>
+<div><p>-&gt; For 2D -&gt; roll the second dimension. (N,D) -&gt; (N-shape+1,shape,D) [use for time series]</p>
+</div></blockquote>
+<p>if tuple -&gt; roll the last len(tuple) dim. It works like conv.</p>
+</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – timestep for rolling on first dim. [only meaning fulling when 1D or 2D]</p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – dimension in which rolling window happens. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Rolled Array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(np.ndarray)</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>use <cite>rolling_window()</cite> when dealing with 1D or 2D time series data,
+<cite>rolling_window()</cite> is roll the entire dimension.
+This function is a roll like a convolution.</p>
+<dl>
+<dt>Usages:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 1D array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#(10,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>  <span class="c1">#(4,7)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">unfold</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>     <span class="c1">#SAME results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># array([[0, 1, 2, 3, 4, 5, 6],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [1, 2, 3, 4, 5, 6, 7],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [2, 3, 4, 5, 6, 7, 8],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [3, 4, 5, 6, 7, 8, 9]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 2D array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">),(</span><span class="mi">16</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span><span class="mi">4</span><span class="p">)</span> <span class="c1">#(4,5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># array([[ 1.,  2.,  3.,  4.,  5.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [ 6.,  7.,  8.,  9., 10.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [11., 12., 13., 14., 15.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [16., 17., 18., 19., 20.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">#(2, 3, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">unfold</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>      <span class="c1">#SAME results</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># array([[[ 1.,  2.,  3.,  4.,  5.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [ 6.,  7.,  8.,  9., 10.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [11., 12., 13., 14., 15.]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [[ 6.,  7.,  8.,  9., 10.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [11., 12., 13., 14., 15.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [16., 17., 18., 19., 20.]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 3D array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> <span class="c1">#(2, 2, 2, 2, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># array([[[[[ 1.,  2.,  3.,  4.,  5.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [ 6.,  7.,  8.,  9., 10.]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#          [[ 6.,  7.,  8.,  9., 10.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [11., 12., 13., 14., 15.]]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [[[ 2.,  3.,  4.,  5.,  6.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [ 7.,  8.,  9., 10., 11.]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#          [[ 7.,  8.,  9., 10., 11.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [12., 13., 14., 15., 16.]]]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#        [[[[ 6.,  7.,  8.,  9., 10.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [11., 12., 13., 14., 15.]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#          [[11., 12., 13., 14., 15.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [16., 17., 18., 19., 20.]]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#         [[[ 7.,  8.,  9., 10., 11.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [12., 13., 14., 15., 16.]],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#          [[12., 13., 14., 15., 16.],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#           [17., 18., 19., 20.,  1.]]]]])</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.change_batch_size">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">change_batch_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.change_batch_size" title="Permalink to this definition"></a></dt>
+<dd><p>Change the batch_size of a dataloader</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loader</strong> (<em>torch.utils.data.dataloader</em>) – Pytorch DataLoader</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – new batch_size</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>torch.utils.data.dataloader</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.conv_window2d">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">conv_window2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.conv_window2d" title="Permalink to this definition"></a></dt>
+<dd><p>Convolution like rolling windows for 2D</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Tensor</em>) – Tensor. Support (N, C, H, W) and (H, W)</p></li>
+<li><p><strong>window</strong> (<em>int</em><em> or </em><em>Tuple</em><em>(</em><em>int</em><em>)</em>) – kernel size</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to <cite>window</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.digit_version">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">digit_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.digit_version" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a version string into a tuple of integers.</p>
+<p>This method is usually used for comparing two versions.
+<cite>digit_version(“1.6.7”) &gt; digit_version(“1.8”)</cite> will return False.
+For pre-release versions: alpha &lt; beta &lt; rc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>version_str</strong> (<em>str</em>) – The version string.</p></li>
+<li><p><strong>length</strong> (<em>int</em>) – The maximum number of version levels. Default: 4.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The version info in digits (integers).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.get_class_weight">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">get_class_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sklearn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_nu_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.get_class_weight" title="Permalink to this definition"></a></dt>
+<dd><p>For auto generate class weight for imbalanced dataset. Only support multi-class classification.</p>
+<p>Note: Are you looking for <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html">https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html</a>
+:param a: The target labels. This should be your <cite>y_train</cite>.
+:type a: list or Tensor
+:param method: See Examples</p>
+<blockquote>
+<div><p>Support either [‘sklearn’,’inverse_size’, ‘inverse_sqrt_size’, ‘inverse_proba’, ‘inverse_sqrt_proba’, ‘inverse_softmax’, ‘inverse_sqrt_softmax’]
+Defaults to ‘sklearn’.
+‘sklearn’ is same as <cite>balanced</cite>. <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html">https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html</a></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>total_nu_class</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of class.
+If <cite>a</cite> does not contains all possible class label, you should set this parameter.
+Assume the first class is 0, the second class is 1, and so on.
+Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>The first element is the order of each class.
+The second element is the weight for each class for that order.</p>
+<blockquote>
+<div><p>This can be used as <cite>weight</cite> in <cite>nn.CrossEntropyLoss()</cite>.</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(Tensor, Tensor)</p>
+</dd>
+</dl>
+<p>Examples:
+&gt;&gt;&gt; a = [0,1,1,1,1,4,4,2]
+&gt;&gt;&gt; # unique -&gt; (tensor([0, 1, 2, 4]), tensor([1, 4, 1, 2]))
+&gt;&gt;&gt; print(get_class_weight(a, ‘sklearn’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_size’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_sqrt_size’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_proba’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_sqrt_proba’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_softmax’))
+&gt;&gt;&gt; print(get_class_weight(a, ‘inverse_sqrt_softmax’))
+&gt;&gt;&gt; print(get_class_weight(a, total_nu_class=6))
+&gt;&gt;&gt; # Output:
+&gt;&gt;&gt; sklearn -&gt; (tensor([0, 1, 2, 4]), tensor([2.0000, 0.5000, 2.0000, 1.0000]))
+&gt;&gt;&gt; inverse_size -&gt; (tensor([0, 1, 2, 4]), tensor([1.0000, 0.2500, 1.0000, 0.5000]))
+&gt;&gt;&gt; inverse_sqrt_size -&gt; (tensor([0, 1, 2, 4]), tensor([1.0000, 0.5000, 1.0000, 0.7071]))
+&gt;&gt;&gt; inverse_proba -&gt; (tensor([0, 1, 2, 4]), tensor([8., 2., 8., 4.]))
+&gt;&gt;&gt; inverse_sqrt_proba -&gt; (tensor([0, 1, 2, 4]), tensor([2.8284, 0.7071, 2.8284, 1.4142]))
+&gt;&gt;&gt; inverse_softmax -&gt; (tensor([0, 1, 2, 4]), tensor([24.8038,  1.2349, 24.8038,  9.1248]))
+&gt;&gt;&gt; inverse_sqrt_softmax -&gt; (tensor([0, 1, 2, 4]), tensor([4.9803, 1.1113, 4.9803, 3.0207]))
+&gt;&gt;&gt; (tensor([0, 1, 2, 3, 4, 5]), tensor([2.0000, 0.5000, 2.0000, 0.0000, 1.0000, 0.0000]))</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.ints_to_tensor">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">ints_to_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.ints_to_tensor" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a nested list of integers to a padded tensor, with padding value <cite>pad</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ints</strong> (<em>list</em><em>[</em><em>]</em>) – A nested list of integers or Tensor</p></li>
+<li><p><strong>pad</strong> (<em>int</em><em>, </em><em>optional</em>) – The padding value. Defaults to 0.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If you need to limit the length of the dimension, do <cite>output[:, :max_len]</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.is_differentiable">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">is_differentiable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.is_differentiable" title="Permalink to this definition"></a></dt>
+<dd><p>Check if a function is differentiable.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.model_keys">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">model_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.model_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first-level layer name of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>nn.Module</em>) – PyTorch model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The keys of the model in order.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p>Examples:
+&gt;&gt;&gt; keys = model_keys(model)
+&gt;&gt;&gt; for i in keys:
+&gt;&gt;&gt;     getattr(model, i)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.number_params">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">number_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_freeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.number_params" title="Permalink to this definition"></a></dt>
+<dd><p>calculate the number of parameters in a model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – PyTorch model</p></li>
+<li><p><strong>exclude_freeze</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to count the frozen layer. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.rolling_window">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">rolling_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safe_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.rolling_window" title="Permalink to this definition"></a></dt>
+<dd><p>Rolling window for Tensor</p>
+<p>Returns a <em>view</em> of the original tensor when <em>step=1</em>, otherwise returns a <em>new</em> tensor.
+Only maintain when <cite>a</cite> is 1D or 2D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Tensor</em>) – Pytorch Tensor</p></li>
+<li><p><strong>shape</strong> (<em>int</em>) – Window Size</p></li>
+<li><p><strong>stride</strong> (<em>int</em><em>, </em><em>optional</em>) – stride within Window, ONLY useful when dim=-1.
+If dm!=-1, stride is same as step. For example, if stride and step are both 2, the final step size will be 2*2=4.
+Defaults to 1.</p></li>
+<li><p><strong>step</strong> (<em>int</em><em>, </em><em>optional</em>) – select every <cite>step</cite> slices after rolling window.
+Defaults to 1.</p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – dimension in which rolling window happens. Defaults to 0.</p></li>
+<li><p><strong>safe_check</strong> (<em>bool</em><em>, </em><em>optional</em>) – <cite>a</cite> can be numpy array, Pandas, list, etc. This may affect performance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>PyTorch Tensor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 1D case</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">9.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="mf">9.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">4.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># For 2D case</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">5.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span> <span class="mf">6.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">11.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">,</span> <span class="mf">14.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[</span><span class="mf">16.</span><span class="p">,</span> <span class="mf">17.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">19.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">5.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span> <span class="mf">6.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span> <span class="mf">6.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span><span class="mf">11.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">,</span> <span class="mf">14.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span><span class="mf">11.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">,</span> <span class="mf">14.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span><span class="mf">16.</span><span class="p">,</span> <span class="mf">17.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">19.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">5.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span> <span class="mf">6.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span><span class="mf">11.</span><span class="p">,</span> <span class="mf">12.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">,</span> <span class="mf">14.</span><span class="p">,</span> <span class="mf">15.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span><span class="mf">16.</span><span class="p">,</span> <span class="mf">17.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">19.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rolling_window</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span><span class="p">([[[</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span> <span class="mf">2.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span> <span class="mf">6.</span><span class="p">,</span>  <span class="mf">8.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span> <span class="mf">7.</span><span class="p">,</span>  <span class="mf">9.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span><span class="mf">11.</span><span class="p">,</span> <span class="mf">13.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span><span class="mf">12.</span><span class="p">,</span> <span class="mf">14.</span><span class="p">]],</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="p">[[</span><span class="mf">16.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="p">[</span><span class="mf">17.</span><span class="p">,</span> <span class="mf">19.</span><span class="p">]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.seed_everything">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">seed_everything</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.seed_everything" title="Permalink to this definition"></a></dt>
+<dd><p>set seed on everything</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.utils.utils.to_tensor">
+<span class="sig-prename descclassname"><span class="pre">btorch.utils.utils.</span></span><span class="sig-name descname"><span class="pre">to_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.utils.utils.to_tensor" title="Permalink to this definition"></a></dt>
+<dd><p>Turns any object into a tensor.</p>
+</dd></dl>
+
+</section>
+<section id="module-btorch.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-btorch.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

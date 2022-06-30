@@ -68,13 +68,18 @@ class Module(nn.Module):
         - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
         - self._config (default:dict)[optional]. Contains all setting and hyper-parameters for training loops
           For Defaults usage, it accepts:
-            start_epoch: start_epoch idx
-            max_epoch: max number of epoch
-            device: either `cuda` or `cpu` or `auto`
-            save: save model path
-            resume: resume model path. Override start_epoch
-            val_freq = freq of running validation
-        - self._history (default:dict)[optional]. All loss, evaluation metric should be here.
+            start_epoch (int): start_epoch idx
+            max_epoch (int): max number of epoch
+            device (str): either `cuda` or `cpu` or `auto`
+            save (str): save model path
+            resume (str): resume model path. Override start_epoch
+            save_every_epoch_checkpoint (int): Enable save the best model and every x epoch
+            val_freq (int): freq of running validation
+            tensorboard (SummaryWriter): Enable logging to Tensorboard.
+              input the session(log_dir) name or `True` to enable
+              input a `SummaryWriter` object to use it.
+              Run `$tensorboard --logdir=runs` on terminal to start Tensorboard.
+        - self._history (default:list)[optional]. All loss, evaluation metric should be here.
     You can set them to be a pytorch instance (or a dictionary, for advanced uses)
     The default guideline is only for the default highlevel functions.
 
@@ -94,15 +99,22 @@ class Module(nn.Module):
         self._lossfn = None
         self._optimizer = None
         self._lr_scheduler = None
+        self.init_config()
+        self._history = []
+
+    def init_config(self):
+        """Initialize the config to Default.
+        """
         self._config = {
                         "start_epoch": 0,
                         "max_epoch": 10,
                         "device": "cpu",
                         "save": None,
                         "resume": None,
-                        "val_freq": 1
+                        "save_every_epoch_checkpoint": None,
+                        "val_freq": 1,
+                        "tensorboard": None,
                         }
-        self._history = []
 
     def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
@@ -264,8 +276,6 @@ class Module(nn.Module):
         https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict
         It uses .predict_()
 
-        TODO: handle when the .predict_() return dict
-
         Args:
             X: Input data. It could be:
               - torch.tensor in batch node, starting with (N, *)
@@ -333,6 +343,7 @@ class Module(nn.Module):
             lr_scheduler (torch.optim.lr_scheduler, optional): Defaults to None.
             config (dict, optional): Config for training. Defaults to None.
         """
+        # Handle config parameters
         if config is None:
             config = dict()
         start_epoch = config.get("start_epoch", 0)
@@ -340,42 +351,54 @@ class Module(nn.Module):
         device = config.get("device", "cpu")
         save_path = config.get("save", None)
         resume_path = config.get("resume", None)
+        save_every_epoch_checkpoint = config.get("save_every_epoch_checkpoint", None)
         val_freq = config.get("val_freq", 1)
+        if config.get("tensorboard", None) is True or isinstance(config.get("tensorboard", None), str):
+            from torch.utils.tensorboard import SummaryWriter
+            name=f"runs/{config.get('tensorboard', None)}" if isinstance(config.get("tensorboard", None),str) else None
+            config['tensorboard'] = SummaryWriter(log_dir=name)
+        if save_every_epoch_checkpoint is not None and save_path is None:
+            warnings.warn("`save_every_epoch_checkpoint` is set, but `save_path` is not set. It will not save any checkpoint.")
 
+        # Set GPU and resume
         if device == 'auto':
             device, net = btorch.utils.trainer.auto_gpu(net)
-
         net.to(device)
         if resume_path is not None:
             start_epoch = resume(resume_path, net, optimizer, lr_scheduler)
 
         train_loss_data = []
         test_loss_data = []
-
+        # Training Loop
         for epoch in range(start_epoch, max_epoch):
             cls.before_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
             train_loss = cls.train_epoch(net, criterion, trainloader, optimizer, epoch, device, config)
             train_loss_data.append(train_loss)
+            cls.add_tensorboard_scalar(config.get("tensorboard", None), 'train_loss', train_loss, epoch)
             test_loss = "Not Provided"
             if testloader is not None and epoch%val_freq==0:
                 test_loss = cls.test_epoch(net, criterion, testloader, epoch, device, config)
                 test_loss_data.append(test_loss)
+                cls.add_tensorboard_scalar(config.get("tensorboard", None), 'test_loss', test_loss, epoch)
             if save_path is not None:
                 to_save = dict(train_loss_data=train_loss_data,
                             test_loss_data=test_loss_data,
                             config=config)
-                if test_loss <= min(test_loss_data, default=999):
-                    save_model(net, f"{save_path}_best.pt",
-                            to_save, optimizer, lr_scheduler)
                 save_model(net, f"{save_path}_latest.pt",
                         to_save, optimizer, lr_scheduler)
-                if epoch % 20 == 0:
-                    save_model(net, f"{save_path}_{epoch}.pt",
-                            to_save, optimizer, lr_scheduler)
+                if save_every_epoch_checkpoint is not None:
+                    if test_loss <= min(test_loss_data, default=999):
+                        save_model(net, f"{save_path}_best.pt",
+                                to_save, optimizer, lr_scheduler)
+                    if epoch % save_every_epoch_checkpoint == 0:
+                        save_model(net, f"{save_path}_{epoch}.pt",
+                                to_save, optimizer, lr_scheduler)
             print(f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
             if lr_scheduler is not None:
                 lr_scheduler.step()
             cls.after_each_train_epoch(net, criterion, optimizer, trainloader, testloader, epoch, lr_scheduler, config)
+        if config.get("tensorboard", None):
+            config.get("tensorboard", None).flush()
         return dict(train_loss_data=train_loss_data,
                     test_loss_data=test_loss_data)
 
@@ -480,6 +503,23 @@ class Module(nn.Module):
         except:
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
+    
+    @classmethod
+    def add_tensorboard_scalar(cls, writer, tag, data, step, *args, **kwargs):
+        """One line code for adding data to tensorboard.
+        Args:
+            writer (SummaryWriter): the writer object.
+              Put config['tensorboard'] to this argument.
+              If input is None, this function will not do anything.
+            tag (str): Name of this data
+            data (Tensor or dict): the data to add.
+            step (int): the step of the data.
+        """
+        if writer is not None:
+            if isinstance(data, dict):
+                writer.add_scalars(tag, data, step)
+            else:
+                writer.add_scalar(tag, data, step)
 
     def cuda(self, device=None):
         self._config['device'] = 'cuda'

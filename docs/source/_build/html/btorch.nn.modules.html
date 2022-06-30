@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>btorch.nn.modules package &mdash; btorch latest documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> btorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">btorch.nn.modules package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-btorch.nn.modules.attention">btorch.nn.modules.attention module</a></li>
+<li><a class="reference internal" href="#module-btorch.nn.modules.conv">btorch.nn.modules.conv module</a></li>
+<li><a class="reference internal" href="#module-btorch.nn.modules.layer">btorch.nn.modules.layer module</a></li>
+<li><a class="reference internal" href="#module-btorch.nn.modules.module">btorch.nn.modules.module module</a></li>
+<li><a class="reference internal" href="#module-btorch.nn.modules">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">btorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>btorch.nn.modules package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/btorch.nn.modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="btorch-nn-modules-package">
+<h1>btorch.nn.modules package<a class="headerlink" href="#btorch-nn-modules-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-btorch.nn.modules.attention">
+<span id="btorch-nn-modules-attention-module"></span><h2>btorch.nn.modules.attention module<a class="headerlink" href="#module-btorch.nn.modules.attention" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">AAConv2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relative</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.combine_heads_2d">
+<span class="sig-name descname"><span class="pre">combine_heads_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.combine_heads_2d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.compute_flat_qkv">
+<span class="sig-name descname"><span class="pre">compute_flat_qkv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.compute_flat_qkv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.rel_to_abs">
+<span class="sig-name descname"><span class="pre">rel_to_abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.rel_to_abs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.relative_logits">
+<span class="sig-name descname"><span class="pre">relative_logits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.relative_logits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.relative_logits_1d">
+<span class="sig-name descname"><span class="pre">relative_logits_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.relative_logits_1d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.split_heads_2d">
+<span class="sig-name descname"><span class="pre">split_heads_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nh</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.split_heads_2d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.AAConv2d.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.AAConv2d.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.BasicConv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">BasicConv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_planes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_planes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.BasicConv" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.BasicConv.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.BasicConv.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.BasicConv.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.BasicConv.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.CBAM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">CBAM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['avg',</span> <span class="pre">'max']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_spatial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.CBAM" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p><a class="reference external" href="https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py">https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py</a>
+<a class="reference external" href="https://arxiv.org/pdf/1807.06521v2.pdf">https://arxiv.org/pdf/1807.06521v2.pdf</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.CBAM.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.CBAM.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.CBAM.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.CBAM.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelGate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">ChannelGate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gate_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['avg',</span> <span class="pre">'max']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.ChannelGate" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelGate.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.ChannelGate.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelGate.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.ChannelGate.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">ChannelPool</span></span><a class="headerlink" href="#btorch.nn.modules.attention.ChannelPool" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelPool.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.ChannelPool.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.ChannelPool.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.ChannelPool.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.SpatialGate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">SpatialGate</span></span><a class="headerlink" href="#btorch.nn.modules.attention.SpatialGate" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.SpatialGate.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.SpatialGate.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.SpatialGate.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.attention.SpatialGate.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.nn.modules.attention.logsumexp_2d">
+<span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.attention.</span></span><span class="sig-name descname"><span class="pre">logsumexp_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.attention.logsumexp_2d" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-btorch.nn.modules.conv">
+<span id="btorch-nn-modules-conv-module"></span><h2>btorch.nn.modules.conv module<a class="headerlink" href="#module-btorch.nn.modules.conv" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.Conv2dBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.conv.</span></span><span class="sig-name descname"><span class="pre">Conv2dBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_batchnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.conv.Conv2dBlock" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Typical ConvNet Block</p>
+<p>-&gt; Conv2d -&gt; BN -&gt; ReLU -&gt;</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.Conv2dBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.conv.Conv2dBlock.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.Conv2dBlock.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.conv.Conv2dBlock.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.DepthPointWiseConv2d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.conv.</span></span><span class="sig-name descname"><span class="pre">DepthPointWiseConv2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.conv.DepthPointWiseConv2d" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.DepthPointWiseConv2d.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.conv.DepthPointWiseConv2d.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.conv.DepthPointWiseConv2d.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.conv.DepthPointWiseConv2d.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-btorch.nn.modules.layer">
+<span id="btorch-nn-modules-layer-module"></span><h2>btorch.nn.modules.layer module<a class="headerlink" href="#module-btorch.nn.modules.layer" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.PositionalEncoding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.layer.</span></span><span class="sig-name descname"><span class="pre">PositionalEncoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.PositionalEncoding" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>PositionalEncoding Module</p>
+<p><a class="reference external" href="https://pytorch.org/tutorials/beginner/transformer_tutorial.html">https://pytorch.org/tutorials/beginner/transformer_tutorial.html</a>
+Expected input size: (batch, seq_len, d_model) if batch_first, otherwise (seq_len, batch, d_model)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d_model</strong> (<em>int</em>) – embedding dimension</p></li>
+<li><p><strong>max_len</strong> (<em>int</em>) – maximum sequence length (sqe_len)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Shape:</dt><dd><p>Input: (batch, seq_len, d_model) if batch_first, otherwise (seq_len, batch, d_model)
+Output: (batch, seq_len, d_model) if batch_first, otherwise (seq_len, batch, d_model)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.PositionalEncoding.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.PositionalEncoding.forward" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – Tensor, shape [seq_len, batch_size, embedding_dim]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.PositionalEncoding.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.layer.PositionalEncoding.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.ResBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.layer.</span></span><span class="sig-name descname"><span class="pre">ResBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.ResBlock" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.ResBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.ResBlock.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.ResBlock.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.layer.ResBlock.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.layer.</span></span><span class="sig-name descname"><span class="pre">Resizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.Resizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>learnable resizer <a class="reference external" href="https://arxiv.org/pdf/2103.09950.pdf">https://arxiv.org/pdf/2103.09950.pdf</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer.scale_factor">
+<span class="sig-name descname"><span class="pre">scale_factor</span></span><a class="headerlink" href="#btorch.nn.modules.layer.Resizer.scale_factor" title="Permalink to this definition"></a></dt>
+<dd><p>multiplier for spatial size. If scale_factor is a tuple, its length has to match input.dim().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer.r">
+<span class="sig-name descname"><span class="pre">r</span></span><a class="headerlink" href="#btorch.nn.modules.layer.Resizer.r" title="Permalink to this definition"></a></dt>
+<dd><p>number of Residual Blocks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#btorch.nn.modules.layer.Resizer.n" title="Permalink to this definition"></a></dt>
+<dd><p>number of mapping channel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.layer.Resizer.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.layer.Resizer.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.layer.Resizer.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-btorch.nn.modules.module">
+<span id="btorch-nn-modules-module-module"></span><h2>btorch.nn.modules.module module<a class="headerlink" href="#module-btorch.nn.modules.module" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.GridSearch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.module.</span></span><span class="sig-name descname"><span class="pre">GridSearch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.GridSearch" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.GridSearch.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.GridSearch.fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.GridSearch.init_model">
+<span class="sig-name descname"><span class="pre">init_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curr_config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.GridSearch.init_model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.GridSearch.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.GridSearch.score" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.nn.modules.module.</span></span><span class="sig-name descname"><span class="pre">Module</span></span><a class="headerlink" href="#btorch.nn.modules.module.Module" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.
+btorch.nn.Module is inhernet from pytorch.nn, hence, all syntax is same as pytorch
+You can replace your <cite>from torch import nn</cite> as <cite>from btorch import nn</cite>
+This class provides some highlevel training method like Keras:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>.fit()</p></li>
+<li><p>.evaluate()</p></li>
+<li><p>.predict()</p></li>
+<li><p>.overfit_small_batch()</p></li>
+</ul>
+</div></blockquote>
+<p>These highlevel method will use the core class methods which should be overrided for advanced use.
+The core class methods are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>.train_net()</p></li>
+<li><p>.train_epoch()</p></li>
+<li><p>.test_epoch()</p></li>
+<li><p>.predict_()</p></li>
+<li><p>.overfit_small_batch_()</p></li>
+</ul>
+</div></blockquote>
+<p>All of above classmethods can be overrided at your need.
+Notice:</p>
+<blockquote>
+<div><p>When overriding instance method, call classmethod via <cite>self.</cite>
+When overriding class method, remember to put <cite>&#64;classmethod</cite>.
+If you want to use core class method directly in real use case, use as follow:
+&gt;&gt;&gt; class Model(nn.Module):
+&gt;&gt;&gt;     …
+&gt;&gt;&gt; mod = Model()
+&gt;&gt;&gt; mod.train_net(…)   # correct
+&gt;&gt;&gt; Model.train_net(…) # wrong
+When overriding class method and if you want to use instance method (eg. fit),
+you should keep the exact SAME signature in the class method.
+Inside class method:</p>
+<blockquote>
+<div><p>-&gt; call instance variable via <cite>net.</cite>
+-&gt; call instance method via <cite>net.</cite>
+-&gt; call class method via <cite>cls.</cite></p>
+</div></blockquote>
+</div></blockquote>
+<p>Hierarchy View:
+.fit
+└── &#64;train_net -&gt; {train_loss, test_loss}</p>
+<blockquote>
+<div><p>├── &#64;before_each_train_epoch [optional]
+├── &#64;train_epoch -&gt; train_loss
+├── &#64;after_each_train_epoch [optional]
+└── &#64;test_epoch -&gt; test_loss [optional]</p>
+</div></blockquote>
+<p>.evaluate -&gt; test_loss
+└── &#64;test_epoch -&gt; test_loss</p>
+<p>.predict -&gt; prediction
+└── &#64;predict_ -&gt; prediction</p>
+<p>.overfit_small_batch
+└── &#64;overfit_small_batch_</p>
+<blockquote>
+<div><p>└── &#64;train_epoch -&gt; train_loss</p>
+</div></blockquote>
+<dl>
+<dt>If you decided to use the highlevel training loop. Please set the following instance attributes:</dt><dd><ul>
+<li><p>self._lossfn (default:pytorch Loss Func)[required]</p></li>
+<li><p>self._optimizer (default:pytorch Optimizer)[required]</p></li>
+<li><p>self._lr_scheduler (default:pytorch lr_Scheduler)[optional]</p></li>
+<li><p>self._config (default:dict)[optional]. Contains all setting and hyper-parameters for training loops
+For Defaults usage, it accepts:</p>
+<blockquote>
+<div><p>start_epoch (int): start_epoch idx
+max_epoch (int): max number of epoch
+device (str): either <cite>cuda</cite> or <cite>cpu</cite> or <cite>auto</cite>
+save (str): save model path
+resume (str): resume model path. Override start_epoch
+save_every_epoch_checkpoint (int): Enable save the best model and every x epoch
+val_freq (int): freq of running validation
+tensorboard (SummaryWriter): set <cite>True</cite> to turn on logging to tensorboard.</p>
+</div></blockquote>
+</li>
+<li><p>self._history (default:list)[optional]. All loss, evaluation metric should be here.</p></li>
+</ul>
+</dd>
+</dl>
+<p>You can set them to be a pytorch instance (or a dictionary, for advanced uses)
+The default guideline is only for the default highlevel functions.</p>
+<dl class="simple">
+<dt>Other high level utils methods are:</dt><dd><ul class="simple">
+<li><p>.set_gpu()</p></li>
+<li><p>.set_cpu()</p></li>
+<li><p>.auto_gpu()</p></li>
+<li><p>.save()</p></li>
+<li><p>.load()</p></li>
+<li><p>.summary()</p></li>
+</ul>
+</dd>
+</dl>
+<p>All the classmethods in this class can be taken out and use them alone.
+They are a good starter code for traditional PyTorch training code.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.add_tensorboard_scalar">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_tensorboard_scalar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.add_tensorboard_scalar" title="Permalink to this definition"></a></dt>
+<dd><p>One line code for adding data to tensorboard.
+:param writer: the writer object.</p>
+<blockquote>
+<div><p>Put config[‘tensorboard’] to this argument.
+If input is None, this function will not do anything.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> (<em>str</em>) – Name of this data</p></li>
+<li><p><strong>data</strong> (<em>Tensor</em><em> or </em><em>dict</em>) – the data to add.</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – the step of the data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.after_each_train_epoch">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">after_each_train_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testloader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.after_each_train_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>You can override this function to do something after each epoch.
+Note that this does not return things. Use <cite>config</cite> to return by reference if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>net</strong> (<em>nn.Module</em>) – this is equivalent to <cite>self</cite> or <cite>forward()</cite>. Use to access instance variables.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.auto_gpu">
+<span class="sig-name descname"><span class="pre">auto_gpu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.auto_gpu" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.before_each_train_epoch">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">before_each_train_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testloader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.before_each_train_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>You can override this function to do something before each epoch.
+Note that this does not return things. Use <cite>config</cite> to return by reference if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>net</strong> (<em>nn.Module</em>) – this is equivalent to <cite>self</cite> or <cite>forward()</cite>. Use to access instance variables.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.cpu">
+<span class="sig-name descname"><span class="pre">cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.cpu" title="Permalink to this definition"></a></dt>
+<dd><p>Moves all model parameters and buffers to the CPU.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method modifies the module in-place.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>self</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#btorch.nn.modules.module.Module" title="btorch.nn.modules.module.Module">Module</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.cuda">
+<span class="sig-name descname"><span class="pre">cuda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.cuda" title="Permalink to this definition"></a></dt>
+<dd><p>Moves all model parameters and buffers to the GPU.</p>
+<p>This also makes associated parameters and buffers different objects. So
+it should be called before constructing optimizer if the module will
+live on GPU while being optimized.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method modifies the module in-place.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>device</strong> (<em>int</em><em>, </em><em>optional</em>) – if specified, all parameters will be
+copied to that device</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#btorch.nn.modules.module.Module" title="btorch.nn.modules.module.Module">Module</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.device">
+<span class="sig-name descname"><span class="pre">device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.device" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the loss value &amp; metrics values for the model in test mode.</p>
+<p>Keras like evaluate method. All arguments follows Keras usage.
+<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate">https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate</a>
+It uses .test_epoch()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – Input data. It could be:
+- torch.tensor in batch node, starting with (N, <a href="#id1"><span class="problematic" id="id2">*</span></a>)
+- a <cite>torch.utils.data.Dataset</cite> dataset. Should return a tuple of <cite>(inputs, targets)</cite>
+- a <cite>torch.utils.data.Dataloader</cite>. All other dataset related argument will be ignored, if provided.</p></li>
+<li><p><strong>y</strong> – Target data. Like the input data <cite>x</cite>,
+it should be torch.tensor.
+If <cite>x</cite> is a dataset, generator or dataloader, <cite>y</cite> should
+not be specified (since targets will be obtained from <cite>x</cite>).</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to 10.</p></li>
+<li><p><strong>drop_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – Shuffle the data or not.</p></li>
+<li><p><strong>workers</strong> (<em>optional</em>) – num_workers for dataloader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Trains the model for a fixed number of epochs (iterations on a dataset).</p>
+<p>Keras like fit method. All arguments follows Keras usage.
+<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit">https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit</a>
+It uses .train_net()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – Input data. It could be:
+- torch.tensor in batch node, starting with (N, <a href="#id3"><span class="problematic" id="id4">*</span></a>)
+- a <cite>torch.utils.data.Dataset</cite> dataset. Should return a tuple of <cite>(inputs, targets)</cite>
+- a <cite>torch.utils.data.Dataloader</cite>. All other dataset related argument will be ignored, if provided.</p></li>
+<li><p><strong>y</strong> – Target data. Like the input data <cite>x</cite>,
+it should be torch.tensor.
+If <cite>x</cite> is a dataset, generator or dataloader, <cite>y</cite> should
+not be specified (since targets will be obtained from <cite>x</cite>).</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to 10.</p></li>
+<li><p><strong>epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Defaults to 1.</p></li>
+<li><p><strong>shuffle</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defaults to True.</p></li>
+<li><p><strong>drop_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – Shuffle the data or not.</p></li>
+<li><p><strong>validation_split</strong> (<em>optional</em>) – Float between 0 and 1.
+Fraction of the training data to be used as validation data.
+The model will set apart this fraction of the training data,
+will not train on it. This argument is
+not supported when <cite>x</cite> is a Dataset or Dataloader.
+Defaults to 0.</p></li>
+<li><p><strong>validation_data</strong> (<em>optional</em>) – <p>Data on which to evaluate the loss
+and any model metrics at the end of each epoch.
+The model will not be trained on this data. Defaults to None.
+<cite>validation_data</cite> will override <cite>validation_split</cite>.
+<cite>validation_data</cite> could be:</p>
+<blockquote>
+<div><ul>
+<li><p>tuple of torch.tensor, tuple(X, y)</p></li>
+<li><p>a <cite>torch.utils.data.Dataset</cite> dataset. Should return a tuple of <cite>(inputs, targets)</cite></p></li>
+<li><p>a <cite>torch.utils.data.Dataloader</cite>. All other dataset related argument will be ignored.</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>validation_batch_size</strong> (<em>optional</em>) – batch size of validation data</p></li>
+<li><p><strong>validation_freq</strong> (<em>optional</em>) – runs validation every x epochs.</p></li>
+<li><p><strong>initial_epoch</strong> (<em>optional</em>) – start epoch. Return from <cite>btorch.utils.load_save.resume</cite></p></li>
+<li><p><strong>workers</strong> (<em>optional</em>) – num_workers for dataloader</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.init_config">
+<span class="sig-name descname"><span class="pre">init_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.init_config" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize the config to Default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_mismatch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.load" title="Permalink to this definition"></a></dt>
+<dd><p>Load the model.state_dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – PATH</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.number_parameters">
+<span class="sig-name descname"><span class="pre">number_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude_freeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.number_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the number of parameters in the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.overfit_small_batch">
+<span class="sig-name descname"><span class="pre">overfit_small_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.overfit_small_batch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.overfit_small_batch_">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overfit_small_batch_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.overfit_small_batch_" title="Permalink to this definition"></a></dt>
+<dd><p>This is a helper function to check if your model is working by checking if it can overfit a small dataset.
+Note: This function will affect the model weights and all other training-related setting/parameters.
+It uses .train_epoch().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_combined</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Generates output predictions for input samples.</p>
+<p>Keras like predict method. All arguments follows Keras usage.
+<a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict">https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict</a>
+It uses .predict_()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – Input data. It could be:
+- torch.tensor in batch node, starting with (N, <a href="#id5"><span class="problematic" id="id6">*</span></a>)
+- a <cite>torch.utils.data.Dataset</cite> dataset. Should return a tuple of <cite>(inputs, _)</cite>
+- a <cite>torch.utils.data.Dataloader</cite>. All other dataset related argument will be ignored, if provided.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>return_combined</strong> (<em>bool</em><em>, </em><em>optional</em>) – <ul>
+<li><p>if return from <cite>self.predict_</cite> is a list. Combine them into a single object.</p></li>
+<li><p>if return is list of tensor: Apply torch.cat() on the output from .predict_() .</p></li>
+<li><p>if return is list of dict: combined them into one big dict.</p></li>
+<li><p>Defaults to False.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List[Tensor] or Tensor if return_combined</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.predict_">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cuda'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.predict_" title="Permalink to this definition"></a></dt>
+<dd><p>This is the very basic predicting function. Override this function when necessary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>predict results</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(list or dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.save" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the model.state_dict and self._history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – PATH</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.set_cpu">
+<span class="sig-name descname"><span class="pre">set_cpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.set_cpu" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.set_gpu">
+<span class="sig-name descname"><span class="pre">set_gpu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.set_gpu" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.summary" title="Permalink to this definition"></a></dt>
+<dd><p>Prints a string summary of network. <a class="reference external" href="https://github.com/TylerYep/torchinfo">https://github.com/TylerYep/torchinfo</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.test_epoch">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cuda'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.test_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>This is the very basic evaluating function for one epoch. Override this function when necessary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>eval_loss</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(float or dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.train_epoch">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cuda'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.train_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>This is the very basic training function for one epoch. Override this function when necessary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>train_loss</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(float or dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.train_net">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testloader</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.nn.modules.module.Module.train_net" title="Permalink to this definition"></a></dt>
+<dd><p>Standard PyTorch training loop. Override this function when necessary.
+It uses .train_epoch() and .test_epoch()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>net</strong> (<em>nn.Module</em>) – this is equivalent to <cite>self</cite> or <cite>forward()</cite>. Use to access instance variables.</p></li>
+<li><p><strong>criterion</strong> (<em>any</em>) – can be a loss function or a list/dict of loss functions. It will be used in <cite>&#64;train_epoch</cite></p></li>
+<li><p><strong>optimizer</strong> (<em>[</em><em>type</em><em>]</em>) – can be a optimizer or a list/dict of optimizers. It will be used in <cite>&#64;train_epoch</cite></p></li>
+<li><p><strong>trainloader</strong> (<em>torch.utils.data.Dataloader</em>) – can be a dataloader or a list/dict of dataloaders. It will be used in <cite>&#64;train_epoch</cite></p></li>
+<li><p><strong>testloader</strong> (<em>torch.utils.data.Dataloader</em><em>, </em><em>optional</em>) – can be a dataloader or a list/dict of dataloaders. It will be used in <cite>&#64;train_epoch</cite>. Defaults to None.</p></li>
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim.lr_scheduler</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+<li><p><strong>config</strong> (<em>dict</em><em>, </em><em>optional</em>) – Config for training. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="btorch.nn.modules.module.Module.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#btorch.nn.modules.module.Module.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-btorch.nn.modules">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-btorch.nn.modules" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

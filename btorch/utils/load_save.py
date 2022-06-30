@@ -14,6 +14,7 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
           Defaults to None.
         optimizer (torch.optim, optional): pytorch optimizer.
           You can also put optim.state_dict() under `extra` instead of using this arg.
+          It accept list or dict of optimizer.
         lr_scheduler (torch.optim, optional): pytorch lr schedular.
           You can also put lr_s.state_dict() under `extra` instead of using this arg.
     """
@@ -31,7 +32,16 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
     if optimizer is not None:
         if 'optimizer' in to_save:
             warnings.warn("key ``optimizer`` is already in ``extra``, replacing the ``optimizer``")
-        to_save['optimizer'] = optimizer.state_dict()
+        if isinstance(optimizer, dict):
+             to_save['optimizer'] = dict()
+             for k in optimizer.keys():
+                to_save['optimizer'][k] = optimizer[k].state_dict()
+        elif isinstance(optimizer, list):
+            to_save['optimizer'] = []
+            for optim in optimizer:
+                to_save['optimizer'].append(optim.state_dict())
+        else:
+            to_save['optimizer'] = optimizer.state_dict()
     if lr_scheduler is not None:
         if 'lr_scheduler' in to_save:
             warnings.warn("key ``lr_scheduler`` is already in ``extra``, replacing the ``lr_scheduler``")
@@ -50,6 +60,8 @@ def resume(path, model, optimizer=None, lr_scheduler=None):
         path (str): Load path. Must contains ['model'] and ['optimizer']
         model (nn.Module): Pytorch Model
         optimizer (torch.optim): Pytorch Optimizer
+          It accept list or dict of optimizer. 
+          Note that the order of list must be same as the order when you save it.
         lr_scheduler (torch.optim): Pytorch Lr Scheduler
 
     Returns:
@@ -59,7 +71,14 @@ def resume(path, model, optimizer=None, lr_scheduler=None):
     epoch = state['epoch'] if 'epoch' in state else len(state['train_loss_data'])
     model.load_state_dict(state['model'])
     if optimizer is not None:
-        optimizer.load_state_dict(state['optimizer'])
+        if isinstance(optimizer, dict):
+             for k in state['optimizer'].keys():
+                optimizer[k].load_state_dict(state['optimizer'][k])
+        elif isinstance(optimizer, list):
+            for i in range(len(optimizer)):
+                 optimizer[i].load_state_dict(state['optimizer'][i])
+        else:
+            optimizer.load_state_dict(state['optimizer'])
     if lr_scheduler is not None:
         if 'lr_scheduler' in state:
             for i in range(state['lr_scheduler']['last_epoch'], epoch, state['lr_scheduler']['_step_count']):

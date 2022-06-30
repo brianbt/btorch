@@ -108,4 +108,6 @@ btorch.utils.trainer.finetune()
 btorch.utils.trainer.twoOptim()
 btorch.vision.utils.conv_output_shape()
 btorch.vision.utils.conv_kernel_shape()
+btorch.vision.utils.pplot()
+btorch.vision.utils.img_MinMaxScaler()
 ```

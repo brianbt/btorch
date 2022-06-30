@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>btorch.metrics package &mdash; btorch latest documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> btorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">btorch.metrics package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-btorch.metrics.metrics">btorch.metrics.metrics module</a></li>
+<li><a class="reference internal" href="#module-btorch.metrics">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">btorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>btorch.metrics package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/btorch.metrics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="btorch-metrics-package">
+<h1>btorch.metrics package<a class="headerlink" href="#btorch-metrics-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-btorch.metrics.metrics">
+<span id="btorch-metrics-metrics-module"></span><h2>btorch.metrics.metrics module<a class="headerlink" href="#module-btorch.metrics.metrics" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.metrics.metrics.all_rmse">
+<span class="sig-prename descclassname"><span class="pre">btorch.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">all_rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_gt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.metrics.metrics.all_rmse" title="Permalink to this definition"></a></dt>
+<dd><p>helper function for cacluating mrmse, mrmse_nz, rel_mrmse, rel_mrmse_nz</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.metrics.metrics.mini_batch_combiner">
+<span class="sig-prename descclassname"><span class="pre">btorch.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">mini_batch_combiner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cached</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.metrics.metrics.mini_batch_combiner" title="Permalink to this definition"></a></dt>
+<dd><p>for mrmse mini-batch combine</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cached</strong> (<em>Tensor</em><em> or </em><em>List</em><em>[</em><em>Tensor</em><em>]</em>) – (B, C) or list([C])</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>metric loss</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pre_batch_loss</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">num_batch</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">mse_b</span><span class="p">,</span> <span class="n">c_b</span> <span class="o">=</span>  <span class="n">mrmse</span><span class="p">(</span><span class="n">y_pred_b</span><span class="p">,</span><span class="n">y_b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">pre_batch_loss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c_b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mse</span> <span class="o">=</span> <span class="n">mini_batch_combiner</span><span class="p">(</span><span class="n">pre_batch_loss</span><span class="p">)</span> <span class="c1">#CORRECT</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mse</span> <span class="o">=</span> <span class="n">pre_batch_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="c1">#WRONG</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.metrics.metrics.mrmse">
+<span class="sig-prename descclassname"><span class="pre">btorch.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">mrmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_gt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.metrics.metrics.mrmse" title="Permalink to this definition"></a></dt>
+<dd><p>compute mean Root Mean Square Error</p>
+<blockquote>
+<div><dl class="simple">
+<dt>RMSE = (y_pred - y)**2.mean(axis=0).sqrt()</dt><dd><p>RMSE for each class (C)</p>
+</dd>
+<dt>mRMSE = RMSE.mean()</dt><dd><p>mean of RMSE across class (C)</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>count_pred</strong> (<em>Tensor</em>) – (N,C) tensor prediction</p></li>
+<li><p><strong>count_gt</strong> (<em>Tensor</em>) – (N,C) tensor ground truth</p></li>
+<li><p><strong>non_zero</strong> (<em>bool</em>) – calc metric for non-zero elements only if True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>metric score
+Tensor: (1,C) cache for mini-batch caluation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.metrics.metrics.rel_mrmse">
+<span class="sig-prename descclassname"><span class="pre">btorch.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">rel_mrmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count_gt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">non_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.metrics.metrics.rel_mrmse" title="Permalink to this definition"></a></dt>
+<dd><p>compute rel mean Root Mean Square Error</p>
+<blockquote>
+<div><dl class="simple">
+<dt>RMSE = (y_pred - y)**2.mean(axis=0).sqrt()</dt><dd><p>RMSE for each class (C)</p>
+</dd>
+</dl>
+<p>rel_RMSE = RMSE/(y+1)
+mrel_RMSE = rel_RMSE.mean()</p>
+<blockquote>
+<div><p>mean of rel_RMSE across class (C)</p>
+</div></blockquote>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>count_pred</strong> (<em>Tensor</em>) – (N,C) tensor prediction</p></li>
+<li><p><strong>count_gt</strong> (<em>Tensor</em>) – (N,C) tensor ground truth</p></li>
+<li><p><strong>non_zero</strong> (<em>bool</em>) – calc metric for non-zero elements only if True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>metric score
+Tensor: (1,C) cache for mini-batch caluation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-btorch.metrics">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-btorch.metrics" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

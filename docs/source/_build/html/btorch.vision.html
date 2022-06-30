@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>btorch.vision package &mdash; btorch latest documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> btorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">btorch.vision package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-btorch.vision.utils">btorch.vision.utils module</a></li>
+<li><a class="reference internal" href="#module-btorch.vision">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">btorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>btorch.vision package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/btorch.vision.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="btorch-vision-package">
+<h1>btorch.vision package<a class="headerlink" href="#btorch-vision-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="btorch.vision.models.html">btorch.vision.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="btorch.vision.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="btorch.vision.models.html#module-btorch.vision.models.resnet">btorch.vision.models.resnet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="btorch.vision.models.html#module-btorch.vision.models">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-btorch.vision.utils">
+<span id="btorch-vision-utils-module"></span><h2>btorch.vision.utils module<a class="headerlink" href="#module-btorch.vision.utils" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="btorch.vision.utils.UnNormalize">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">UnNormalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.UnNormalize" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.coco_ann2Mask">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">coco_ann2Mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.coco_ann2Mask" title="Permalink to this definition"></a></dt>
+<dd><p>Generate Mask for each object on COCO dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>Tensor</em>) – (<a href="#id1"><span class="problematic" id="id2">*</span></a>,H,W)</p></li>
+<li><p><strong>annotations</strong> (<em>List</em><em>[</em><em>Dict</em><em>[</em><em>]</em><em>]</em>) – This should be the default target output of datasets.COCODection()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List[MASK]]: Each mask is a 2D matrix that contains either 0, 1. Size is same as <cite>img</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.conv_kernel_shape">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">conv_kernel_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.conv_kernel_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function for computing kernel size of convolutions using the expected output size. This function ignores channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Input Tensor shape. (<a href="#id3"><span class="problematic" id="id4">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+<li><p><strong>output_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Expected output shape. (<a href="#id5"><span class="problematic" id="id6">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.conv_output_shape">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">conv_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.conv_output_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function for computing output of convolutions. This function did not calculate out_channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Input Tensor shape. (<a href="#id7"><span class="problematic" id="id8">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+<li><p><strong>model</strong> (<em>nn.Conv2d</em>) – get the parameter from the given model. Override all other parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.convtransp_kernel_shape">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">convtransp_kernel_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.convtransp_kernel_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function for computing kernel size of transposed convolutions using the expected output size. This function ignores channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Input Tensor shape. (<a href="#id9"><span class="problematic" id="id10">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+<li><p><strong>output_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Expected output shape. (<a href="#id11"><span class="problematic" id="id12">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.convtransp_output_shape">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">convtransp_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.convtransp_output_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function for computing output of transposed convolutions. This function did not calculate out_channels</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_size</strong> (<em>Tuple</em><em>[</em><em>] or </em><em>Tensor</em>) – Input Tensor shape. (<a href="#id13"><span class="problematic" id="id14">*</span></a>,H,W) -&gt; Must be at least two dimension, OR, int when H=W.</p></li>
+<li><p><strong>model</strong> (<em>nn.ConvTranspose2d</em>) – get the parameter from the given model. Override all other parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.crop_img_from_bbx">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">crop_img_from_bbx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bboxs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pascal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.crop_img_from_bbx" title="Permalink to this definition"></a></dt>
+<dd><p>Crop the bounding box of an image from bbox</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>Tensor</em>) – (3,H,W). NOTICE: this img should be in original size. Without any Resize()</p></li>
+<li><p><strong>bboxs</strong> (<em>bounding boxes</em>) – <dl>
+<dt>it accepts,</dt><dd><p>(List[List]): List of bbox if raw is False
+(List[Dict[]]): List of dictionary if raw is True.</p>
+<blockquote>
+<div><p>This should be the default target output of datasets.COCODection()</p>
+</div></blockquote>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>bbox_format</strong> (<em>str</em><em>, </em><em>optional</em>) – Format of bboxs.
+Either <cite>pascal</cite> or <cite>coco</cite>. Defaults to ‘pascal’.</p></li>
+<li><p><strong>raw</strong> (<em>bool</em><em>, </em><em>optional</em>) – see bboxs doc. Defaults to False.</p></li>
+<li><p><strong>return_dict</strong> (<em>bool</em><em>, </em><em>optional</em>) – only support when <cite>raw</cite> is ON</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Cropped Images
+of
+Dict[category_id:[Tensor]]: Dict of List of Cropped Images for each class</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tensor]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">img</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">COCODection</span><span class="p">():</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">break</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datasets</span><span class="o">.</span><span class="n">crop_img_from_bbx</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bbox_format</span><span class="o">=</span><span class="s1">&#39;coco&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.find_corner_from_mask">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">find_corner_from_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flexible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.find_corner_from_mask" title="Permalink to this definition"></a></dt>
+<dd><p>Extract a rectangular bounding box of each object color</p>
+<p>Each pixel value in A will be treated as one object.
+In other words, each color is treated as one object.
+Expected A to be a very simple image that contains only few colors.
+Usually is a mask of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>np.array</em>) – can be 2D(grayscale) or 3D(RGB)
+if input is 3D(RGB): will converge to 2D</p></li>
+<li><p><strong>flexible</strong> (<em>float</em>) – percent of enlargement on the topLeft and bottomRight.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(2D)grayscale version of input A.
+dict: key is object index, value is [x_min, y_min, x_max, y_max] coordinates</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.flood_fill">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">flood_fill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.flood_fill" title="Permalink to this definition"></a></dt>
+<dd><p>cv2.flood_fill() wrapper</p>
+<p>This function uses cv2 and numpy, is slow and not differentiable
+See <a class="reference external" href="https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html?highlight=floodfill#floodfill">https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html?highlight=floodfill#floodfill</a>
+See <a class="reference external" href="https://stackoverflow.com/questions/19839947/flood-fill-in-python">https://stackoverflow.com/questions/19839947/flood-fill-in-python</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>torch.Tensor</em>) – pytorch Tensor, dtype should be int. Support (H,W)</p></li>
+<li><p><strong>target_value</strong> (<em>int</em>) – Value that need to change</p></li>
+<li><p><strong>fill_value</strong> (<em>int</em>) – target_value will change to this value</p></li>
+<li><p><strong>start_point</strong> (<em>tuple</em><em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) – starting point for flood fill.</p></li>
+<li><p><strong>flags</strong> (<em>int</em><em>, </em><em>optional</em>) – 4 means that the four nearest neighbor pixels. (vertically and horizontally)
+8 means that the eight nearest neighbor pixels. (vertically, horizontally and diagonally)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>same shape as input.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.get_COCO_class_dict">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">get_COCO_class_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.get_COCO_class_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get COCO 2014 idx2label dict. reverse will give label2idx.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.get_COCO_paper_class_dict">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">get_COCO_paper_class_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_background</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.get_COCO_paper_class_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Get COCO Paper idx2label dict. reverse will give label2idx.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.get_pascal_class_dict">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">get_pascal_class_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.get_pascal_class_dict" title="Permalink to this definition"></a></dt>
+<dd><p>“Get Pascal VOC idx2label dict. reverse will give label2idx.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.high_pass_filter">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">high_pass_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.high_pass_filter" title="Permalink to this definition"></a></dt>
+<dd><p>apply high-pass filter on image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>np.ndarray</em>) – (C,H,W)</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – either <cite>gaussian</cite>, <cite>3</cite> or <cite>5</cite>. Defaults to ‘3’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(C,H,W)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.img_MinMaxScaler">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">img_MinMaxScaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.img_MinMaxScaler" title="Permalink to this definition"></a></dt>
+<dd><p>MinMaxScaler for img data, it support 2D(gray), 3D and 4D(batch) data.</p>
+<p>sklearn.MinMaxScaler only works for 2D.
+Usually used when visualizing the image data extracted from hidden layers.
+The visualized may look like <cite>UnNormalize()</cite>, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
+To perform un-normalization, please use <cite>UnNormalize()</cite> instead.
+It can also be used to rescale the pixel value to the given range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>Tensor</em>) – pytorch Tensor. (H,W) or (C,H,W) or (N,C,H,W)</p></li>
+<li><p><strong>feature_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Defaults to (0, 1).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scaled Image, same shape as input. dtype can be int or float depends on the feature_range.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If have warning `Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).`</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># You can try do the following, beware that the visualized output will look like UnNormalized.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_MinMaxScaler</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.pplot">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">pplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.pplot" title="Permalink to this definition"></a></dt>
+<dd><p>Smart plot for pytorch tensor.</p>
+<p>It handle every possible shape of tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>tensor</em>) – accept (N,C,H,W), (N,H,W,C), (C,H,W), (H,W,C), (H,W)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.replace_part">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">replace_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_transparent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.replace_part" title="Permalink to this definition"></a></dt>
+<dd><p>replace part of <cite>img</cite> by <cite>part</cite>. It support batch mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img</strong> (<em>Tensor</em><em> or </em><em>ndarray</em>) – either (N,C,H,W) or (C,H,W)</p></li>
+<li><p><strong>part</strong> (<em>Tensor</em><em> or </em><em>ndarray</em>) – used to replace. (C,H,W)</p></li>
+<li><p><strong>loc</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – [x_min, x_max], the topLeft coordinate of img to be replaced.</p></li>
+<li><p><strong>handle_transparent</strong> (<em>bool</em>) – if the pixel that has zero value (transparent) will be replaced or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The replaced version of img</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">replace_part</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="btorch.vision.utils.smart_rotate">
+<span class="sig-prename descclassname"><span class="pre">btorch.vision.utils.</span></span><span class="sig-name descname"><span class="pre">smart_rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#btorch.vision.utils.smart_rotate" title="Permalink to this definition"></a></dt>
+<dd><p>Fix the rotation error when PIL.Image.open()</p>
+<p>Sometimes, when we open an image that is taken by our cell phone,
+The rotation maybe wrong, this function helps to fix that error</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>image</strong> (<em>PIL.Image</em>) – Python Image</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Python Image</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>PIL.Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-btorch.vision">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-btorch.vision" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Brian.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
