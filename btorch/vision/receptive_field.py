@@ -13,7 +13,7 @@ def check_same(stride):
     return stride
 
 def receptive_field(model, input_size, batch_size=-1, device="cuda"):
-    '''
+    """
     :parameter
     'input_size': tuple of (Channel, Height, Width)
 
@@ -24,7 +24,7 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
     'r' for "receptive_field" is the spatial range of the receptive field in one direction.
     'start' denotes the center of the receptive field for the first unit (start) in on direction of the feature tensor.
         Convention is to use half a pixel as the center for a range. center for `slice(0,5)` is 2.5.
-    '''
+    """
     def register_hook(module):
 
         def hook(module, input, output):

@@ -10,13 +10,13 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
         path (str): saving_path
         extra (dict, optional): 
           Extra things that want to save. 
-          Must reserve key ``model``
+          Must reserve key ``model``.
           Defaults to None.
         optimizer (torch.optim, optional): pytorch optimizer.
-          You can also put optim.state_dict() under `extra` instead of using this arg.
-          It accept list or dict of optimizer.
+          You can also put optim.state_dict() under ``extra`` instead of using this arg.
+          It accepts list or dict of optimizer.
         lr_scheduler (torch.optim, optional): pytorch lr schedular.
-          You can also put lr_s.state_dict() under `extra` instead of using this arg.
+          You can also put lr_s.state_dict() under ``extra`` instead of using this arg.
     """
     try:
         state_dict = model.module.state_dict()
@@ -49,7 +49,7 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     if 'epoch' not in to_save:
-        warnings.warn("`epoch` is not in ``extra``, consider adding it to keep track of which epoch you are saving.")
+        warnings.warn("``epoch`` is not in ``extra``, consider adding it to keep track of which epoch you are saving.")
     torch.save(to_save, path)
 
 
@@ -60,7 +60,7 @@ def resume(path, model, optimizer=None, lr_scheduler=None):
         path (str): Load path. Must contains ['model'] and ['optimizer']
         model (nn.Module): Pytorch Model
         optimizer (torch.optim): Pytorch Optimizer
-          It accept list or dict of optimizer. 
+          It accepts list or dict of optimizer.
           Note that the order of list must be same as the order when you save it.
         lr_scheduler (torch.optim): Pytorch Lr Scheduler
 

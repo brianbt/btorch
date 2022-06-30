@@ -13,11 +13,11 @@ class UnNormalize(object):
             std (iterable or Tensor): Should be same as Transforms.Normalize args
 
         Examples:
-        >>> mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
-        >>> transform = transforms.Compose([transforms.Normalize(mean, std)])
-        >>> unNormer = UnNormalize(mean, std)
-        >>> # transformed_input is from dataloader(transformed_dataset)
-        >>> plt.imshow(unNormer(transformed_input))
+            >>> mean, std = [0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+            >>> transform = transforms.Compose([transforms.Normalize(mean, std)])
+            >>> unNormer = UnNormalize(mean, std)
+            >>> # transformed_input is from dataloader(transformed_dataset)
+            >>> plt.imshow(unNormer(transformed_input))
         """
         if not isinstance(mean, torch.Tensor):
             mean = torch.tensor(mean)
@@ -226,7 +226,7 @@ def high_pass_filter(img, method='3'):
 
     Args:
         img (np.ndarray): (C,H,W)
-        method (str, optional): either `gaussian`, `3` or `5`. Defaults to '3'.
+        method (str, optional): either ``gaussian``, ``3`` or ``5``. Defaults to '3'.
 
     Returns:
         np.ndarray: (C,H,W)
@@ -304,7 +304,7 @@ def find_corner_from_mask(A, flexible=False):
     return A, out
 
 def replace_part(img, part, loc, handle_transparent=False):
-    """replace part of `img` by `part`. It support batch mode.
+    """replace part of ``img`` by ``part``. It supports batch mode.
 
     Args:
         img (Tensor or ndarray): either (N,C,H,W) or (C,H,W)
@@ -349,24 +349,23 @@ def crop_img_from_bbx(img, bboxs, bbox_format='pascal', raw=False, return_dict=F
     Args:
         img (Tensor): (3,H,W). NOTICE: this img should be in original size. Without any Resize()
         bboxs (bounding boxes)
-          it accepts,
-            (List[List]): List of bbox if raw is False
-            (List[Dict[]]): List of dictionary if raw is True. 
-              This should be the default target output of datasets.COCODection()
+          it accepts:
+            - (List[List]): List of bbox if raw is False
+            - (List[Dict[]]): List of dictionary if raw is True.
+                This should be the default target output of ``datasets.COCODection()``
         bbox_format (str, optional): Format of bboxs.
-          Either `pascal` or `coco`. Defaults to 'pascal'.
+          Either ``pascal`` or ``coco``. Defaults to 'pascal'.
         raw (bool, optional): see bboxs doc. Defaults to False.
-        return_dict (bool, optional): only support when `raw` is ON
+        return_dict (bool, optional): only support when ``raw`` is ON
 
     Returns:
         List[Tensor]: List of Cropped Images
-        of 
         Dict[category_id:[Tensor]]: Dict of List of Cropped Images for each class
 
     Example:
         >>> for img, target in datasets.COCODection():
         >>>     break
-        >>> datasets.crop_img_from_bbx(i[0], i[1], bbox_format='coco', raw=True, return_dict=True)
+        >>> datasets.crop_img_from_bbx(img, target, bbox_format='coco', raw=True, return_dict=True)
     """
     if img.shape[1] == img.shape[2]:
         warnings.warn("Did you resized this image? If yes -> cropping will NOT be correct")
@@ -384,7 +383,7 @@ def crop_img_from_bbx(img, bboxs, bbox_format='pascal', raw=False, return_dict=F
                 classes.append(i['category_id'])
         else:
             if not isinstance(bboxs, dict):
-                raise Exception("I should be a Dict")
+                raise Exception("``bboxs`` should be a Dict")
             for i in bboxs['annotation']['object']:
                 tmp.append(list(i['bndbox'].values()))
                 classes.append(dict_check[i['name']])
@@ -491,7 +490,7 @@ def coco_ann2Mask(img, annotations, return_dict=False):
         annotations (List[Dict[]]): This should be the default target output of datasets.COCODection()
     
     Returns:
-        Dict[id:List[MASK]]: Each mask is a 2D matrix that contains either 0, 1. Size is same as `img`
+        Dict[id:List[MASK]]: Each mask is a 2D matrix that contains either 0, 1. Size is same as ``img``
     """
     def decodeSeg(mask, segmentations):
         """
@@ -542,7 +541,7 @@ def smart_rotate(image):
     """Fix the rotation error when PIL.Image.open()
 
     Sometimes, when we open an image that is taken by our cell phone,
-    The rotation maybe wrong, this function helps to fix that error
+    The rotation maybe wrong, this function helps to fix that error.
 
     Args:
         image (PIL.Image): Python Image
@@ -570,8 +569,8 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
     
     sklearn.MinMaxScaler only works for 2D. 
     Usually used when visualizing the image data extracted from hidden layers.
-    The visualized may look like `UnNormalize()`, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
-    To perform un-normalization, please use `UnNormalize()` instead.
+    The visualized may look like ``UnNormalize()``, but the pixel value obtained by this function is NOT exactly the same the un-normalized one.
+    To perform un-normalization, please use ``UnNormalize()`` instead.
     It can also be used to rescale the pixel value to the given range.
 
     Args:
@@ -583,8 +582,8 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
 
     Note:
         >>> plt.imshow(img.permute(1,2,0))
-        >>> # If have warning `Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).`
-        >>> # You can try do the following, beware that the visualized output will look like UnNormalized.
+        >>> # If have warning ``Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).``
+        >>> # You can try to do the following, beware that the visualized output will look like UnNormalized.
         >>> plt.imshow(img_MinMaxScaler(img).permute(1,2,0))
     """
     min_v, max_v = feature_range
@@ -605,7 +604,7 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
 def pplot(x):
     """Smart plot for pytorch tensor.
 
-    It handle every possible shape of tensor.
+    It handles every possible shape of tensor.
 
     Args:
         x (tensor): accept (N,C,H,W), (N,H,W,C), (C,H,W), (H,W,C), (H,W)

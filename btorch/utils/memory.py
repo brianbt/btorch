@@ -200,7 +200,7 @@ def model_size(model, input, type_size=4):
     Args:
         model (nn.Module): PyTorch Model
         input (Tensor or list of size): 
-          if Tensor -> should be able to call `model(input)`
+          if Tensor -> should be able to call ``model(input)``
           else -> size of input
         type_size (int, optional): dtype of input, Default to 4 (float32)
     """

@@ -3,13 +3,13 @@ from matplotlib.lines import Line2D
 import numpy as np
 
 def plot_grad_flow(named_parameters):
-    '''https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/10
-    
+    """https://discuss.pytorch.org/t/check-gradient-flow-in-network/15063/10
+
     Plots the gradients flowing through different layers in the net during training.
     Can be used for checking for possible gradient vanishing / exploding problems.
-    
-    Usage: Plug this function in Trainer class after loss.backwards() as 
-    "plot_grad_flow(self.model.named_parameters())" to visualize the gradient flow'''
+
+    Usage: Plug this function in Trainer class after loss.backwards() as
+    "plot_grad_flow(self.model.named_parameters())" to visualize the gradient flow"""
     ave_grads = []
     max_grads= []
     layers = []
