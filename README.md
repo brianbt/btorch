@@ -30,9 +30,11 @@ The high-level methods are
 Hierarchy View (method_name -> return_value):  
 ```
     .fit  
-    └── @train_net -> {train_loss, test_loss}  
-        ├── @train_epoch -> train_loss  
-        └── @test_epoch -> test_loss  
+    └── @train_net -> {train_loss, test_loss} 
+        ├── @before_each_train_epoch [optional]
+        ├── @train_epoch -> train_loss
+        ├── @after_each_train_epoch [optional]  
+        └── @test_epoch -> test_loss [optional] 
   
     .evaluate -> test_loss  
     └── @test_epoch -> test_loss  

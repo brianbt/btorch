@@ -5,7 +5,6 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
-
 import btorch
 from btorch.utils.load_save import save_model, resume
 
@@ -13,83 +12,89 @@ class Module(nn.Module):
     """Base class for all neural network modules.
 
     Your models should also subclass this class.
-    btorch.nn.Module is inhernet from pytorch.nn, hence, all syntax is same as pytorch
-    You can replace your `from torch import nn` as `from btorch import nn`
-    This class provides some highlevel training method like Keras:
-        - .fit()
-        - .evaluate()
-        - .predict()
-        - .overfit_small_batch()
+    btorch.nn.Module is inhernet from pytorch.nn, hence, all syntax is same as pytorch.
+    
+    You can replace your `from torch import nn` as `from btorch import nn`.
+    
+    This class provides some highlevel training method like Keras
+      - .fit()
+      - .evaluate()
+      - .predict()
+      - .overfit_small_batch()
     These highlevel method will use the core class methods which should be overrided for advanced use.
-    The core class methods are:
-        - .train_net()
-        - .train_epoch()
-        - .test_epoch()
-        - .predict_()
-        - .overfit_small_batch_()
-    All of above classmethods can be overrided at your need. 
-    Notice:
-        When overriding instance method, call classmethod via `self.`
-        When overriding class method, remember to put `@classmethod`.
-        If you want to use core class method directly in real use case, use as follow:
+    
+    The core class methods are
+      - .train_net()
+      - .train_epoch()
+      - .test_epoch()
+      - .predict_()
+      - .overfit_small_batch_()
+    All of above classmethods can be overrided at your need.
+    
+    Note:
+      When overriding instance method, call classmethod via `self.`
+      When overriding class method, remember to put `@classmethod`.
+      If you want to use core class method directly in real use case, use as follow:
         >>> class Model(nn.Module):
         >>>     ...
         >>> mod = Model()
         >>> mod.train_net(...)   # correct
         >>> Model.train_net(...) # wrong
-        When overriding class method and if you want to use instance method (eg. fit),
-        you should keep the exact SAME signature in the class method. 
-        Inside class method:
-            -> call instance variable via `net.`
-            -> call instance method via `net.`
-            -> call class method via `cls.`
+      When overriding class method and if you want to use instance method (eg. fit),
+      you should keep the exact SAME signature in the class method. 
+      
+      Inside class method
+        - call instance variable via `net.`
+        - call instance method via `net.`
+        - call class method via `cls.`
 
     Hierarchy View:
-    .fit
-    └── @train_net -> {train_loss, test_loss}
-        ├── @before_each_train_epoch [optional]
-        ├── @train_epoch -> train_loss
-        ├── @after_each_train_epoch [optional]
-        └── @test_epoch -> test_loss [optional]
+      | .fit
+      | └── @train_net -> {train_loss, test_loss}
+      |     ├── @before_each_train_epoch [optional]
+      |     ├── @train_epoch -> train_loss
+      |     ├── @after_each_train_epoch [optional]
+      |     └── @test_epoch -> test_loss [optional]
 
-    .evaluate -> test_loss
-    └── @test_epoch -> test_loss
+      | .evaluate -> test_loss
+      | └── @test_epoch -> test_loss
 
-    .predict -> prediction
-    └── @predict_ -> prediction
+      | .predict -> prediction
+      | └── @predict_ -> prediction
 
-    .overfit_small_batch
-    └── @overfit_small_batch_
-        └── @train_epoch -> train_loss
+      | .overfit_small_batch
+      | └── @overfit_small_batch_
+      |     └── @train_epoch -> train_loss
 
     If you decided to use the highlevel training loop. Please set the following instance attributes: 
-        - self._lossfn (default:pytorch Loss Func)[required]
-        - self._optimizer (default:pytorch Optimizer)[required]
-        - self._lr_scheduler (default:pytorch lr_Scheduler)[optional]
-        - self._config (default:dict)[optional]. Contains all setting and hyper-parameters for training loops
-          For Defaults usage, it accepts:
-            start_epoch (int): start_epoch idx
-            max_epoch (int): max number of epoch
-            device (str): either `cuda` or `cpu` or `auto`
-            save (str): save model path
-            resume (str): resume model path. Override start_epoch
-            save_every_epoch_checkpoint (int): Enable save the best model and every x epoch
-            val_freq (int): freq of running validation
-            tensorboard (SummaryWriter): Enable logging to Tensorboard.
-              input the session(log_dir) name or `True` to enable
-              input a `SummaryWriter` object to use it.
+      - self._lossfn (default:pytorch Loss Func)[required][`criterion` in @classmethod]
+      - self._optimizer (default:pytorch Optimizer)[required][`optimizer` in @classmethod]
+      - self._lr_scheduler (default:pytorch lr_Scheduler)[optional][`lr_scheduler` in @classmethod]
+      - self._config (default:dict)[optional][`config` in @classmethod]
+        Contains all setting and hyper-parameters for training loops
+        For Defaults usage, it accepts:
+          - start_epoch (int): start_epoch idx
+          - max_epoch (int): max number of epoch
+          - device (str): either `cuda` or `cpu` or `auto`
+          - save (str): save model path
+          - resume (str): resume model path. Override start_epoch
+          - save_every_epoch_checkpoint (int): Enable save the best model and every x epoch
+          - val_freq (int): freq of running validation
+          - tensorboard (SummaryWriter): Enable logging to Tensorboard.
+              Input the session(log_dir) name or `True` to enable.
+              Input a `SummaryWriter` object to use it.
               Run `$tensorboard --logdir=runs` on terminal to start Tensorboard.
-        - self._history (default:list)[optional]. All loss, evaluation metric should be here.
-    You can set them to be a pytorch instance (or a dictionary, for advanced uses)
+      - self._history (default:list)[optional]. All loss, evaluation metric should be here.
+    You can set them to be a pytorch instance (or a dictionary, for advanced uses).
     The default guideline is only for the default highlevel functions.
 
     Other high level utils methods are:
-        - .set_gpu()
-        - .set_cpu()
-        - .auto_gpu()
-        - .save()
-        - .load()
-        - .summary()
+      - .set_gpu()
+      - .set_cpu()
+      - .auto_gpu()
+      - .save()
+      - .load()
+      - .summary()
 
     All the classmethods in this class can be taken out and use them alone. 
     They are a good starter code for traditional PyTorch training code.
@@ -509,7 +514,7 @@ class Module(nn.Module):
         """One line code for adding data to tensorboard.
         Args:
             writer (SummaryWriter): the writer object.
-              Put config['tensorboard'] to this argument.
+              Put `config['tensorboard']` to this argument.
               If input is None, this function will not do anything.
             tag (str): Name of this data
             data (Tensor or dict): the data to add.
