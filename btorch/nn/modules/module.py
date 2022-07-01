@@ -103,7 +103,7 @@ class Module(nn.Module):
 
     def __init__(self) -> None:
         super(Module, self).__init__()
-        self._config = None
+        self.__config = dict()
         self._lossfn = None
         self._optimizer = None
         self._lr_scheduler = None
@@ -129,8 +129,8 @@ class Module(nn.Module):
             initial_epoch=None, workers=1):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
         
-        Keras like fit method. All arguments follows Keras usage.
-        https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit
+        Keras like fit method. All arguments follow `Keras usage
+        <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`__.
         It uses .train_net()
 
         Args:
@@ -169,9 +169,9 @@ class Module(nn.Module):
             raise ValueError("x is not provided")
         if self._lossfn is None or self._optimizer is None:
             raise ValueError("``self._lossfn`` and ``self._optimizer`` is not set.")
-
+        # Override config with parameter.
         self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
-        self._config['start_epoch'] = initial_epoch if initial_epoch is not None else 0
+        self._config['start_epoch'] = initial_epoch if initial_epoch is not None else self._config['start_epoch']
         self._config['val_freq'] = validation_freq if epochs is not None else self._config['val_freq']
 
         pin_memory = True if self._config.get('device', 'cpu') == 'cuda' else False
@@ -536,20 +536,21 @@ class Module(nn.Module):
 
     def cuda(self, device=None):
         self._config['device'] = 'cuda'
-        return self._apply(lambda t: t.cuda(device))
+        return super().cuda(device)
 
     def set_gpu(self):
         if not torch.cuda.is_available():
-            warnings.warn("Cuda is not available but you are setting the model to GPU mode.")
+            warnings.warn("Cuda is not available but you are setting the model to GPU mode. This will change the "
+                          "._config['device'] to cuda even though you might recieve an Exception")
         self._config['device'] = 'cuda'
         self.to('cuda')
 
     def cpu(self):
-        self.set_cpu()
+        self._config['device'] = 'cpu'
+        return super().cpu()
 
     def set_cpu(self):
-        self._config['device'] = 'cpu'
-        self.to('cpu')
+        self.cpu()
 
     def auto_gpu(self, parallel='auto', on=None):
         device, _ = btorch.utils.trainer.auto_gpu(self, parallel, on)
@@ -588,47 +589,73 @@ class Module(nn.Module):
         """
         return btorch.utils.number_params(self, exclude_freeze)
 
+    @property
+    def _config(self):
+        return self.__config
+
+    @_config.setter
+    def _config(self, d):
+        if isinstance(d, dict):
+            self.__config.update(d)
+        else:
+            raise ValueError("``_config`` must be a dict")
+
 
 class GridSearch:
-    def __init__(self, model, base_config, param_grid, scoring=None, **kwargs):
+    def __init__(self, model, param_grid, scoring=None, **kwargs):
         self.model = model
-        self.base_config = base_config
         self.param_grid = param_grid
         self.scoring = scoring
         if self.scoring is None:
             self.scoring = btorch.utils.accuracy_score
-        self.log = {}
-        self.best_model = None
-        self.best_score = None
-        if kwargs['_lossfn'] is None or kwargs['_optimizer'] is None:
-            raise Exception('``_lossfn`` and ``_optimizer`` is not set.')
-        self._lossfn = kwargs['_lossfn']
-        self._optimizer = kwargs['_optimizer']
-        if kwargs['_lr_scheduler']:
-            self._lr_scheduler = kwargs['_lr_scheduler']
-        else:
-            self._lr_scheduler = None
+        self.cv_results_ = {'params':[], 'train_score':[], 'test_score':[]}
+        self.best_model_ = None
+        self.best_score_ = None
+        self.best_params_ = None
+
+        self._config = dict()
+        self._lossfn = None
+        self._optimizer = None
+        self._lr_scheduler = None
+
+    def all_combination_in_dict_of_list(self, dict_of_list):
+        """ Get all combination from a dict of list.
+        https://stackoverflow.com/questions/38721847/how-to-generate-all-combination-from-values-in-dict-of-lists-in-python
+        """
+        import itertools
+        keys, values = zip(*dict_of_list.items())
+        permutations_dicts = [dict(zip(keys, v)) for v in itertools.product(*values)]
+        return permutations_dicts
 
     def init_model(self, curr_config, *args, **kwargs):
-        model = self.model(**{**self.base_config, **curr_config})
+        model = self.model(**curr_config)
         model._lossfn = self._lossfn
-        model._optimizer = self._optimizer
-        model._lr_scheduler = self._lr_scheduler
+        model._optimizer = self._optimizer(model.parameters())
+        model._lr_scheduler = self._lr_scheduler(model._optimizer)
+        if self._config is not None:
+            model._config = self._config
         return model
 
     def score(self, net, x, y):
         y_pred = net.predict(x, return_combined=True)
         return self.scoring(y_pred, y)
 
-    def fit(self, x=None, y=None, **kwargs):
-        for curr_config in self.param_grid:
-            curr_model = self.init_model(curr_config)
+    def fit(self, x=None, y=None, val_x=None, val_y=None, **kwargs):
+        for curr_params in self.all_combination_in_dict_of_list(self.param_grid):
+            curr_model = self.init_model(curr_params)
             curr_model.fit(x, y, **kwargs)
-            score = self.score(curr_model, x, y)
-            self.log[str({**self.base_config, **curr_config})] = score
-            if self.best_score is None:
-                self.best_model = curr_model
-                self.best_score = score
-            elif score > self.best_score:
-                self.best_model = curr_model
-                self.best_score = score
+            train_score = self.score(curr_model, x, y)
+            test_score = torch.nan
+            self.cv_results_['params'].append(str(curr_params))
+            self.cv_results_['train_score'].append(train_score)
+            if val_x is not None and val_y is not None:
+                test_score = self.score(curr_model, val_x, val_y)
+                self.cv_results_['test_score'].append(test_score)
+            if self.best_score_ is None:
+                self.best_model_ = curr_model
+                self.best_score_ = test_score
+                self.best_params_ = curr_params
+            elif test_score > self.best_score_:
+                self.best_model_ = curr_model
+                self.best_score_ = test_score
+                self.best_params_ = curr_params

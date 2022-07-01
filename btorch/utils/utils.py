@@ -374,7 +374,7 @@ def get_class_weight(a, method='sklearn', total_nu_class=None):
           a (list or Tensor): The target labels. This should be your ``y_train``.
           method (str, optional): See Examples.
             Support either ['sklearn','inverse_size', 'inverse_sqrt_size', 'inverse_proba', 'inverse_sqrt_proba', 'inverse_softmax', 'inverse_sqrt_softmax']
-            Defaults to 'sklearn'. https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html
+            Defaults to `'sklearn' <https://scikit-learn.org/stable/modules/generated/sklearn.utils.class_weight.compute_class_weight.html>`__.
           total_nu_class (int, optional): Total number of class.
             If ``a`` does not contain all possible class label, you should set this parameter.
             Assume the first class is 0, the second class is 1, and so on.
