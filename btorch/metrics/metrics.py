@@ -1,6 +1,5 @@
 import torch
 
-
 def mini_batch_combiner(cached):
     """for mrmse mini-batch combine
 
@@ -102,7 +101,7 @@ def rel_mrmse(count_pred, count_gt, non_zero=False):
         nzero_mask = torch.zeros(count_gt.size(), device=count_pred.device)
         nzero_mask[count_gt != 0] = 1
     num = torch.pow(count_pred - count_gt, 2)
-    denom = count_gt.clone() + 1
+    denom = count_gt.clone()+1
     rel_mrmse = torch.div(num, denom)
     rel_mrmse = torch.mul(rel_mrmse, nzero_mask)
     rel_mrmse = torch.sum(rel_mrmse, 0)

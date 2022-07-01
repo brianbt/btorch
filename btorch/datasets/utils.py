@@ -1,6 +1,5 @@
 import torch
 
-
 def get_mean_std(dataset):
     """calc the mean std for an dataset
 
@@ -22,7 +21,7 @@ def get_mean_std(dataset):
           368 - [0.4713, 0.4474, 0.4077], [0.2370, 0.2319, 0.2351]
           224 - [0.4713, 0.4474, 0.4077], [0.2330, 0.2279, 0.2313]
     """
-    train_loader = torch.utils.data.DataLoader(dataset, batch_size=4, num_workers=2)
+    train_loader = torch.utils.data.DataLoader(dataset,batch_size=4,num_workers=2)
     mean = 0.
     std = 0.
     nb_samples = 0.

@@ -1,12 +1,12 @@
 import os
-import re
-import warnings
-from fnmatch import fnmatch
-from typing import List, Union, Dict, Iterable
-
-import numpy as np
 import torch
 from torch import nn
+import numpy as np
+import warnings
+
+import re
+from fnmatch import fnmatch
+from typing import Tuple, List, Union, Dict, Iterable
 
 
 class twoOptim():
@@ -26,7 +26,6 @@ class twoOptim():
     Note:
         This can be nested, you can wrap a ``twoOptim`` as ``optim1`` or ``optim2``
     """
-
     def __init__(self, optim1, optim2, change_step):
         self.optim1 = optim1
         self.optim2 = optim2
@@ -70,13 +69,11 @@ class twoOptim():
         format_string += ')'
         return format_string
 
-
 def get_freer_gpu():
     """return the idx of the first available gpu"""
     os.system('nvidia-smi -q -d Memory |grep -A4 GPU|grep Free >tmp')
     memory_available = [int(x.split()[2]) for x in open('tmp', 'r').readlines()]
     return np.argmax(memory_available)
-
 
 def auto_gpu(model=None, parallel='auto', on=None):
     """turn model to gpu if possible and nn.DataParallel
@@ -111,14 +108,12 @@ def auto_gpu(model=None, parallel='auto', on=None):
         return device
     model = model.to(device)
     if 'cuda' in device and parallel == 'auto' and torch.cuda.device_count() > 1:
-        print(
-            f"auto_gpu: using nn.DataParallel on {torch.cuda.device_count()}GPU, consider increase batch size {torch.cuda.device_count()} times")
+        print(f"auto_gpu: using nn.DataParallel on {torch.cuda.device_count()}GPU, consider increase batch size {torch.cuda.device_count()} times")
         model = nn.DataParallel(model, device_ids=on)
     elif 'cuda' in device and parallel is True:
         print("auto_gpu: using nn.DataParallel, consider increase batch size")
         model = nn.DataParallel(model, device_ids=on)
     return device, model
-
 
 def finetune(
         model: nn.Module,
@@ -184,10 +179,10 @@ def finetune(
     # Deal with Freeze Later
     freeze_group = dict()
     freeze = False
-    for k, v in groups.items():
+    for k,v in groups.items():
         if v is False:
             freeze_group[k] = 1
-            freeze = True
+            freeze=True
     for k in freeze_group.keys():
         del groups[k]
     freeze_group = "(" + ")|(".join(freeze_group) + ")"
@@ -196,8 +191,8 @@ def finetune(
         dict(params=[],
              names=[],
              query=query if raw_query else '*' + query + '*',
-             lr=lr * base_lr,
-             initial_lr=lr * base_lr) for query, lr in groups.items()
+             lr = lr * base_lr,
+             initial_lr = lr * base_lr) for query, lr in groups.items()
     ]
     rest_parameters = dict(params=[], names=[], lr=base_lr, initial_lr=base_lr)
     for k, v in model.named_parameters():
@@ -238,7 +233,6 @@ def unfreeze(model):
     for param in model.parameters():
         param.requires_grad = True
 
-
 def L1Regularizer(model, lambda_=1e-4):
     """
     Add L1 regularization to the model. Notice: weight_decay is L2 reg.
@@ -251,4 +245,4 @@ def L1Regularizer(model, lambda_=1e-4):
         >>> loss.backward()
         >>> optimizer.step()
     """
-    return lambda_ * sum(p.norm(p=1) for p in model.parameters() if p.requires_grad)
+    return lambda_*sum(p.norm(p=1) for p in model.parameters() if p.requires_grad)

@@ -1,8 +1,6 @@
 import os
 import warnings
-
 import torch
-
 
 def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
     """torch.save enhanced. Will auto handle nn.DataParallel(model)
@@ -35,8 +33,8 @@ def save_model(model, path, extra=None, optimizer=None, lr_scheduler=None):
         if 'optimizer' in to_save:
             warnings.warn("key ``optimizer`` is already in ``extra``, replacing the ``optimizer``")
         if isinstance(optimizer, dict):
-            to_save['optimizer'] = dict()
-            for k in optimizer.keys():
+             to_save['optimizer'] = dict()
+             for k in optimizer.keys():
                 to_save['optimizer'][k] = optimizer[k].state_dict()
         elif isinstance(optimizer, list):
             to_save['optimizer'] = []
@@ -74,11 +72,11 @@ def resume(path, model, optimizer=None, lr_scheduler=None):
     model.load_state_dict(state['model'])
     if optimizer is not None:
         if isinstance(optimizer, dict):
-            for k in state['optimizer'].keys():
+             for k in state['optimizer'].keys():
                 optimizer[k].load_state_dict(state['optimizer'][k])
         elif isinstance(optimizer, list):
             for i in range(len(optimizer)):
-                optimizer[i].load_state_dict(state['optimizer'][i])
+                 optimizer[i].load_state_dict(state['optimizer'][i])
         else:
             optimizer.load_state_dict(state['optimizer'])
     if lr_scheduler is not None:
