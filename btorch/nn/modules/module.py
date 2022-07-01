@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 import btorch
 from btorch.utils.load_save import save_model, resume
+import math
 
 
 class Module(nn.Module):
@@ -178,52 +179,36 @@ class Module(nn.Module):
         x_eval = None
         eval_loader = None
 
-        # Pre-process train_loader
-        if isinstance(x, torch.utils.data.DataLoader):
-            train_loader = x
-        else:
-            if isinstance(x, torch.Tensor):
-                if y is None:
-                    raise ValueError(f"x is {type(x)}, expected y to be torch.Tensor")
-                if validation_split != 0:
-                    x, x_eval, y, y_eval = train_test_split(x, y, test_size=validation_split)
-                    x_eval = TensorDataset(x_eval, y_eval)
+        # Pre-process train_data
+        if isinstance(x, torch.Tensor):  # Handle if x is tensor
+            assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
+            if isinstance(y, (tuple, list)):  # Handle if y is list
+                x = TensorDataset(x, *y)
+            else:  # Handle if y is tensor
                 x = TensorDataset(x, y)
-            elif isinstance(x, (tuple, list)):
-                if isinstance(y, (tuple, list)):
-                    if validation_split != 0:
-                        splited = train_test_split(*x, *y, test_size=validation_split)
-                        x = []
-                        x_eval = []
-                        for i in range(len(splited)):
-                            if i % 0 == 0:
-                                x.append(splited[i])
-                            else:
-                                x_eval.append(splited[i])
-                        x = TensorDataset(*x)
-                        x_eval = TensorDataset(*x_eval)
-                    else:
-                        x = TensorDataset(*x, *y)
-                else:
-                    if validation_split != 0:
-                        splited = train_test_split(*x, y, test_size=validation_split)
-                        x = []
-                        x_eval = []
-                        for i in range(len(splited)):
-                            if i % 0 == 0:
-                                x.append(splited[i])
-                            else:
-                                x_eval.append(splited[i])
-                        x = TensorDataset(*x)
-                        x_eval = TensorDataset(*x_eval)
-                    else:
-                        x = TensorDataset(*x, y)
-            train_loader = DataLoader(x, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
-                                      pin_memory=pin_memory, drop_last=drop_last)
-        # Pre-process eval_loader
+        elif isinstance(x, (tuple, list)):  # Handle if x is list
+            assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
+            if isinstance(y, (tuple, list)):  # Handle if y is list
+                x = TensorDataset(*x, *y)
+            else:  # Handle if y is tensor
+                x = TensorDataset(*x, y)
+        elif isinstance(x, (torch.utils.data.DataLoader, torch.utils.data.Dataset)):
+            warnings.warn(f"x is {type(x)}, y should be not specified and will be ignored.")
+
+        # Pre-process eval_data
         if validation_data is not None:
             if isinstance(validation_data, (tuple, list)):
-                x_eval = TensorDataset(*validation_data)
+                assert len(validation_data) == 2, "``validation_data`` should have only 2 element, [eval_x, eval_y]."
+                if isinstance(validation_data[0], torch.Tensor):  # Handle if eval_x is tensor
+                    if isinstance(y, (tuple, list)):  # Handle if eval_y is list
+                        x_eval = TensorDataset(validation_data[0], *validation_data[1])
+                    else:  # Handle if eval_y is tensor
+                        x_eval = TensorDataset(validation_data[0], validation_data[1])
+                elif isinstance(validation_data[0], (tuple, list)):  # Handle if eval_x is list
+                    if isinstance(validation_data[1], (tuple, list)):  # Handle if eval_y is list
+                        x_eval = TensorDataset(*validation_data[0], *validation_data[1])
+                    else:  # Handle if eval_y is tensor
+                        x_eval = TensorDataset(*validation_data[0], validation_data[1])
             elif isinstance(validation_data, torch.utils.data.Dataset):
                 x_eval = validation_data
             elif isinstance(validation_data, torch.utils.data.DataLoader):
@@ -231,10 +216,23 @@ class Module(nn.Module):
                 x_eval = None
             else:
                 raise ValueError(f"validation_data doesn't support {type(validation_data)}")
+        elif validation_split != 0:
+            if isinstance(x, torch.utils.data.DataLoader):
+                raise ValueError(f"x is DataLoader, it does not support validation_split.")
+            eval_len = math.ceil(validation_split * len(x))
+            train_len = len(x) - eval_len
+            x, x_eval = torch.utils.data.random_split(x, [train_len, eval_len])
+
+        # Make dataset to dataloader
+        if isinstance(x, torch.utils.data.DataLoader):
+            train_loader = x
+        else:
+            train_loader = DataLoader(x, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
+                                      pin_memory=pin_memory, drop_last=drop_last)
         if x_eval is not None:
             eval_loader = DataLoader(x_eval, batch_size=validation_batch_size, num_workers=workers,
                                      pin_memory=pin_memory, drop_last=drop_last)
-
+        # Call @train_net
         self._history.append(self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
                                             trainloader=train_loader, testloader=eval_loader,
                                             lr_scheduler=self._lr_scheduler, config=self._config))
@@ -601,14 +599,18 @@ class Module(nn.Module):
             raise ValueError("``_config`` must be a dict")
 
 
-class GridSearch:
-    def __init__(self, model, param_grid, scoring=None, **kwargs):
+class GridSearchCV:
+    def __init__(self, model, param_grid, scoring=None, cv=2, **kwargs):
         self.model = model
         self.param_grid = param_grid
         self.scoring = scoring
         if self.scoring is None:
             self.scoring = btorch.utils.accuracy_score
-        self.cv_results_ = {'params':[], 'train_score':[], 'test_score':[]}
+        self.cv = cv
+        self.cv_results_ = {'params': []}
+        for i in range(cv):
+            self.cv_results_[f'split{i}_train_score'] = []
+            self.cv_results_[f'split{i}_test_score'] = []
         self.best_model_ = None
         self.best_score_ = None
         self.best_params_ = None
@@ -641,21 +643,27 @@ class GridSearch:
         return self.scoring(y_pred, y)
 
     def fit(self, x=None, y=None, val_x=None, val_y=None, **kwargs):
+        # Split into ``cv`` folds
+        split_num = [len(x)//self.cv for i in range(self.cv-1)]
+        split_num.append(len(x) - self.cv)
+        splited = torch.utils.data.random_split(x, split_num)
+
         for curr_params in self.all_combination_in_dict_of_list(self.param_grid):
-            curr_model = self.init_model(curr_params)
-            curr_model.fit(x, y, **kwargs)
-            train_score = self.score(curr_model, x, y)
-            test_score = torch.nan
-            self.cv_results_['params'].append(str(curr_params))
-            self.cv_results_['train_score'].append(train_score)
-            if val_x is not None and val_y is not None:
-                test_score = self.score(curr_model, val_x, val_y)
-                self.cv_results_['test_score'].append(test_score)
-            if self.best_score_ is None:
-                self.best_model_ = curr_model
-                self.best_score_ = test_score
-                self.best_params_ = curr_params
-            elif test_score > self.best_score_:
-                self.best_model_ = curr_model
-                self.best_score_ = test_score
-                self.best_params_ = curr_params
+            for curr_split in range(self.cv):
+                curr_model = self.init_model(curr_params)
+                curr_model.fit(x, y, **kwargs)
+                train_score = self.score(curr_model, x, y)
+                test_score = torch.nan
+                self.cv_results_['params'].append(str(curr_params))
+                self.cv_results_['train_score'].append(train_score)
+                if val_x is not None and val_y is not None:
+                    test_score = self.score(curr_model, val_x, val_y)
+                    self.cv_results_['test_score'].append(test_score)
+                if self.best_score_ is None:
+                    self.best_model_ = curr_model
+                    self.best_score_ = test_score
+                    self.best_params_ = curr_params
+                elif test_score > self.best_score_:
+                    self.best_model_ = curr_model
+                    self.best_score_ = test_score
+                    self.best_params_ = curr_params

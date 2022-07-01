@@ -4,6 +4,7 @@ import random
 import torch
 import torch.nn.functional as F
 from packaging.version import parse as _parse
+from torch.utils.data import TensorDataset
 
 
 def to_tensor(a):
@@ -454,3 +455,18 @@ def model_keys(model):
     for k, v in model.named_children():
         out.append(k)
     return out
+
+def tensor_to_Dataset(x, y):
+    if isinstance(x, torch.Tensor):  # Handle if x is tensor
+        assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
+        if isinstance(y, (tuple, list)):  # Handle if y is list
+            x = TensorDataset(x, *y)
+        else:  # Handle if y is tensor
+            x = TensorDataset(x, y)
+    elif isinstance(x, (tuple, list)):  # Handle if x is list
+        assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
+        if isinstance(y, (tuple, list)):  # Handle if y is list
+            x = TensorDataset(*x, *y)
+        else:  # Handle if y is tensor
+            x = TensorDataset(*x, y)
+    return x
