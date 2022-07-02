@@ -126,7 +126,7 @@ class Module(nn.Module):
 
     def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
-            scoring=None, initial_epoch=None, workers=1):
+            scoring=None, initial_epoch=None, workers=1, **kwargs):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
         
         Keras like fit method. All arguments follow `Keras usage
@@ -170,6 +170,9 @@ class Module(nn.Module):
               The function signature must be ``scoring(y_true=, model_output=)``.
             initial_epoch (optional): start epoch. Return from ``btorch.utils.load_save.resume``
             workers (optional): num_workers for dataloader
+            
+        Kwargs:
+            - verbose (optional): verbose level. 0 means print nothings. Defaults to 1.
 
         Note:
             x should be a DataLoader/Dataset that yields two element (inputs, targets).
@@ -228,9 +231,9 @@ class Module(nn.Module):
         # Call @train_net
         self._history.append(self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
                                             trainloader=train_loader, testloader=eval_loader, scoring=scoring,
-                                            lr_scheduler=self._lr_scheduler, config=self._config))
+                                            lr_scheduler=self._lr_scheduler, config=self._config, **kwargs))
 
-    def evaluate(self, x=None, y=None, batch_size=None, scoring=None, drop_last=False, workers=1, **kwargs):
+    def evaluate(self, x=None, y=None, batch_size=8, scoring=None, drop_last=False, workers=1, **kwargs):
         """Returns the loss value & metrics values for the model in test mode.
 
         Keras like evaluate method. All arguments follows Keras usage.
@@ -246,7 +249,7 @@ class Module(nn.Module):
               It should be torch.tensor.
               If ``x`` is a dataset, generator or dataloader, ``y`` should
               not be specified (since targets will be obtained from ``x``).
-            batch_size (int, optional): Defaults to 10.
+            batch_size (int, optional): Defaults to 8.
             scoring (Callable, optional): A scoring function that take in ``y_true`` and ``model_output``
               Usually, this is your evaluation metric, like accuracy.
               If provided, this method return a dict that include both loss and score.
@@ -342,7 +345,7 @@ class Module(nn.Module):
         self.overfit_small_batch_(self, self._lossfn, x, self._optimizer, self._config)
 
     @classmethod
-    def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None, config=None):
+    def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None, config=None, **kwargs):
         """Standard PyTorch training loop. Override this function when necessary.
         It uses .train_epoch() and .test_epoch()
         
@@ -393,15 +396,15 @@ class Module(nn.Module):
         for epoch in range(start_epoch, max_epoch):
             cls.before_each_train_epoch(net=net, criterion=criterion, optimizer=optimizer, trainloader=trainloader,
                                         testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
-                                        config=config)
+                                        config=config, **kwargs)
             train_loss = cls.train_epoch(net=net, criterion=criterion, trainloader=trainloader,
-                                         optimizer=optimizer, epoch_idx=epoch, device=device, config=config)
+                                         optimizer=optimizer, epoch_idx=epoch, device=device, config=config, **kwargs)
             train_loss_data.append(train_loss)
             cls.add_tensorboard_scalar(config.get("tensorboard", None), 'train_loss', train_loss, epoch)
             test_loss = "Not Provided"
             if testloader is not None and epoch % val_freq == 0:
                 test_loss = cls.test_epoch(net=net, criterion=criterion, testloader=testloader, scoring=scoring,
-                                           epoch_idx=epoch, device=device, config=config)
+                                           epoch_idx=epoch, device=device, config=config, **kwargs)
                 test_loss_data.append(test_loss)
                 cls.add_tensorboard_scalar(config.get("tensorboard", None), 'test_loss', test_loss, epoch)
             if save_path is not None:
@@ -417,19 +420,20 @@ class Module(nn.Module):
                     if epoch % save_every_epoch_checkpoint == 0:
                         save_model(net, f"{save_path}_{epoch}.pt",
                                    to_save, optimizer, lr_scheduler)
-            print(f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
+            if kwargs.get("verbose", 1):
+                print(f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
             if lr_scheduler is not None:
                 lr_scheduler.step()
             cls.after_each_train_epoch(net=net, criterion=criterion, optimizer=optimizer, trainloader=trainloader,
                                        testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
-                                       config=config)
+                                       config=config, **kwargs)
         if config.get("tensorboard", None):
             config.get("tensorboard", None).flush()
         return dict(train_loss_data=train_loss_data,
                     test_loss_data=test_loss_data)
 
     @classmethod
-    def train_epoch(cls, net, criterion, trainloader, optimizer, epoch_idx, device='cuda', config=None):
+    def train_epoch(cls, net, criterion, trainloader, optimizer, epoch_idx, device='cuda', config=None, **kwargs):
         """This is the very basic training function for one epoch. Override this function when necessary
             
         Returns:
@@ -437,7 +441,7 @@ class Module(nn.Module):
         """
         net.train()
         train_loss = 0
-        pbar = tqdm(enumerate(trainloader), total=len(trainloader))
+        pbar = tqdm(enumerate(trainloader), total=len(trainloader), disable=(kwargs.get("verbose", 1)==0))
         batch_idx = 1
         for batch_idx, (inputs, targets) in pbar:
             inputs, targets = inputs.to(device), targets.to(device)
@@ -453,7 +457,7 @@ class Module(nn.Module):
         return train_loss / (batch_idx + 1)
 
     @classmethod
-    def test_epoch(cls, net, criterion, testloader, scoring=None, epoch_idx=0, device='cuda', config=None):
+    def test_epoch(cls, net, criterion, testloader, scoring=None, epoch_idx=0, device='cuda', config=None, **kwargs):
         """This is the very basic evaluating function for one epoch. Override this function when necessary
 
         Args:
@@ -485,7 +489,7 @@ class Module(nn.Module):
 
     @classmethod
     def before_each_train_epoch(cls, net, criterion, optimizer, trainloader, testloader=None, epoch_idx=0,
-                                lr_scheduler=None, config=None):
+                                lr_scheduler=None, config=None, **kwargs):
         """You can override this function to do something before each epoch.
         Note that this does not return things. Use ``config`` to return by reference if needed.
 
@@ -496,7 +500,7 @@ class Module(nn.Module):
 
     @classmethod
     def after_each_train_epoch(cls, net, criterion, optimizer, trainloader, testloader=None, epoch_idx=0,
-                               lr_scheduler=None, config=None):
+                               lr_scheduler=None, config=None, **kwargs):
         """You can override this function to do something after each epoch.
         Note that this does not return things. Use ``config`` to return by reference if needed.
 
