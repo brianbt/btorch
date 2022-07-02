@@ -457,16 +457,24 @@ def model_keys(model):
     return out
 
 def tensor_to_Dataset(x, y):
+    """Helper function to transform Tensor to TensorDataset
+
+    Args:
+        x, y (Tensor or List(Tensor))
+
+    Returns:
+        torch.utils.data.Dataset
+    """
     if isinstance(x, torch.Tensor):  # Handle if x is tensor
-        assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
         if isinstance(y, (tuple, list)):  # Handle if y is list
             x = TensorDataset(x, *y)
         else:  # Handle if y is tensor
             x = TensorDataset(x, y)
     elif isinstance(x, (tuple, list)):  # Handle if x is list
-        assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
         if isinstance(y, (tuple, list)):  # Handle if y is list
             x = TensorDataset(*x, *y)
         else:  # Handle if y is tensor
             x = TensorDataset(*x, y)
+    else:
+        raise ValueError(f"Does not support x is {type(x)} and y is {type(y)}")
     return x
