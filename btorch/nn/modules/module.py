@@ -433,7 +433,7 @@ class Module(nn.Module):
                     if isinstance(test_loss, dict) and test_loss[config.get('save_base_on', 'loss')] <= min(test_loss_data, key=lambda x: x[config.get('save_base_on', 'loss')], default=999)[config.get('save_base_on', 'loss')]:
                         save_model(net, f"{save_path}_best.pt",
                                     to_save, optimizer, lr_scheduler)
-                    elif test_loss <= min(test_loss_data, default=999):
+                    elif not isinstance(test_loss, dict) and test_loss <= min(test_loss_data, default=999):
                         save_model(net, f"{save_path}_best.pt",
                                    to_save, optimizer, lr_scheduler)
                 if save_every_epoch_checkpoint is not None:
