@@ -1,3 +1,5 @@
+.. _btorch_nn:
+
 btorch.nn.modules package
 =========================
 

@@ -1,3 +1,5 @@
+.. _btorch_main:
+
 btorch package
 ==============
 

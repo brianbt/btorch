@@ -7,6 +7,7 @@ sphinx_rtd_theme==1.0.0
 sphinx-autodoc-typehints==1.12.0
 sphinxcontrib-packages==1.0.1
 sphinxcontrib-napoleon==0.7
+sphinx-copybutton
 numpy
 torch
 torchvision
@@ -18,3 +19,4 @@ scikit-learn
 matplotlib
 tqdm
 scipy
+git+https://github.com/pytorch/pytorch_sphinx_theme

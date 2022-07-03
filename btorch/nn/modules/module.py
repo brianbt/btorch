@@ -143,9 +143,9 @@ class Module(nn.Module):
               If ``x`` is a dataset, generator or dataloader, ``y`` should
               not be specified (since targets will be obtained from ``x``).
             batch_size (int, optional): Defaults to 10.
-            epochs (int, optional): Defaults to 1.
-            shuffle (bool, optional): Defaults to True.
-            drop_last (bool, optional): Shuffle the data or not. 
+            epochs (int, optional): max_epochs. Defaults to 1.
+            shuffle (bool, optional): Shuffle the data or not. Defaults to True.
+            drop_last (bool, optional): All batch has same shape or not. Defautls to False.
             validation_split (optional): Float between 0 and 1.
               Fraction of the training data to be used as validation data.
               The model will set apart this fraction of the training data,
@@ -160,12 +160,12 @@ class Module(nn.Module):
                 - tuple of torch.tensor, tuple(X, y)
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, targets)``
                 - a ``torch.utils.data.Dataloader``. All other dataset related argument will be ignored.
-            validation_batch_size (optional): batch size of validation data
+            validation_batch_size (optional): batch size of validation data.
             validation_freq (optional): runs validation every x epochs.
             scoring (Callable, optional): A scoring function that take in ``y_true`` and ``model_output``
               Usually, this is your evaluation metric, like accuracy.
               If provided, this method return a dict that include both loss and score.
-              This scoring function should return the **sum**(set ``reduction=sum``) of the score of a batch.
+              This scoring function should return the **sum** (set ``reduction=sum``) of the score of a batch.
               This will only apply to validation data by default.
               The function signature must be ``scoring(y_true=, model_output=)``.
             initial_epoch (optional): start epoch. Return from ``btorch.utils.load_save.resume``
@@ -238,7 +238,7 @@ class Module(nn.Module):
 
         Keras like evaluate method. All arguments follows Keras usage.
         https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
-        It uses .test_epoch()
+       
 
         Args:
             x: Input data. It could be
@@ -260,7 +260,10 @@ class Module(nn.Module):
 
         Returns:
             (float or dict)
-            """
+        
+        Note:
+            It uses .test_epoch()
+        """
         # Pre-process train_loader
         pin_memory = True if self._config.get('device', 'cpu') == 'cuda' else False
         if isinstance(x, torch.utils.data.DataLoader):
@@ -283,9 +286,8 @@ class Module(nn.Module):
     def predict(self, x, batch_size=8, return_combined=False):
         """Generates output predictions for input samples.
 
-        Keras like predict method. All arguments follows Keras usage.
-        https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict
-        It uses .predict_()
+        Keras like predict method. All arguments follows `Keras usage.
+        <https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict>`__.
 
         Args:
             x: Input data. It could be
@@ -301,6 +303,9 @@ class Module(nn.Module):
 
         Returns:
             List[Tensor] or Tensor if return_combined 
+            
+        Note:
+            It uses .predict_()
         """
         if isinstance(x, torch.Tensor):
             _y = torch.zeros(x.shape[0])
@@ -347,7 +352,6 @@ class Module(nn.Module):
     @classmethod
     def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None, config=None, **kwargs):
         """Standard PyTorch training loop. Override this function when necessary.
-        It uses .train_epoch() and .test_epoch()
         
         Args:
           net (nn.Module): this is equivalent to ``self`` or ``forward()``. Use to access instance variables.
@@ -363,6 +367,9 @@ class Module(nn.Module):
               This will only apply to .test_epoch() by default.
               The function signature is ``scoring(y_true=, model_output=)``.
           config (dict, optional): Config for training. Defaults to None.
+          
+        Note:
+          It uses .train_epoch() and .test_epoch()
         """
         # Handle config parameters
         if config is None:
@@ -466,6 +473,7 @@ class Module(nn.Module):
               If provided, this method return a dict that include both loss and score.
               This scoring function should return the **sum** (set ``reduction=sum``) of the score of a batch.
               The function signature must be ``scoring(y_true=, model_output=)``.
+              
         Returns:
             (float or dict): eval_loss
         """
@@ -528,8 +536,12 @@ class Module(nn.Module):
     @classmethod
     def overfit_small_batch_(cls, net, criterion, dataset, optimizer, config=None):
         """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
-        Note: This function will affect the model weights and all other training-related setting/parameters.
-        It uses .train_epoch().
+        
+        Note:
+            It uses .train_epoch().
+            
+            This function will affect the model weights and all other training-related setting/parameters.
+         
         """
         if not isinstance(dataset, torch.utils.data.Dataset):
             raise ValueError("Currently only support Dataset as input")
@@ -664,8 +676,8 @@ class GridSearchCV:
               Defaults to None.
             
                 Note:
-                    For ``param_grid``, ``optim_param_grid``, ``lossfn_param_grid``, and ``lr_s_param_grid``,
-                    the keys names should NOT start with [``optim_``, ``lossfn_``, ``lr_s_``]. They are resevered.
+                  For ``param_grid``, ``optim_param_grid``, ``lossfn_param_grid``, and ``lr_s_param_grid``,
+                  the keys names should NOT start with [``optim_``, ``lossfn_``, ``lr_s_``]. They are resevered.
             
             scoring (Callable, optional): A scoring function that take in ``y_true`` and ``model_output``.
               Usually, this is your evaluation metric, like accuracy.
@@ -681,9 +693,9 @@ class GridSearchCV:
             _lr_scheduler (functools.partial Class Constructor): lr_scheduler for btorch model.
             
                 Note:
-                    For ``_lossfn``, ``_optimizer``, and ``_lr_scheduler``, you must wrap the constructor using ``functools.partial()``.
-                    You should define all non-searching parameters in ``functools.partial()``.
-                    EG, If you want grid search ``lr`` in ``_optimizer``, you should not put ``lr`` in ``functools.partial()``.   
+                  For ``_lossfn``, ``_optimizer``, and ``_lr_scheduler``, you must wrap the constructor using ``functools.partial()``.
+                  You should define all non-searching parameters in ``functools.partial()``.
+                  EG, If you want grid search ``lr`` in ``_optimizer``, you should not put ``lr`` in ``functools.partial()``.   
                 
         Attributes: 
             cv_results_ (dict): 

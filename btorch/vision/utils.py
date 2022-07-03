@@ -3,6 +3,7 @@ import numpy as np
 import warnings
 import cv2
 from matplotlib import pyplot as plt
+import math
 
 class UnNormalize(object):
     def __init__(self, mean, std):
@@ -601,36 +602,62 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
     else:
         return X_scaled.int()
 
-def pplot(x):
+
+def pplot(x, in_one_figure=True):
     """Smart plot for pytorch tensor.
 
     It handles every possible shape of tensor.
 
     Args:
-        x (tensor): accept (N,C,H,W), (N,H,W,C), (C,H,W), (H,W,C), (H,W)
+        x (Tensor): accept (N,C,H,W), (N,H,W,C), (C,H,W), (H,W,C), (H,W).
+          Only support ``gray`` and ``rgb`` image.
+        in_one_figure (bool): if true, when x contains multi image, plot them in one figure.
+        
+            Note:
+                Becareful when x has too many images, each plot might be very small.
     """
-    def plot_3dim(x):
-        if (x.shape[0] !=1 and x.shape[0] !=3) and (x.shape[-1] != 1 and x.shape[-1] !=3):
+    def plot_3dim(x, return_array=False):
+        if (x.shape[0] != 1 and x.shape[0] != 3) and (x.shape[-1] != 1 and x.shape[-1] != 3):
             raise ValueError('This is not a RGB or gray-scale image')
         if x.shape[0] == 3:
-            plt.imshow(x.detach().cpu().permute(1,2,0))
+            if return_array:
+                return (x.detach().cpu().permute(1, 2, 0), 'viridis')
+            plt.imshow(x.detach().cpu().permute(1, 2, 0))
             plt.show()
         elif x.shape[0] == 1:
+            if return_array:
+                return (x.detach().cpu()[0], 'gray')
             plt.imshow(x.detach().cpu()[0], cmap='gray')
             plt.show()
-        if x.shape[-1] == 3:
+        elif x.shape[-1] == 3:
+            if return_array:
+                return (x.detach().cpu(), 'viridis')
             plt.imshow(x.detach().cpu())
             plt.show()
         elif x.shape[-1] == 1:
-            plt.imshow(x.detach().cpu()[:,:,0], cmap='gray')
+            if return_array:
+                return (x.detach().cpu()[:, :, 0], 'gray')
+            plt.imshow(x.detach().cpu()[:, :, 0], cmap='gray')
             plt.show()
     if len(x.shape) == 4:
-        for i in range(x.shape[0]):
+        if in_one_figure and x.shape[0] != 1:
+          to_plot = []
+          for i in range(x.shape[0]):
+              to_plot.append(plot_3dim(x[i], return_array=True))
+          fig = plt.figure(figsize=(8, 8))
+          columns = math.ceil(math.sqrt(len(x)))
+          rows = math.ceil(math.sqrt(len(x)))
+          for i in range(1, len(to_plot) + 1):
+              fig.add_subplot(rows, columns, i)
+              plt.imshow(to_plot[i-1][0], cmap=to_plot[i-1][1])
+          plt.show()
+        else:
+          for i in range(x.shape[0]):
             plot_3dim(x[i])
     elif len(x.shape) == 3:
         plot_3dim(x)
     elif len(x.shape) == 2:
-        plt.imshow(x.detach().cpu())
+        plt.imshow(x.detach().cpu(), cmap='gray')
         plt.show()
     else:
         raise ValueError('This is not a RGB or gray-scale image')
