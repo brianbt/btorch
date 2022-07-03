@@ -91,9 +91,8 @@ class Module(nn.Module):
                 The key of the dict to determine the best model.
                 Defaults to 'loss'.
             - val_freq (int): freq of running validation. Defaults to 1.
-            - tensorboard (SummaryWriter): Enable logging to Tensorboard. Defaults to None.
+            - tensorboard (str or bool): Enable logging to Tensorboard. Defaults to None.
                 Input the session(log_dir)_name(``str``) or ``True`` to enable.
-                Input a ``SummaryWriter`` object to use it.
                 Run ``$tensorboard --logdir=runs`` on terminal to start Tensorboard.
       
     Other high level utils methods are:
@@ -389,11 +388,12 @@ class Module(nn.Module):
         resume_path = config.get("resume", None)
         save_every_epoch_checkpoint = config.get("save_every_epoch_checkpoint", None)
         val_freq = config.get("val_freq", 1)
+        tensorboard_writer = config.get("tensorboard", None)
         if config.get("tensorboard", None) is True or isinstance(config.get("tensorboard", None), str):
             from torch.utils.tensorboard import SummaryWriter
             name = f"runs/{config.get('tensorboard', None)}" if isinstance(config.get("tensorboard", None),
                                                                            str) else None
-            config['tensorboard'] = SummaryWriter(log_dir=name)
+            tensorboard_writer = SummaryWriter(log_dir=name)
         if save_every_epoch_checkpoint is not None and save_path is None:
             warnings.warn(
                 "``save_every_epoch_checkpoint`` is set, but ``save_path`` is not set. It will not save any checkpoint.")
@@ -415,13 +415,13 @@ class Module(nn.Module):
             train_loss = cls.train_epoch(net=net, criterion=criterion, trainloader=trainloader,
                                          optimizer=optimizer, epoch_idx=epoch, device=device, config=config, **kwargs)
             train_loss_data.append(train_loss)
-            cls.add_tensorboard_scalar(config.get("tensorboard", None), 'train_loss', train_loss, epoch)
+            cls.add_tensorboard_scalar(tensorboard_writer, 'train_loss', train_loss, epoch)
             test_loss = "Not Provided"
             if testloader is not None and epoch % val_freq == 0:
                 test_loss = cls.test_epoch(net=net, criterion=criterion, testloader=testloader, scoring=scoring,
                                            epoch_idx=epoch, device=device, config=config, **kwargs)
                 test_loss_data.append(test_loss)
-                cls.add_tensorboard_scalar(config.get("tensorboard", None), 'test_loss', test_loss, epoch)
+                cls.add_tensorboard_scalar(tensorboard_writer, 'test_loss', test_loss, epoch)
             if save_path is not None:
                 to_save = dict(train_loss_data=train_loss_data,
                                test_loss_data=test_loss_data,
