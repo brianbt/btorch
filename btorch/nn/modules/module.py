@@ -80,16 +80,19 @@ class Module(nn.Module):
         Contains all setting and hyper-parameters for training loops
         
         For Defaults usage, it accepts:
-            - start_epoch (int): start_epoch idx.
-            - max_epoch (int): max number of epoch.
-            - device (str): either ``cuda`` or ``cpu`` or ``auto``.
-            - save (str): save model path. Save the best and latest model.
-            - resume (str): resume model path. Override start_epoch.
+            - start_epoch (int): start_epoch idx. Defaults to 0.
+            - max_epoch (int): max number of epoch. Defaults to 10.
+            - device (str): either 'cuda' or 'cpu' or 'auto'. Defaults to 'cpu'.
+            - save (str): save model path. Save the best (lowest loss) and latest model. Defaults to None.
+            - resume (str): resume model path. Override start_epoch. Defaults to None.
             - save_every_epoch_checkpoint (int): Enable save the best model and every x epoch.
                 Default to None, it will not save on every epoch.
-            - val_freq (int): freq of running validation.
-            - tensorboard (SummaryWriter): Enable logging to Tensorboard.
-                Input the session(log_dir) name or ``True`` to enable.
+            - save_base_on (str): only useful when ``cls.test_epoch()`` returns a dict.
+                The key of the dict to determine the best model.
+                Defaults to 'loss'.
+            - val_freq (int): freq of running validation. Defaults to 1.
+            - tensorboard (SummaryWriter): Enable logging to Tensorboard. Defaults to None.
+                Input the session(log_dir)_name(``str``) or ``True`` to enable.
                 Input a ``SummaryWriter`` object to use it.
                 Run ``$tensorboard --logdir=runs`` on terminal to start Tensorboard.
       
@@ -124,6 +127,7 @@ class Module(nn.Module):
             "save": None,
             "resume": None,
             "save_every_epoch_checkpoint": None,
+            "save_base_on": 'loss',
             "val_freq": 1,
             "tensorboard": None,
         }
@@ -425,9 +429,13 @@ class Module(nn.Module):
                                epoch=epoch)
                 save_model(net, f"{save_path}_latest.pt",
                            to_save, optimizer, lr_scheduler)
-                if test_loss <= min(test_loss_data, default=999):
-                    save_model(net, f"{save_path}_best.pt",
-                                to_save, optimizer, lr_scheduler)
+                if test_loss!="Not Provided":
+                    if isinstance(test_loss, dict) and test_loss[config.get('save_base_on', 'loss')] <= min(test_loss_data, key=lambda x: x[config.get('save_base_on', 'loss')], default=999)[config.get('save_base_on', 'loss')]:
+                        save_model(net, f"{save_path}_best.pt",
+                                    to_save, optimizer, lr_scheduler)
+                    elif test_loss <= min(test_loss_data, default=999):
+                        save_model(net, f"{save_path}_best.pt",
+                                   to_save, optimizer, lr_scheduler)
                 if save_every_epoch_checkpoint is not None:
                     if epoch % save_every_epoch_checkpoint == 0:
                         save_model(net, f"{save_path}_{epoch}.pt",
