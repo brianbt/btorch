@@ -448,7 +448,7 @@ class Module(nn.Module):
                                        testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
                                        config=config, **kwargs)
         if config.get("tensorboard", None):
-            config.get("tensorboard", None).flush()
+            tensorboard_writer.flush()
         return dict(train_loss_data=train_loss_data,
                     test_loss_data=test_loss_data)
 
