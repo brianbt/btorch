@@ -4,29 +4,14 @@ btorch.utils package
 Submodules
 ----------
 
-btorch.utils.load\_save module
-------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.utils.load_save
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-btorch.utils.trainer module
----------------------------
-
-.. automodule:: btorch.utils.trainer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-btorch.utils.utils module
--------------------------
-
-.. automodule:: btorch.utils.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.utils.grad
+   btorch.utils.load_save
+   btorch.utils.memory
+   btorch.utils.trainer
+   btorch.utils.utils
 
 Module contents
 ---------------

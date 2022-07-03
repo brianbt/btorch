@@ -1,13 +1,16 @@
+import math
 import warnings
-from tqdm import tqdm
-from torchinfo import summary
+
+import pandas as pd
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset, ConcatDataset
+from torchinfo import summary
+from tqdm import tqdm
+
 import btorch
 from btorch.utils.load_save import save_model, resume
-import math
-import pandas as pd
+
 
 class Module(nn.Module):
     """Base class for all neural network modules.
@@ -357,7 +360,8 @@ class Module(nn.Module):
         self.overfit_small_batch_(self, self._lossfn, x, self._optimizer, self._config)
 
     @classmethod
-    def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None, config=None, **kwargs):
+    def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None,
+                  config=None, **kwargs):
         """Standard PyTorch training loop. Override this function when necessary.
         
         Args:
@@ -429,10 +433,12 @@ class Module(nn.Module):
                                epoch=epoch)
                 save_model(net, f"{save_path}_latest.pt",
                            to_save, optimizer, lr_scheduler)
-                if test_loss!="Not Provided":
-                    if isinstance(test_loss, dict) and test_loss[config.get('save_base_on', 'loss')] <= min(test_loss_data, key=lambda x: x[config.get('save_base_on', 'loss')], default=999)[config.get('save_base_on', 'loss')]:
+                if test_loss != "Not Provided":
+                    if isinstance(test_loss, dict) and test_loss[config.get('save_base_on', 'loss')] <= \
+                            min(test_loss_data, key=lambda x: x[config.get('save_base_on', 'loss')], default=999)[
+                                config.get('save_base_on', 'loss')]:
                         save_model(net, f"{save_path}_best.pt",
-                                    to_save, optimizer, lr_scheduler)
+                                   to_save, optimizer, lr_scheduler)
                     elif not isinstance(test_loss, dict) and test_loss <= min(test_loss_data, default=999):
                         save_model(net, f"{save_path}_best.pt",
                                    to_save, optimizer, lr_scheduler)
@@ -461,7 +467,7 @@ class Module(nn.Module):
         """
         net.train()
         train_loss = 0
-        pbar = tqdm(enumerate(trainloader), total=len(trainloader), disable=(kwargs.get("verbose", 1)==0))
+        pbar = tqdm(enumerate(trainloader), total=len(trainloader), disable=(kwargs.get("verbose", 1) == 0))
         batch_idx = 1
         for batch_idx, (inputs, targets) in pbar:
             inputs, targets = inputs.to(device), targets.to(device)
@@ -505,8 +511,8 @@ class Module(nn.Module):
                     test_score += score
                 total += len(inputs)
         if scoring is None:
-            return test_loss / (batch_idx+1)
-        return {'loss': test_loss / (batch_idx+1), 'score': test_score / total}
+            return test_loss / (batch_idx + 1)
+        return {'loss': test_loss / (batch_idx + 1), 'score': test_score / total}
 
     @classmethod
     def before_each_train_epoch(cls, net, criterion, optimizer, trainloader, testloader=None, epoch_idx=0,
@@ -742,6 +748,7 @@ class GridSearchCV:
             
             >>> a.fit(x)
         """
+
     def __init__(self, model, param_grid, optim_param_grid=None, lossfn_param_grid=None,
                  lr_s_param_grid=None, scoring=None, cv=3, **kwargs):
         self.model = model
@@ -758,7 +765,8 @@ class GridSearchCV:
 
         self.cv = cv
         self.cv_results_ = {'params': []}
-        self.cv_results_lookup = {'mean_train_loss':[], 'mean_test_loss':[],'mean_train_score':[], 'mean_test_score':[]}
+        self.cv_results_lookup = {'mean_train_loss': [], 'mean_test_loss': [], 'mean_train_score': [],
+                                  'mean_test_score': []}
         for i in range(cv):
             self.cv_results_[f'split{i}_train_loss'] = []
             self.cv_results_[f'split{i}_test_loss'] = []
@@ -784,7 +792,7 @@ class GridSearchCV:
         if self.best_model_ is None:
             raise ValueError("You must call .fit() first")
         return self.best_model_(*args, **kwargs)
-    
+
     @property
     def param_grid(self):
         return self._param_grid
@@ -798,6 +806,7 @@ class GridSearchCV:
     @property
     def lr_s_param_grid(self):
         return self._lr_s_param_grid
+
     @lr_s_param_grid.setter
     def lr_s_param_grid(self, d):
         if d is not None:
@@ -858,8 +867,8 @@ class GridSearchCV:
                 lr_s_params[k[5:]] = v
             else:
                 model_params[k] = v
-        return {'model_params':model_params, 'lossfn_params':lossfn_params,
-                'optim_params':optim_params, 'lr_s_params':lr_s_params}
+        return {'model_params': model_params, 'lossfn_params': lossfn_params,
+                'optim_params': optim_params, 'lr_s_params': lr_s_params}
 
     def init_model(self, curr_config, *args, **kwargs):
         curr_params = self.extract_single_config(curr_config)
@@ -878,7 +887,7 @@ class GridSearchCV:
         if isinstance(results, dict):
             return results
         else:
-            return {'loss':results}
+            return {'loss': results}
 
     def fit(self, x=None, y=None, **kwargs):
         """Run fit with all sets of parameters. This will call .fit() and .evaluate().
@@ -906,7 +915,7 @@ class GridSearchCV:
             x = btorch.utils.tensor_to_Dataset(x, y)
         assert isinstance(x, torch.utils.data.Dataset), 'x cannot be DataLoader'
         # Split into ``cv`` folds
-        split_num = [len(x) // self.cv for i in range(self.cv - 1)]
+        split_num = [len(x) // self.cv for _ in range(self.cv - 1)]
         split_num.append(len(x) - sum(split_num))
         split_data = torch.utils.data.random_split(x, split_num)
 
@@ -946,4 +955,3 @@ class GridSearchCV:
             df['rank_train_score'] = df['mean_train_score'].rank()
             df['rank_test_score'] = df['mean_test_score'].rank()
         self.cv_results_ = df.to_dict()
-

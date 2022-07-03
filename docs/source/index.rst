@@ -25,5 +25,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 * :ref:`btorch_main`
-* :ref:`btorch_nn`
+* :ref:`btorch_nn_module`
 

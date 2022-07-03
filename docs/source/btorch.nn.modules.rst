@@ -1,42 +1,17 @@
-.. _btorch_nn:
-
 btorch.nn.modules package
 =========================
 
 Submodules
 ----------
 
-btorch.nn.modules.attention module
-----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.nn.modules.attention
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-btorch.nn.modules.conv module
------------------------------
-
-.. automodule:: btorch.nn.modules.conv
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-btorch.nn.modules.layer module
-------------------------------
-
-.. automodule:: btorch.nn.modules.layer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-btorch.nn.modules.module module
--------------------------------
-
-.. automodule:: btorch.nn.modules.module
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.nn.modules.attention
+   btorch.nn.modules.conv
+   btorch.nn.modules.layer
+   btorch.nn.modules.module
+   btorch.nn.modules.soft_argmax
 
 Module contents
 ---------------

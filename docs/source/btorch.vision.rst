@@ -12,13 +12,11 @@ Subpackages
 Submodules
 ----------
 
-btorch.vision.utils module
---------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.vision.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.vision.receptive_field
+   btorch.vision.utils
 
 Module contents
 ---------------

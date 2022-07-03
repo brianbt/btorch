@@ -1,6 +1,7 @@
 # https://github.com/MWPainter/cvpr2019/blob/master/stitched/soft_argmax.py
 import torch
 
+
 def _make_radial_window(width, height, cx, cy, fn, window_width=10.0, device='cuda'):
     """
     Returns a grid, where grid[i,j] = fn((i**2 + j**2)**0.5)
@@ -42,11 +43,11 @@ def _parzen_torch(dists, width):
     hwidth = width / 2.0
     del_ovr_width = dists / hwidth
 
-    near_mode = (dists <= hwidth/2.0).float()
-    in_tail = ((dists > hwidth/2.0) * (dists <= hwidth)).float()
+    near_mode = (dists <= hwidth / 2.0).float()
+    in_tail = ((dists > hwidth / 2.0) * (dists <= hwidth)).float()
 
     return near_mode * (1 - 6 * (del_ovr_width ** 2) * (1 - del_ovr_width)) \
-        + in_tail * (2 * ((1 - del_ovr_width) ** 3))
+           + in_tail * (2 * ((1 - del_ovr_width) ** 3))
 
 
 def _uniform_window(dists, width):
@@ -67,11 +68,11 @@ def _identity_window(dists, width):
     return torch.ones(dists.size())
 
 
-
 class SoftArgmax1D(torch.nn.Module):
     """
     Implementation of a 1d soft arg-max function as an nn.Module, so that we can differentiate through arg-max operations.
     """
+
     def __init__(self, base_index=0, step_size=1):
         """
         The "arguments" are base_index, base_index+step_size, base_index+2*step_size, ... and so on for
@@ -87,7 +88,6 @@ class SoftArgmax1D(torch.nn.Module):
         self.step_size = step_size
         self.softmax = torch.nn.Softmax(dim=1)
 
-
     def forward(self, x):
         """
         Compute the forward pass of the 1D soft arg-max function as defined below:
@@ -99,7 +99,8 @@ class SoftArgmax1D(torch.nn.Module):
         """
         smax = self.softmax(x)
         end_index = self.base_index + x.size()[1] * self.step_size
-        indices = torch.arange(start=self.base_index, end=end_index, step=self.step_size, device=x.device, dtype=torch.float32)
+        indices = torch.arange(start=self.base_index, end=end_index, step=self.step_size, device=x.device,
+                               dtype=torch.float32)
         print(x.dtype)
         return torch.matmul(smax, indices)
 
@@ -108,6 +109,7 @@ class SoftArgmax2D(torch.nn.Module):
     """
     Implementation of a 1d soft arg-max function as an nn.Module, so that we can differentiate through arg-max operations.
     """
+
     def __init__(self, base_index=0, step_size=1, window_fn=None, window_width=10, softmax_temp=1.0):
         """
         The "arguments" are base_index, base_index+step_size, base_index+2*step_size, ... and so on for
@@ -140,8 +142,6 @@ class SoftArgmax2D(torch.nn.Module):
         elif window_fn == "Uniform":
             self.window_fn = _uniform_window
 
-
-
     def _softmax_2d(self, x, temp):
         """
         For the lack of a true 2D softmax in pytorch, we reshape each image from (C, W, H) to (C, W*H) and then
@@ -152,10 +152,9 @@ class SoftArgmax2D(torch.nn.Module):
         :return: Softmax(x, dims=(2,3))
         """
         B, C, W, H = x.size()
-        x_flat = x.view((B, C, W*H)) / temp
+        x_flat = x.view((B, C, W * H)) / temp
         x_softmax = self.softmax(x_flat)
         return x_softmax.view((B, C, W, H))
-
 
     def forward(self, x):
         """
@@ -171,11 +170,13 @@ class SoftArgmax2D(torch.nn.Module):
         # Compute windows using a batch_size of "batch_size * channels"
         batch_size, channels, height, width = x.size()
         argmax = torch.argmax(x.view(batch_size * channels, -1), dim=1)
-        argmax_x, argmax_y = torch.remainder(argmax, width).float(), torch.floor(torch.div(argmax.float(), float(width)))
-        windows = _make_radial_window(width, height, argmax_x, argmax_y, self.window_fn, self.window_width, device=x.device)
+        argmax_x, argmax_y = torch.remainder(argmax, width).float(), torch.floor(
+            torch.div(argmax.float(), float(width)))
+        windows = _make_radial_window(width, height, argmax_x, argmax_y, self.window_fn, self.window_width,
+                                      device=x.device)
         windows = windows.view(batch_size, channels, height, width)
         smax = self._softmax_2d(x, self.softmax_temp) * windows
-        smax = smax / torch.sum(smax.view(batch_size, channels, -1), dim=2).view(batch_size,channels,1,1)
+        smax = smax / torch.sum(smax.view(batch_size, channels, -1), dim=2).view(batch_size, channels, 1, 1)
 
         # compute x index (sum over y axis, produce with indices and then sum over x axis for the expectation)
         x_end_index = self.base_index + width * self.step_size

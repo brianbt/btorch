@@ -1,8 +1,8 @@
-import warnings
-import numpy as np
 import random
+import warnings
+
+import numpy as np
 import torch
-import torch.nn.functional as F
 from packaging.version import parse as _parse
 from torch.utils.data import TensorDataset
 
@@ -455,6 +455,7 @@ def model_keys(model):
     for k, v in model.named_children():
         out.append(k)
     return out
+
 
 def tensor_to_Dataset(x, y):
     """Helper function to transform Tensor to TensorDataset

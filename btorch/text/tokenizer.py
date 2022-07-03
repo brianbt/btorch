@@ -1,7 +1,10 @@
 import spacy
+
+
 class SpacyTokenizer:
     """ Tool for tokenize powered by spacy module
     """
+
     def __init__(self, lang: str, disable=['parser', 'tagger', 'ner']):
         """ Initialize the language type for token
 
@@ -28,9 +31,9 @@ class SpacyTokenizer:
             List[str]: tokenized text
         """
         if not isinstance(text, list):
-          lines = text.splitlines()
+            lines = text.splitlines()
         else:
-          lines = text
+            lines = text
 
         doc = [[token.text for token
                 in self._nlp.tokenizer(text.strip())] for text in lines]

@@ -4,13 +4,10 @@ btorch.nn.functional package
 Submodules
 ----------
 
-btorch.nn.functional.functional module
---------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.nn.functional.functional
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.nn.functional.functional
 
 Module contents
 ---------------

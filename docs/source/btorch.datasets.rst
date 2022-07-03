@@ -4,13 +4,10 @@ btorch.datasets package
 Submodules
 ----------
 
-btorch.datasets.utils module
-----------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.datasets.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.datasets.utils
 
 Module contents
 ---------------

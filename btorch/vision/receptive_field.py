@@ -1,16 +1,18 @@
 # https://github.com/Fangyh09/pytorch-receptive-field
+from collections import OrderedDict
+
+import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from collections import OrderedDict
-import numpy as np
 
 def check_same(stride):
     if isinstance(stride, (list, tuple)):
         assert len(stride) == 2 and stride[0] == stride[1]
         stride = stride[0]
     return stride
+
 
 def receptive_field(model, input_size, batch_size=-1, device="cuda"):
     """
@@ -25,6 +27,7 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
     'start' denotes the center of the receptive field for the first unit (start) in on direction of the feature tensor.
         Convention is to use half a pixel as the center for a range. center for `slice(0,5)` is 2.5.
     """
+
     def register_hook(module):
 
         def hook(module, input, output):
@@ -71,7 +74,7 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
                 else:
                     raise ValueError("module not ok")
                     pass
-            receptive_field[m_key]["input_shape"] = list(input[0].size()) # only one
+            receptive_field[m_key]["input_shape"] = list(input[0].size())  # only one
             receptive_field[m_key]["input_shape"][0] = batch_size
             if isinstance(output, (list, tuple)):
                 # list/tuple
@@ -84,9 +87,9 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
                 receptive_field[m_key]["output_shape"][0] = batch_size
 
         if (
-            not isinstance(module, nn.Sequential)
-            and not isinstance(module, nn.ModuleList)
-            and not (module == model)
+                not isinstance(module, nn.Sequential)
+                and not isinstance(module, nn.ModuleList)
+                and not (module == model)
         ):
             hooks.append(module.register_forward_hook(hook))
 
@@ -129,7 +132,8 @@ def receptive_field(model, input_size, batch_size=-1, device="cuda"):
         h.remove()
 
     print("------------------------------------------------------------------------------")
-    line_new = "{:>20}  {:>10} {:>10} {:>10} {:>15} ".format("Layer (type)", "map size", "start", "jump", "receptive_field")
+    line_new = "{:>20}  {:>10} {:>10} {:>10} {:>15} ".format("Layer (type)", "map size", "start", "jump",
+                                                             "receptive_field")
     print(line_new)
     print("==============================================================================")
     total_params = 0
@@ -178,10 +182,11 @@ def receptive_field_for_unit(receptive_field_dict, layer, unit_position):
         if np.any([unit_position[idx] < 0 or
                    unit_position[idx] >= feat_map_lim[idx]
                    for idx in range(2)]):
-            raise Exception("Unit position outside spatial extent of the feature tensor ((H, W) = (%d, %d)) " % tuple(feat_map_lim))
+            raise Exception(
+                "Unit position outside spatial extent of the feature tensor ((H, W) = (%d, %d)) " % tuple(feat_map_lim))
         # X, Y = tuple(unit_position)
         rf_range = [(rf_stats['start'] + idx * rf_stats['j'] - rf_stats['r'] / 2,
-            rf_stats['start'] + idx * rf_stats['j'] + rf_stats['r'] / 2) for idx in unit_position]
+                     rf_stats['start'] + idx * rf_stats['j'] + rf_stats['r'] / 2) for idx in unit_position]
         if len(input_shape) == 2:
             limit = input_shape
         else:  # input shape is (channel, H, W)

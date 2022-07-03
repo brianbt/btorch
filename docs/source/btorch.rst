@@ -12,6 +12,7 @@ Subpackages
    btorch.datasets
    btorch.metrics
    btorch.nn
+   btorch.text
    btorch.utils
    btorch.vision
 

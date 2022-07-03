@@ -1,5 +1,5 @@
-btorch.vision.models package
-============================
+btorch.text package
+===================
 
 Submodules
 ----------
@@ -7,12 +7,13 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   btorch.vision.models.resnet
+   btorch.text.tokenizer
+   btorch.text.utils
 
 Module contents
 ---------------
 
-.. automodule:: btorch.vision.models
+.. automodule:: btorch.text
    :members:
    :undoc-members:
    :show-inheritance:

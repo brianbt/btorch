@@ -1,31 +1,31 @@
 # This is an improved version of the following function
 # https://github.com/Oldpan/Pytorch-Memory-Utils
-import gc
 import datetime
+import gc
 import inspect
 
+import numpy as np
 import torch
 from torch import nn
-import numpy as np
 
-dtype_memory_size_dict = {  #these are in bytes
-    torch.float64: 64/8,
-    torch.double: 64/8,
-    torch.float32: 32/8,
-    torch.float: 32/8,
-    torch.float16: 16/8,
-    torch.half: 16/8,
-    torch.int64: 64/8,
-    torch.long: 64/8,
-    torch.int32: 32/8,
-    torch.int: 32/8,
-    torch.int16: 16/8,
-    torch.short: 16/6,
-    torch.uint8: 8/8,
-    torch.int8: 8/8,
+dtype_memory_size_dict = {  # these are in bytes
+    torch.float64: 64 / 8,
+    torch.double: 64 / 8,
+    torch.float32: 32 / 8,
+    torch.float: 32 / 8,
+    torch.float16: 16 / 8,
+    torch.half: 16 / 8,
+    torch.int64: 64 / 8,
+    torch.long: 64 / 8,
+    torch.int32: 32 / 8,
+    torch.int: 32 / 8,
+    torch.int16: 16 / 8,
+    torch.short: 16 / 6,
+    torch.uint8: 8 / 8,
+    torch.int8: 8 / 8,
 }
 bytes_to = {
-    'bit': 1/8,
+    'bit': 1 / 8,
     'byte': 1,
     'bytes': 1,
     'b': 1,
@@ -35,9 +35,11 @@ bytes_to = {
 }
 # compatibility of torch1.0
 if getattr(torch, "bfloat16", None) is not None:
-    dtype_memory_size_dict[torch.bfloat16] = 16/8
+    dtype_memory_size_dict[torch.bfloat16] = 16 / 8
 if getattr(torch, "bool", None) is not None:
-    dtype_memory_size_dict[torch.bool] = 8/8 # pytorch use 1 byte for a bool, see https://github.com/pytorch/pytorch/issues/41571
+    dtype_memory_size_dict[
+        torch.bool] = 8 / 8  # pytorch use 1 byte for a bool, see https://github.com/pytorch/pytorch/issues/41571
+
 
 def get_mem_space(x):
     try:
@@ -45,6 +47,7 @@ def get_mem_space(x):
     except KeyError:
         print(f"dtype {x} is not supported!")
     return ret
+
 
 class MemTracker(object):
     """
@@ -63,6 +66,7 @@ class MemTracker(object):
         >>> gpu_tracker.track()                     # run function between the code line where uses GPU
         >>> gpu_tracker.done()                      # call this function to print the result
     """
+
     def __init__(self, detail=True, path=None, verbose=False, device=0):
         self.print_detail = detail
         self.last_tensor_sizes = set()
@@ -90,10 +94,10 @@ class MemTracker(object):
 
     def get_tensor_usage(self):
         sizes = [np.prod(np.array(tensor.size())) * get_mem_space(tensor.dtype) for tensor in self.get_tensors()]
-        return np.sum(sizes) / 1024**2
+        return np.sum(sizes) / 1024 ** 2
 
     def get_allocate_usage(self):
-        return torch.cuda.memory_allocated() / 1024**2
+        return torch.cuda.memory_allocated() / 1024 ** 2
 
     def clear_cache(self):
         gc.collect()
@@ -101,7 +105,7 @@ class MemTracker(object):
 
     def print_all_gpu_tensor(self, file=None):
         for x in self.get_tensors():
-            print(x.size(), x.dtype, np.prod(np.array(x.size()))*get_mem_space(x.dtype)/1024**2, file=file)
+            print(x.size(), x.dtype, np.prod(np.array(x.size())) * get_mem_space(x.dtype) / 1024 ** 2, file=file)
 
     def done(self):
         print(self.outstr)
@@ -113,29 +117,30 @@ class MemTracker(object):
         frameinfo = inspect.stack()[1]
         where_str = frameinfo.filename + ' line ' + str(frameinfo.lineno) + ': ' + frameinfo.function
         if self.begin:
-            self.outstr+=(f"GPU Memory Track | {datetime.datetime.now():%d-%b-%y-%H:%M:%S} |"
-                    f" Total Tensor Used Memory:{self.get_tensor_usage():<7.1f}Mb"
-                    f" Total Allocated Memory:{self.get_allocate_usage():<7.1f}Mb\n\n")
+            self.outstr += (f"GPU Memory Track | {datetime.datetime.now():%d-%b-%y-%H:%M:%S} |"
+                            f" Total Tensor Used Memory:{self.get_tensor_usage():<7.1f}Mb"
+                            f" Total Allocated Memory:{self.get_allocate_usage():<7.1f}Mb\n\n")
             self.begin = False
 
         if self.print_detail is True:
             ts_list = [(tensor.size(), tensor.dtype) for tensor in self.get_tensors()]
             new_tensor_sizes = {(type(x),
-                                tuple(x.size()),
-                                ts_list.count((x.size(), x.dtype)),
-                                np.prod(np.array(x.size()))*get_mem_space(x.dtype)/1024**2,
-                                x.dtype) for x in self.get_tensors()}
+                                 tuple(x.size()),
+                                 ts_list.count((x.size(), x.dtype)),
+                                 np.prod(np.array(x.size())) * get_mem_space(x.dtype) / 1024 ** 2,
+                                 x.dtype) for x in self.get_tensors()}
             for t, s, n, m, data_type in new_tensor_sizes - self.last_tensor_sizes:
-                self.outstr+=(f'+ | {str(n)} * Size:{str(s):<20} | Memory: {str(m*n)[:6]} M | {str(t):<20} | {data_type}\n')
+                self.outstr += (
+                    f'+ | {str(n)} * Size:{str(s):<20} | Memory: {str(m * n)[:6]} M | {str(t):<20} | {data_type}\n')
             for t, s, n, m, data_type in self.last_tensor_sizes - new_tensor_sizes:
-                self.outstr+=(f'- | {str(n)} * Size:{str(s):<20} | Memory: {str(m*n)[:6]} M | {str(t):<20} | {data_type}\n')
+                self.outstr += (
+                    f'- | {str(n)} * Size:{str(s):<20} | Memory: {str(m * n)[:6]} M | {str(t):<20} | {data_type}\n')
 
             self.last_tensor_sizes = new_tensor_sizes
 
-        self.outstr+=(f"\n↳At {where_str:<50}"
-                f" Total Tensor Used Memory:{self.get_tensor_usage():<7.1f}Mb"
-                f" Total Allocated Memory:{self.get_allocate_usage():<7.1f}Mb\n\n")
-
+        self.outstr += (f"\n↳At {where_str:<50}"
+                        f" Total Tensor Used Memory:{self.get_tensor_usage():<7.1f}Mb"
+                        f" Total Allocated Memory:{self.get_allocate_usage():<7.1f}Mb\n\n")
 
         if self.gpu_profile_fn is not None:
             with open(self.gpu_profile_fn, 'a+') as f:
@@ -149,20 +154,23 @@ class MemTracker(object):
                 if self.print_detail is True:
                     ts_list = [(tensor.size(), tensor.dtype) for tensor in self.get_tensors()]
                     new_tensor_sizes = {(type(x),
-                                        tuple(x.size()),
-                                        ts_list.count((x.size(), x.dtype)),
-                                        np.prod(np.array(x.size()))*get_mem_space(x.dtype)/1024**2,
-                                        x.dtype) for x in self.get_tensors()}
+                                         tuple(x.size()),
+                                         ts_list.count((x.size(), x.dtype)),
+                                         np.prod(np.array(x.size())) * get_mem_space(x.dtype) / 1024 ** 2,
+                                         x.dtype) for x in self.get_tensors()}
                     for t, s, n, m, data_type in new_tensor_sizes - self.last_tensor_sizes:
-                        f.write(f'+ | {str(n)} * Size:{str(s):<20} | Memory: {str(m*n)[:6]} M | {str(t):<20} | {data_type}\n')
+                        f.write(
+                            f'+ | {str(n)} * Size:{str(s):<20} | Memory: {str(m * n)[:6]} M | {str(t):<20} | {data_type}\n')
                     for t, s, n, m, data_type in self.last_tensor_sizes - new_tensor_sizes:
-                        f.write(f'- | {str(n)} * Size:{str(s):<20} | Memory: {str(m*n)[:6]} M | {str(t):<20} | {data_type}\n')
+                        f.write(
+                            f'- | {str(n)} * Size:{str(s):<20} | Memory: {str(m * n)[:6]} M | {str(t):<20} | {data_type}\n')
 
                     self.last_tensor_sizes = new_tensor_sizes
 
                 f.write(f"\n↳At {where_str:<50}"
                         f" Total Tensor Used Memory:{self.get_tensor_usage():<7.1f}Mb"
                         f" Total Allocated Memory:{self.get_allocate_usage():<7.1f}Mb\n\n")
+
 
 def memory_summary(device=None, return_unit='bytes'):
     """Print the memory usage of the current device.
@@ -177,16 +185,18 @@ def memory_summary(device=None, return_unit='bytes'):
         device (int, optional): see https://pytorch.org/docs/stable/generated/torch.cuda.max_memory_allocated.html
     """
     print(f"GPU Memory Summary | {datetime.datetime.now():%d-%b-%y-%H:%M:%S} |")
-    print(f'{torch.cuda.memory_allocated(device)/bytes_to[return_unit.lower()]:.2f} {return_unit} USED')
-    print(f'{torch.cuda.memory_reserved(device)/bytes_to[return_unit.lower()]:.2f} {return_unit} RESERVED')
-    print(f'{torch.cuda.max_memory_allocated(device)/bytes_to[return_unit.lower()]:.2f} {return_unit} USED MAX')
-    print(f'{torch.cuda.max_memory_reserved(device)/bytes_to[return_unit.lower()]:.2f} {return_unit} RESERVED MAX')
+    print(f'{torch.cuda.memory_allocated(device) / bytes_to[return_unit.lower()]:.2f} {return_unit} USED')
+    print(f'{torch.cuda.memory_reserved(device) / bytes_to[return_unit.lower()]:.2f} {return_unit} RESERVED')
+    print(f'{torch.cuda.max_memory_allocated(device) / bytes_to[return_unit.lower()]:.2f} {return_unit} USED MAX')
+    print(f'{torch.cuda.max_memory_reserved(device) / bytes_to[return_unit.lower()]:.2f} {return_unit} RESERVED MAX')
+
 
 def tensor_size(tensor, return_unit='bytes'):
     """input torch.tensor, return the theroteical size"""
     if return_unit.lower() not in bytes_to:
         raise ValueError(f"return_unit should be one of {list(bytes_to.values())}. Got '{return_unit}'")
     return np.prod(np.array(tensor.size())) * get_mem_space(tensor.dtype) / bytes_to[return_unit.lower()]
+
 
 def model_size(model, input, type_size=4):
     """given a model and input, return the model size
@@ -233,7 +243,7 @@ def model_size(model, input, type_size=4):
     print('Model {} : intermedite variables: {:3f} Mb (without backward)'
           .format(model._get_name(), total_nums * type_size / 1000 / 1000))
     print('Model {} : intermedite variables: {:3f} Mb (with backward)'
-          .format(model._get_name(), total_nums * type_size*2 / 1000 / 1000))
+          .format(model._get_name(), total_nums * type_size * 2 / 1000 / 1000))
 
 
 def del_gpu(ls=None, release_gpu=True):
@@ -251,4 +261,3 @@ def del_gpu(ls=None, release_gpu=True):
     if release_gpu:
         gc.collect()
         torch.cuda.empty_cache()
-       

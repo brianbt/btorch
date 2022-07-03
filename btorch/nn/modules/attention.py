@@ -4,7 +4,8 @@ import torch.nn.functional as F
 
 
 class BasicConv(nn.Module):
-    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1, groups=1, relu=True, bn=True, bias=False):
+    def __init__(self, in_planes, out_planes, kernel_size, stride=1, padding=0, dilation=1, groups=1, relu=True,
+                 bn=True, bias=False):
         super(BasicConv, self).__init__()
         self.conv = nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size,
                               stride=stride, padding=padding, dilation=dilation, groups=groups, bias=bias)
@@ -78,7 +79,7 @@ class SpatialGate(nn.Module):
         super(SpatialGate, self).__init__()
         kernel_size = 7
         self.compress = ChannelPool()
-        self.spatial = BasicConv(2, 1, kernel_size, stride=1, padding=(kernel_size-1) // 2, relu=False)
+        self.spatial = BasicConv(2, 1, kernel_size, stride=1, padding=(kernel_size - 1) // 2, relu=False)
 
     def forward(self, x):
         x_compress = self.compress(x)
@@ -86,10 +87,12 @@ class SpatialGate(nn.Module):
         scale = torch.sigmoid(x_out)  # broadcasting
         return x * scale
 
+
 class CBAM(nn.Module):
     """https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
     https://arxiv.org/pdf/1807.06521v2.pdf
     """
+
     def __init__(self, in_channels, reduction_ratio=16, pool_types=['avg', 'max'], no_spatial=False, dropout=0.0):
         super(CBAM, self).__init__()
         self.ChannelGate = ChannelGate(in_channels, reduction_ratio, pool_types)
@@ -104,6 +107,7 @@ class CBAM(nn.Module):
             x_out = self.SpatialGate(x_out)
         x_out = self.dropout(x_out)
         return x_out
+
 
 class AAConv2d(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, dk=40, dv=4, Nh=4, relative=True, *args, **kwargs):

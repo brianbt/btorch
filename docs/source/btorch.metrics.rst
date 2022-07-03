@@ -4,13 +4,10 @@ btorch.metrics package
 Submodules
 ----------
 
-btorch.metrics.metrics module
------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: btorch.metrics.metrics
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   btorch.metrics.metrics
 
 Module contents
 ---------------

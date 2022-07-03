@@ -1,9 +1,11 @@
-import torch
-import numpy as np
-import warnings
-import cv2
-from matplotlib import pyplot as plt
 import math
+import warnings
+
+import cv2
+import numpy as np
+import torch
+from matplotlib import pyplot as plt
+
 
 class UnNormalize(object):
     def __init__(self, mean, std):
@@ -26,6 +28,7 @@ class UnNormalize(object):
             std = torch.tensor(std)
         self.mean = mean
         self.std = std
+
     def __call__(self, tensor):
         """
         Args:
@@ -41,6 +44,7 @@ class UnNormalize(object):
             tensor = tensor.permute(0, 2, 3, 1)
         tensor = ((tensor * self.std) + self.mean)
         return tensor
+
 
 def conv_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
     """
@@ -73,7 +77,6 @@ def conv_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, mo
     elif not isinstance(input_size, tuple) and not isinstance(input_size, list):
         input_size = (input_size, input_size)
 
-
     if not isinstance(kernel_size, tuple) and not isinstance(kernel_size, list):
         kernel_size = (kernel_size, kernel_size)
 
@@ -86,11 +89,12 @@ def conv_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, mo
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    h = (input_size[0] + (2 * pad[0]) - dilation[0]*(kernel_size[0]-1) - 1) // stride[0] + 1
-    w = (input_size[1] + (2 * pad[1]) - dilation[0]*(kernel_size[1]-1) - 1) // stride[1] + 1
+    h = (input_size[0] + (2 * pad[0]) - dilation[0] * (kernel_size[0] - 1) - 1) // stride[0] + 1
+    w = (input_size[1] + (2 * pad[1]) - dilation[0] * (kernel_size[1] - 1) - 1) // stride[1] + 1
     out.append(h)
     out.append(w)
     return tuple(out)
+
 
 def convtransp_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation=1, model=None):
     """
@@ -136,11 +140,12 @@ def convtransp_output_shape(input_size, kernel_size=1, stride=1, pad=0, dilation
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    h = (input_size[0] - 1) * stride[0] - 2 * pad[0] + dilation[0]*(kernel_size[0]-1) + pad[0] + 1
-    w = (input_size[1] - 1) * stride[1] - 2 * pad[1] + dilation[1]*(kernel_size[1]-1) + pad[1] + 1
+    h = (input_size[0] - 1) * stride[0] - 2 * pad[0] + dilation[0] * (kernel_size[0] - 1) + pad[0] + 1
+    w = (input_size[1] - 1) * stride[1] - 2 * pad[1] + dilation[1] * (kernel_size[1] - 1) + pad[1] + 1
     out.append(h)
     out.append(w)
     return tuple(out)
+
 
 def conv_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
     """
@@ -176,11 +181,12 @@ def conv_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    k_h = (output_size[0]*stride[0] - stride[0] - input_size[0] - 2*pad[0] + 1) // -dilation[0] + 1
-    k_w = (output_size[1]*stride[1] - stride[1] - input_size[1] - 2*pad[1] + 1) // -dilation[1] + 1
+    k_h = (output_size[0] * stride[0] - stride[0] - input_size[0] - 2 * pad[0] + 1) // -dilation[0] + 1
+    k_w = (output_size[1] * stride[1] - stride[1] - input_size[1] - 2 * pad[1] + 1) // -dilation[1] + 1
     out.append(k_h)
     out.append(k_w)
     return tuple(out)
+
 
 def convtransp_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1):
     """
@@ -216,11 +222,12 @@ def convtransp_kernel_shape(input_size, output_size, stride=1, pad=0, dilation=1
     if not isinstance(dilation, tuple) and not isinstance(dilation, list):
         dilation = (dilation, dilation)
 
-    k_h = (output_size[0] - stride[0]*(input_size[0]-1) + pad[0] - 1) // dilation[0] + 1
-    k_w = (output_size[1] - stride[1]*(input_size[1]-1) + pad[1] - 1) // dilation[1] + 1
+    k_h = (output_size[0] - stride[0] * (input_size[0] - 1) + pad[0] - 1) // dilation[0] + 1
+    k_w = (output_size[1] - stride[1] * (input_size[1] - 1) + pad[1] - 1) // dilation[1] + 1
     out.append(k_h)
     out.append(k_w)
     return tuple(out)
+
 
 def high_pass_filter(img, method='3'):
     """apply high-pass filter on image
@@ -243,20 +250,20 @@ def high_pass_filter(img, method='3'):
     if method == '3':
         # 3x3 high pass
         kernel = np.array([[-1, -1, -1],
-                        [-1,  8, -1],
-                        [-1, -1, -1]])
+                           [-1, 8, -1],
+                           [-1, -1, -1]])
     elif method == '5':
         # 5X5 high pass
         kernel = np.array([[-1, -1, -1, -1, -1], [-1, 1, 2, 1, -1], [-1, 2, 4, 2, -1],
-                        [-1, 1, 2, 1, -1], [-1, -1, -1, -1, -1]])
+                           [-1, 1, 2, 1, -1], [-1, -1, -1, -1, -1]])
     elif method == 'fun':
         kernel = np.array([[-1, -1, -1, -1, -1, -1, -1],
-                        [-1,  1,  2,  3,  2,  1, -1],
-                        [-1,  2,  3,  4,  3,  2, -1],
-                        [-1,  3,  4,  5,  4,  3, -1],
-                        [-1,  2,  3,  4,  3,  2, -1],
-                        [-1,  1,  2,  3,  2,  1, -1],
-                        [-1, -1, -1, -1, -1, -1, -1]])
+                           [-1, 1, 2, 3, 2, 1, -1],
+                           [-1, 2, 3, 4, 3, 2, -1],
+                           [-1, 3, 4, 5, 4, 3, -1],
+                           [-1, 2, 3, 4, 3, 2, -1],
+                           [-1, 1, 2, 3, 2, 1, -1],
+                           [-1, -1, -1, -1, -1, -1, -1]])
     else:
         raise ValueError(f"Not support method ({method})")
     kernel = kernel[:, :, None]
@@ -264,6 +271,7 @@ def high_pass_filter(img, method='3'):
     highpass[highpass <= 0.03] = 0
     highpass[highpass > 0.03] = 1
     return highpass
+
 
 def find_corner_from_mask(A, flexible=False):
     """Extract a rectangular bounding box of each object color
@@ -286,23 +294,24 @@ def find_corner_from_mask(A, flexible=False):
         A = np.asarray(A)
     if len(A.shape) == 3 and A.shape[0] == 3:
         # CHW -> HWC, C=3
-        A=A.transpose(1,2,0)
+        A = A.transpose(1, 2, 0)
     if len(A.shape) == 3:
-        #turn to grayscale
-        A=np.dot(A[...,:3], [0.299, 0.587, 0.114])
+        # turn to grayscale
+        A = np.dot(A[..., :3], [0.299, 0.587, 0.114])
     toFind = np.unique(A)
-    out=dict()
+    out = dict()
     for tar in toFind:
         if tar == 0:
             continue
-        i,j = np.where(A==tar)
+        i, j = np.where(A == tar)
         topLeft = (min(i), min(j))
         bottomRight = (max(i), max(j))
         if flexible:
-            topLeft = (math.floor(topLeft[0]*(1-flexible)), math.floor(topLeft[1]*(1-flexible)))
-            bottomRight = (math.floor(bottomRight[0]*(1+flexible)), math.floor(bottomRight[1]*(1+flexible)))
-        out[tar]=[topLeft, bottomRight]
+            topLeft = (math.floor(topLeft[0] * (1 - flexible)), math.floor(topLeft[1] * (1 - flexible)))
+            bottomRight = (math.floor(bottomRight[0] * (1 + flexible)), math.floor(bottomRight[1] * (1 + flexible)))
+        out[tar] = [topLeft, bottomRight]
     return A, out
+
 
 def replace_part(img, part, loc, handle_transparent=False):
     """replace part of ``img`` by ``part``. It supports batch mode.
@@ -327,7 +336,7 @@ def replace_part(img, part, loc, handle_transparent=False):
     if len(img.shape) == 4:
         if handle_transparent:
             print(part_mask.shape)
-            part_mask = part_mask.expand([img.shape[0]]+list(part.shape))
+            part_mask = part_mask.expand([img.shape[0]] + list(part.shape))
             part = part.expand([img.shape[0]] + list(part.shape))
             print(img.shape, img[:, :, x:x + part.shape[-2], y:y + part.shape[-1]].shape, part.shape, part_mask.shape)
             print(img[:, :, x:x + part.shape[-2], y:y + part.shape[-1]][part_mask].shape)
@@ -343,6 +352,7 @@ def replace_part(img, part, loc, handle_transparent=False):
     else:
         raise ValueError(f"img's dim should be either 3 or 4, got {len(img.shape)}, {img.shape}")
     return img
+
 
 def crop_img_from_bbx(img, bboxs, bbox_format='pascal', raw=False, return_dict=False):
     """Crop the bounding box of an image from bbox
@@ -408,6 +418,7 @@ def crop_img_from_bbx(img, bboxs, bbox_format='pascal', raw=False, return_dict=F
             out.append(cropped_image)
     return out
 
+
 def get_pascal_class_dict(reverse=False):
     """"Get Pascal VOC idx2label dict. reverse will give label2idx.
     """
@@ -421,6 +432,7 @@ def get_pascal_class_dict(reverse=False):
         return {v: k for k, v in out.items()}
     else:
         return out
+
 
 def get_COCO_class_dict(include_background=False, reverse=False):
     """ Get COCO 2014 idx2label dict. reverse will give label2idx.
@@ -445,13 +457,14 @@ def get_COCO_class_dict(include_background=False, reverse=False):
             zip(range(81), classes)
         )
     else:
-        out =  dict(
+        out = dict(
             zip(range(80), classes[1:])
         )
     if reverse:
         return {v: k for k, v in out.items()}
     else:
         return out
+
 
 def get_COCO_paper_class_dict(include_background=False, reverse=False):
     """ Get COCO Paper idx2label dict. reverse will give label2idx.
@@ -483,6 +496,7 @@ def get_COCO_paper_class_dict(include_background=False, reverse=False):
     else:
         return out
 
+
 def coco_ann2Mask(img, annotations, return_dict=False):
     """Generate Mask for each object on COCO dataset
 
@@ -493,6 +507,7 @@ def coco_ann2Mask(img, annotations, return_dict=False):
     Returns:
         Dict[id:List[MASK]]: Each mask is a 2D matrix that contains either 0, 1. Size is same as ``img``
     """
+
     def decodeSeg(mask, segmentations):
         """
         Draw segmentation
@@ -538,6 +553,7 @@ def coco_ann2Mask(img, annotations, return_dict=False):
             out.append(mask)
     return out
 
+
 def smart_rotate(image):
     """Fix the rotation error when PIL.Image.open()
 
@@ -565,6 +581,7 @@ def smart_rotate(image):
     transposed = ImageOps.exif_transpose(image)
     return transposed
 
+
 def img_MinMaxScaler(img, feature_range=(0, 1)):
     """MinMaxScaler for img data, it support 2D(gray), 3D and 4D(batch) data.
     
@@ -588,12 +605,15 @@ def img_MinMaxScaler(img, feature_range=(0, 1)):
         >>> plt.imshow(img_MinMaxScaler(img).permute(1,2,0))
     """
     min_v, max_v = feature_range
-    if len(img.shape)==2:
-        X_std = (img-img.amin((-2,-1)).view(1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(1).unsqueeze(-1).expand(img.shape))
-    elif len(img.shape)==3:
-        X_std = (img-img.amin((-2,-1)).view(3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(3,1).unsqueeze(-1).expand(img.shape))
-    elif len(img.shape)==4:
-        X_std = (img-img.amin((-2,-1)).view(-1,3,1).unsqueeze(-1).expand(img.shape)) / ((img.amax((-2,-1)) - img.amin((-2,-1))).view(-1,3,1).unsqueeze(-1).expand(img.shape))
+    if len(img.shape) == 2:
+        X_std = (img - img.amin((-2, -1)).view(1).unsqueeze(-1).expand(img.shape)) / (
+            (img.amax((-2, -1)) - img.amin((-2, -1))).view(1).unsqueeze(-1).expand(img.shape))
+    elif len(img.shape) == 3:
+        X_std = (img - img.amin((-2, -1)).view(3, 1).unsqueeze(-1).expand(img.shape)) / (
+            (img.amax((-2, -1)) - img.amin((-2, -1))).view(3, 1).unsqueeze(-1).expand(img.shape))
+    elif len(img.shape) == 4:
+        X_std = (img - img.amin((-2, -1)).view(-1, 3, 1).unsqueeze(-1).expand(img.shape)) / (
+            (img.amax((-2, -1)) - img.amin((-2, -1))).view(-1, 3, 1).unsqueeze(-1).expand(img.shape))
     else:
         raise ValueError("img must be either (H,W) or (C,H,W) or (N,C,H,W)")
     X_scaled = X_std * (max_v - min_v) + min_v
@@ -616,6 +636,7 @@ def pplot(x, in_one_figure=True):
             Note:
                 Becareful when x has too many images, each plot might be very small.
     """
+
     def plot_3dim(x, return_array=False):
         if (x.shape[0] != 1 and x.shape[0] != 3) and (x.shape[-1] != 1 and x.shape[-1] != 3):
             raise ValueError('This is not a RGB or gray-scale image')
@@ -639,21 +660,22 @@ def pplot(x, in_one_figure=True):
                 return (x.detach().cpu()[:, :, 0], 'gray')
             plt.imshow(x.detach().cpu()[:, :, 0], cmap='gray')
             plt.show()
+
     if len(x.shape) == 4:
         if in_one_figure and x.shape[0] != 1:
-          to_plot = []
-          for i in range(x.shape[0]):
-              to_plot.append(plot_3dim(x[i], return_array=True))
-          fig = plt.figure(figsize=(8, 8))
-          columns = math.ceil(math.sqrt(len(x)))
-          rows = math.ceil(math.sqrt(len(x)))
-          for i in range(1, len(to_plot) + 1):
-              fig.add_subplot(rows, columns, i)
-              plt.imshow(to_plot[i-1][0], cmap=to_plot[i-1][1])
-          plt.show()
+            to_plot = []
+            for i in range(x.shape[0]):
+                to_plot.append(plot_3dim(x[i], return_array=True))
+            fig = plt.figure(figsize=(8, 8))
+            columns = math.ceil(math.sqrt(len(x)))
+            rows = math.ceil(math.sqrt(len(x)))
+            for i in range(1, len(to_plot) + 1):
+                fig.add_subplot(rows, columns, i)
+                plt.imshow(to_plot[i - 1][0], cmap=to_plot[i - 1][1])
+            plt.show()
         else:
-          for i in range(x.shape[0]):
-            plot_3dim(x[i])
+            for i in range(x.shape[0]):
+                plot_3dim(x[i])
     elif len(x.shape) == 3:
         plot_3dim(x)
     elif len(x.shape) == 2:
@@ -661,8 +683,7 @@ def pplot(x, in_one_figure=True):
         plt.show()
     else:
         raise ValueError('This is not a RGB or gray-scale image')
-        
-        
+
 
 def flood_fill(img, target_value, fill_value, start_point, flags=4):
     """cv2.flood_fill() wrapper
@@ -685,9 +706,9 @@ def flood_fill(img, target_value, fill_value, start_point, flags=4):
     """
     assert len(start_point) == 2, 'Starting point should be a tuple of length 2 (x, y)'
     matrix_np = np.asarray(img).copy()
-    numeric_matrix = np.where(matrix_np==target_value, 255, 0).astype(np.uint8)
-    mask = np.zeros(np.asarray(numeric_matrix.shape)+2, dtype=np.uint8)
+    numeric_matrix = np.where(matrix_np == target_value, 255, 0).astype(np.uint8)
+    mask = np.zeros(np.asarray(numeric_matrix.shape) + 2, dtype=np.uint8)
     cv2.floodFill(numeric_matrix, mask, start_point, 255, flags=flags)
     mask = mask[1:-1, 1:-1]
-    matrix_np[mask==1] = fill_value
+    matrix_np[mask == 1] = fill_value
     return torch.tensor(matrix_np, dtype=img.dtype, device=img.device)
