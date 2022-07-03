@@ -67,28 +67,32 @@ class Module(nn.Module):
       | └── @overfit_small_batch_
       |     └── @train_epoch -> train_loss
 
-    If you decided to use the highlevel training loop. Please set the following instance attributes: 
-      - self._lossfn (default:pytorch Loss Func)[required][``criterion`` in @classmethod]
-      - self._optimizer (default:pytorch Optimizer)[required][``optimizer`` in @classmethod]
-      - self._lr_scheduler (default:pytorch lr_Scheduler)[optional][``lr_scheduler`` in @classmethod]
-      - self._config (default:dict)[optional][``config`` in @classmethod]
+    If you decided to use the highlevel training loop. Please set the following instance attributes.
+    You can set the attributes to anything you want for advanced use.
+    The default attributes guideline is only for the default highlevel functions.
+    
+    Attributes:
+      self._lossfn (default to pytorch Loss Func): **Required**. ``criterion`` in @classmethod
+      self._optimizer (default to pytorch Optimizer): **Required**.``optimizer`` in @classmethod
+      self._lr_scheduler (default to pytorch lr_Scheduler): **Optional**. ``lr_scheduler`` in @classmethod
+      self._history (default to list): **Optional**. All loss, evaluation metric should be here.
+      self._config (default to dict): **Optional**. ``config`` in @classmethod.
         Contains all setting and hyper-parameters for training loops
+        
         For Defaults usage, it accepts:
-          - start_epoch (int): start_epoch idx
-          - max_epoch (int): max number of epoch
-          - device (str): either ``cuda`` or ``cpu`` or ``auto``
-          - save (str): save model path
-          - resume (str): resume model path. Override start_epoch
-          - save_every_epoch_checkpoint (int): Enable save the best model and every x epoch
-          - val_freq (int): freq of running validation
-          - tensorboard (SummaryWriter): Enable logging to Tensorboard.
-              Input the session(log_dir) name or ``True`` to enable.
-              Input a ``SummaryWriter`` object to use it.
-              Run ``$tensorboard --logdir=runs`` on terminal to start Tensorboard.
-      - self._history (default:list)[optional]. All loss, evaluation metric should be here.
-    You can set them to be a pytorch instance (or a dictionary, for advanced uses).
-    The default guideline is only for the default highlevel functions.
-
+            - start_epoch (int): start_epoch idx.
+            - max_epoch (int): max number of epoch.
+            - device (str): either ``cuda`` or ``cpu`` or ``auto``.
+            - save (str): save model path. Save the best and latest model.
+            - resume (str): resume model path. Override start_epoch.
+            - save_every_epoch_checkpoint (int): Enable save the best model and every x epoch.
+                Default to None, it will not save on every epoch.
+            - val_freq (int): freq of running validation.
+            - tensorboard (SummaryWriter): Enable logging to Tensorboard.
+                Input the session(log_dir) name or ``True`` to enable.
+                Input a ``SummaryWriter`` object to use it.
+                Run ``$tensorboard --logdir=runs`` on terminal to start Tensorboard.
+      
     Other high level utils methods are:
       - .set_gpu()
       - .set_cpu()
@@ -417,13 +421,14 @@ class Module(nn.Module):
             if save_path is not None:
                 to_save = dict(train_loss_data=train_loss_data,
                                test_loss_data=test_loss_data,
-                               config=config)
+                               config=config,
+                               epoch=epoch)
                 save_model(net, f"{save_path}_latest.pt",
                            to_save, optimizer, lr_scheduler)
+                if test_loss <= min(test_loss_data, default=999):
+                    save_model(net, f"{save_path}_best.pt",
+                                to_save, optimizer, lr_scheduler)
                 if save_every_epoch_checkpoint is not None:
-                    if test_loss <= min(test_loss_data, default=999):
-                        save_model(net, f"{save_path}_best.pt",
-                                   to_save, optimizer, lr_scheduler)
                     if epoch % save_every_epoch_checkpoint == 0:
                         save_model(net, f"{save_path}_{epoch}.pt",
                                    to_save, optimizer, lr_scheduler)
