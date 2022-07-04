@@ -232,7 +232,14 @@ def unfreeze(model):
     """Freeze all layers of a model."""
     for param in model.parameters():
         param.requires_grad = True
-
+        
+        
+def get_lr(optimizer):
+    """Get the learning rate from the optimizer."""
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+    
+    
 def L1Regularizer(model, lambda_=1e-4):
     """
     Add L1 regularization to the model. Notice: weight_decay is L2 reg.

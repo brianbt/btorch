@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 import btorch
 from btorch.utils.load_save import save_model, resume
-
+from btorch.utils.trainer import get_lr
 
 class Module(nn.Module):
     """Base class for all neural network modules.
@@ -291,6 +291,9 @@ class Module(nn.Module):
                     x = TensorDataset(*x, *y)
                 else:
                     x = TensorDataset(*x, y)
+            else:
+                warnings.warn(
+                    f"x might not support {type(x)}. It will treat x as ``Dataset``.")
             test_loader = DataLoader(x, batch_size=batch_size, num_workers=workers,
                                      pin_memory=pin_memory, drop_last=drop_last)
         return self.test_epoch(net=self, criterion=self._lossfn, testloader=test_loader, scoring=scoring,
@@ -361,7 +364,7 @@ class Module(nn.Module):
             return out
 
     def overfit_small_batch(self, x):
-        self.overfit_small_batch_(self, self._lossfn, x, self._optimizer, self._config)
+        self.overfit_small_batch_(self, self._lossfn, x, self._optimizer, self._config, verbose=0)
 
     @classmethod
     def train_net(cls, net, criterion, optimizer, trainloader, testloader=None, lr_scheduler=None, scoring=None,
@@ -483,7 +486,7 @@ class Module(nn.Module):
             train_loss += loss.item()
 
             pbar.set_description(
-                f"epoch {epoch_idx + 1} iter {batch_idx}: train loss {loss.item():.5f}.")
+                f"epoch {epoch_idx + 1} iter {batch_idx}: train loss {loss.item():.5f}, lr:{get_lr(optimizer)}")
         return train_loss / (batch_idx + 1)
 
     @classmethod
@@ -557,7 +560,7 @@ class Module(nn.Module):
         return out
 
     @classmethod
-    def overfit_small_batch_(cls, net, criterion, dataset, optimizer, config=None):
+    def overfit_small_batch_(cls, net, criterion, dataset, optimizer, config=None, **kwargs):
         """This is a helper function to check if your model is working by checking if it can overfit a small dataset.
         
         Note:
@@ -567,12 +570,14 @@ class Module(nn.Module):
          
         """
         if not isinstance(dataset, torch.utils.data.Dataset):
-            raise ValueError("Currently only support Dataset as input")
+            warnings.warn(f"Currently only support Dataset as input. Got {type(dataset)}.  It will treat x as ``Dataset``")
         dataset = torch.utils.data.Subset(dataset, [0, 1, 2, 3])
         loader = DataLoader(dataset, 2)
         loss_history = []
         for epoch in range(100):
-            train_loss = cls.train_epoch(net, criterion, loader, optimizer, epoch, config['device'], config)
+            train_loss = cls.train_epoch(net=net, criterion=criterion, trainloader=loader,
+                                         optimizer=optimizer, epoch_idx=epoch, device=config['device'], 
+                                         config=config, **kwargs)
             loss_history.append(train_loss)
         print(loss_history)
         # del net_test
@@ -580,10 +585,11 @@ class Module(nn.Module):
             last_loss = loss_history[-1].item()
             if last_loss < 1e-5:
                 print(
-                    "It looks like your model is working. Please double check the loss_history to see whether it is overfitting. Expected to be overfit.")
+                    "It looks like your model is working.")
         except Exception:
             pass
         print("Please check the loss_history to see whether it is overfitting. Expected to be overfit.")
+        warnings.warn("Please manually re-init this model.")
 
     @classmethod
     def add_tensorboard_scalar(cls, writer, tag, data, step, *args, **kwargs):

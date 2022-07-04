@@ -137,7 +137,7 @@ def accuarcy(model_output, y_true, reduction='sum', method='multiclass'):
     if reduction == 'sum':
         out = (y_pred == y_true).float().sum().item()
     elif reduction == 'mean':
-        out = (y_pred == y_true).float().sum().item()
+        out = (y_pred == y_true).float().mean().item()
     elif reduction is None:
         out = (y_pred.view(-1) == y_true.view(-1)).float()
     else:
