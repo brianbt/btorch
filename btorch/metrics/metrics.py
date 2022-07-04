@@ -111,3 +111,35 @@ def rel_mrmse(count_pred, count_gt, non_zero=False):
     rel_mrmse = torch.sqrt(rel_mrmse)
     rel_mrmse = torch.nanmean(rel_mrmse)
     return rel_mrmse, cache.unsqueeze(0)
+
+
+def accuarcy(model_output, y_true, reduction='sum', method='multiclass'):
+    """scoring function, can be directly used in ``test_epoch()``
+    
+    Args:
+        model_output (Tensor): should be ``(N,C)`` or ``(N)``
+        y_true (_type_): should be ``(N)``
+        reduction (str, optional): either ``sum`` or ``mean``. Defaults to 'sum'.
+        method (str, optional): either ``multiclass`` or ``binary``. Defaults to 'multiclass'.
+          If your loss is CrossEntropyLoss, you should use ``multiclass``.
+          If your loss is BSELoss, you should use ``binary``.
+
+    Returns:
+        If reduction is ``none``, same shape as the target. Otherwise, scalar.
+    """
+    if method == 'multiclass':
+        y_pred = model_output.max(1)[1]
+    elif method == 'binary':
+        y_pred = (model_output>=0).int().float()
+    else:
+        raise ValueError("method should be 'multiclass' or 'binary'")
+    # print(y_pred)
+    if reduction == 'sum':
+        out = (y_pred == y_true).float().sum().item()
+    elif reduction == 'mean':
+        out = (y_pred == y_true).float().sum().item()
+    elif reduction is None:
+        out = (y_pred.view(-1) == y_true.view(-1)).float()
+    else:
+         raise ValueError("reduction should be 'mean' or 'sum'")
+    return out

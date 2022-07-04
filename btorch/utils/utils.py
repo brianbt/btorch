@@ -250,12 +250,6 @@ def adaptive_conv_window(a, shape, stride=1, dim=0):
     out = torch.tensor(np.lib.stride_tricks.as_strided(a, shape=s, strides=strides).squeeze())
     return out[::stride]
 
-
-def accuracy_score(y_pred, y, normalize=True, sample_weight=None):
-    from sklearn.metrics import accuracy_score
-    return accuracy_score(y_true=y, y_pred=y_pred, normalize=normalize, sample_weight=sample_weight)
-
-
 # https://discuss.pytorch.org/t/nested-list-of-variable-length-to-a-tensor/38699/21?u=brianbt
 def ints_to_tensor(ints, pad=0):
     """Converts a nested list of integers to a padded tensor, with padding value ``pad``

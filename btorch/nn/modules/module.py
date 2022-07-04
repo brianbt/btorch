@@ -209,7 +209,9 @@ class Module(nn.Module):
             x = btorch.utils.tensor_to_Dataset(x, y)
         elif isinstance(x, (torch.utils.data.DataLoader, torch.utils.data.Dataset)) and y is not None:
             warnings.warn(f"x is {type(x)}, y should be not specified and will be ignored.")
-
+        else:
+            warnings.warn(f"x might not support {type(validation_data)}")
+            
         # Pre-process eval_data
         if validation_data is not None:
             if isinstance(validation_data, (tuple, list)):
@@ -221,7 +223,7 @@ class Module(nn.Module):
                 eval_loader = validation_data
                 x_eval = None
             else:
-                raise ValueError(f"validation_data doesn't support {type(validation_data)}")
+                warnings.warn(f"validation_data might not support {type(validation_data)}")
         elif validation_split != 0:
             if isinstance(x, torch.utils.data.DataLoader):
                 raise ValueError(f"x is DataLoader, it does not support validation_split.")
