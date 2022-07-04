@@ -328,7 +328,8 @@ class Module(nn.Module):
         elif isinstance(x, torch.utils.data.DataLoader):
             pass
         else:
-            raise ValueError(f"x is {type(x)}, it should be ``Tensor``, ``Dataset`` or ``DataLoader``")
+            warnings.warn(f"x might not support {type(x)}. It will treat x as ``Dataset``.")
+            dataset = x
         if isinstance(x, torch.utils.data.DataLoader):
             loader = x
         else:
