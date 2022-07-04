@@ -210,7 +210,7 @@ class Module(nn.Module):
         elif isinstance(x, (torch.utils.data.DataLoader, torch.utils.data.Dataset)) and y is not None:
             warnings.warn(f"x is {type(x)}, y should be not specified and will be ignored.")
         else:
-            warnings.warn(f"x might not support {type(validation_data)}")
+            warnings.warn(f"x might not support {type(validation_data)}. It will treat x as ``Dataset``.")
             
         # Pre-process eval_data
         if validation_data is not None:
@@ -223,7 +223,8 @@ class Module(nn.Module):
                 eval_loader = validation_data
                 x_eval = None
             else:
-                warnings.warn(f"validation_data might not support {type(validation_data)}")
+                warnings.warn(f"validation_data might not support {type(validation_data)}. It will treat validation_data as ``Dataset``.")
+                x_eval = validation_data
         elif validation_split != 0:
             if isinstance(x, torch.utils.data.DataLoader):
                 raise ValueError(f"x is DataLoader, it does not support validation_split.")
