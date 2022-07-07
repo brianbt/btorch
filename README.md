@@ -2,13 +2,13 @@
 [![Documentation Status](https://readthedocs.org/projects/btorch/badge/?version=latest)](https://btorch.readthedocs.io/en/latest/?badge=latest)  
 BTorch is a PyTorch's useful utils library
 
-## Requiements
+## Requiements <a name="Requiements"></a>
 PyTorch ≥ 1.10
 
-## Install
+## Install <a name="Install"></a>
 `pip install git+https://github.com/brianbt/btorch`
 
-# Import Library
+## Import Library <a name="Import"></a>
 You can import below library and use them as PyTorch.
 ```python
 from btorch import nn
@@ -16,7 +16,12 @@ import btorch.nn.functional as F
 from btorch.vision import models
 ```
 
-# High Level Module (nn.Module)
+1. [nn.Module](#nn.Module)
+   1. [Usage](#nn.module_usage)
+2. [Common functions](#Common_functions)
+
+<a name="nn.Module"></a>
+# High Level Module (nn.Module) 
 You can use `btorch.nn` as normal `torch.nn` with more useful functions.  
 You can define your model by subclassing it from `btorch.nn.Module` and everythings will be same as subclassing from `torch.nn.Module`.  
 `btorch.nn.Module` provides you high-level training loop that you can define by yourself. Making the code more clean while maintain the flexibilityof PyTorch.  
@@ -49,8 +54,13 @@ Hierarchy View (method_name -> return_value):
 Override the @classmethod when necessary and train your model by just calling `.fit()`  
 **Note: if you are using the default high level methods, you should keep the signiture of the @classmethod the same as the default one.**
 
+<a name="nn.module_usage"></a>
 ## Usage  
 ```python
+import torch
+from torchvision import transforms, datasets
+from btorch import nn
+
 class ResNet(nn.Module):
     def __init__(self, num_classes) -> None:
         super(ResNet, self).__init__()
@@ -88,6 +98,18 @@ net._config = {'max_epoch':3}
 # Set GPU
 device = net.auto_gpu()
 
+# DataSet
+transform = transforms.Compose([transforms.ToTensor()])
+batch_size = 4
+trainset = datasets.MNIST(root='./data', train=True,
+                          download=True, transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                          shuffle=True)
+testset = datasets.MNIST(root='./data', train=False,
+                         download=True, transform=transform)
+testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                         shuffle=False)
+
 # Fit model
 net.fit(trainloader)
 
@@ -97,12 +119,18 @@ for i in testloader:
 net.predict(i[0])
 net.predict(testloader)
 ```
-Other common useful methods are
+Other high level utils methods are:
+- .set_gpu()
+- .set_cpu()
+- .auto_gpu()
 - .save()
 - .load()
 - .summary()
-- .auto_gpu()
-# Commonly used functions
+- .device()
+- .number_parameters()
+
+<a name="Common_functions"></a>
+# Commonly used functions 
 ```python
 btorch.utils.trainer.finetune()
 btorch.utils.trainer.twoOptim()

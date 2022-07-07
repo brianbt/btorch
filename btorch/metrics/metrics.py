@@ -118,11 +118,11 @@ def accuarcy(model_output, y_true, reduction='sum', method='multiclass'):
     
     Args:
         model_output (Tensor): should be ``(N,C)`` or ``(N)``
-        y_true (_type_): should be ``(N)``
+        y_true (Tensor): should be ``(N)``
         reduction (str, optional): either ``sum`` or ``mean``. Defaults to 'sum'.
         method (str, optional): either ``multiclass`` or ``binary``. Defaults to 'multiclass'.
           If your loss is CrossEntropyLoss, you should use ``multiclass``.
-          If your loss is BSELoss, you should use ``binary``.
+          If your loss is BCELoss, you should use ``binary``.
 
     Returns:
         If reduction is ``none``, same shape as the target. Otherwise, scalar.

@@ -7,18 +7,24 @@ from packaging.version import parse as _parse
 from torch.utils.data import TensorDataset
 
 
-def to_tensor(a):
+def to_tensor(a, *args, **kwargs):
     """Turns any object into a tensor.
+    
+    Note:
+        Each dimension must have the same length. 
+        If you are converting list of different length, use ``ints_to_tensor``.
       """
     import pandas as pd
+    if isinstance(a, list) and isinstance(a[0], list):
+        return to_tensor([to_tensor(i, *args, **kwargs) for i in a], *args, **kwargs)
     if isinstance(a, pd.DataFrame):
-        a = torch.tensor(a.to_numpy())
-    if isinstance(a, list) and isinstance(a[0], np.ndarray):
-        a = torch.stack([torch.tensor(x) for x in a])
-    if isinstance(a, list) and isinstance(a[0], torch.Tensor):
+        a = torch.tensor(a.to_numpy(), *args, **kwargs)
+    elif isinstance(a, list) and isinstance(a[0], np.ndarray):
+        a = torch.stack([torch.tensor(x, *args, **kwargs) for x in a])
+    elif isinstance(a, list) and isinstance(a[0], torch.Tensor):
         a = torch.stack(a)
-    if not isinstance(a, torch.Tensor):
-        a = torch.tensor(a)
+    elif not isinstance(a, torch.Tensor):
+        a = torch.tensor(a, *args, **kwargs)
     return a
 
 
@@ -260,6 +266,7 @@ def ints_to_tensor(ints, pad=0):
 
       Note:
           If you need to limit the length of the dimension, do ``output[:, :max_len]``.
+          This function only suppoert up to 3 dimensions.
       """
     if isinstance(ints, torch.Tensor):
         return ints
