@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   btorch.utils.dict_operator
    btorch.utils.grad
    btorch.utils.load_save
    btorch.utils.memory
