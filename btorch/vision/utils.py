@@ -8,8 +8,7 @@ from matplotlib import pyplot as plt
 
 
 class UnNormalize(object):
-    def __init__(self, mean, std):
-        """ Undo Transforms.Normalize()
+    """ Undo Transforms.Normalize()
 
         Args:
             mean (iterable or Tensor): Should be same as Transforms.Normalize args
@@ -22,6 +21,7 @@ class UnNormalize(object):
             >>> # transformed_input is from dataloader(transformed_dataset)
             >>> plt.imshow(unNormer(transformed_input))
         """
+    def __init__(self, mean, std):
         if not isinstance(mean, torch.Tensor):
             mean = torch.tensor(mean)
         if not isinstance(std, torch.Tensor):

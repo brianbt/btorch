@@ -81,7 +81,7 @@ class Module(nn.Module):
 
     Attributes:
       self._lossfn (default to pytorch Loss Func): **Required**. ``criterion`` in @classmethod
-      self._optimizer (default to pytorch Optimizer): **Required**.``optimizer`` in @classmethod
+      self._optimizer (default to pytorch Optimizer): **Required**. ``optimizer`` in @classmethod
       self._lr_scheduler (default to pytorch lr_Scheduler): **Optional**. ``lr_scheduler`` in @classmethod
       self._history (default to list): **Optional**. All loss, evaluation metric should be here.
       self._config (default to dict): **Optional**. ``config`` in @classmethod.
@@ -141,14 +141,13 @@ class Module(nn.Module):
             "tensorboard": None,
         }
 
-    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
-            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
+    def fit(self, x=None, y=None, batch_size=8, epochs=10, shuffle=True, drop_last=False,
+            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
             scoring=None, initial_epoch=None, workers=1, **kwargs):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
 
         Keras like fit method. All arguments follow `Keras usage
         <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`__.
-        It uses .train_net()
 
         Args:
             x: Input data. It could be
@@ -159,15 +158,15 @@ class Module(nn.Module):
               it should be torch.Tensor.
               If ``x`` is a dataset, generator or dataloader, ``y`` should
               not be specified (since targets will be obtained from ``x``).
-            batch_size (int, optional): Defaults to 10.
-            epochs (int, optional): max_epochs. Defaults to 1.
+            batch_size (int, optional): Defaults to 8.
+            epochs (int, optional): max_epochs. Defaults to 10.
             shuffle (bool, optional): Shuffle the data or not. Defaults to True.
             drop_last (bool, optional): All batch has same shape or not. Defautls to False.
             validation_split (optional): Float between 0 and 1.
               Fraction of the training data to be used as validation data.
               The model will set apart this fraction of the training data,
               will not train on it. This argument is
-              not supported when ``x`` is a Dataset or Dataloader.
+              not supported when ``x`` is a Dataloader.
               Defaults to 0.
             validation_data (optional): Data on which to evaluate the loss 
               and any model metrics at the end of each epoch. 
@@ -178,15 +177,16 @@ class Module(nn.Module):
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, targets)``
                 - a ``torch.utils.data.Dataloader``. All other dataset related argument will be ignored.
             validation_batch_size (optional): batch size of validation data.
-            validation_freq (optional): runs validation every x epochs.
+            validation_freq (optional): runs validation every x epochs. Defaults to 1.
             scoring (Callable, optional): A scoring function that take in ``y_true`` and ``model_output``
               Usually, this is your evaluation metric, like accuracy.
               If provided, this method return a dict that include both loss and score.
               This scoring function should return the **sum** (set ``reduction=sum``) of the score of a batch.
               This will only apply to validation data by default.
               The function signature must be ``scoring(y_true=, model_output=)``.
-            initial_epoch (optional): start epoch. Return from ``btorch.utils.load_save.resume``
-            workers (optional): num_workers for dataloader
+            initial_epoch (optional): start epoch. 
+              Return from ``btorch.utils.load_save.resume`` if possible. Defaults to 1.
+            workers (optional): num_workers for dataloader. Defaults to 1.
 
         Kwargs:
             - verbose (optional): verbose level. 0 means print nothings. Defaults to 1.
@@ -196,6 +196,9 @@ class Module(nn.Module):
             If your x yields more than 2 elements or you input x as list of Tensor or y as list of Tensor.
             You might need to manually change the ``for batch_idx, (inputs, targets) in pbar:``
             in each classmethod (eg. @train_epoch).
+            
+        Note:
+            It uses .train_net()
         """
         if x is None:
             raise ValueError("x is not provided")
@@ -361,13 +364,7 @@ class Module(nn.Module):
         if return_combined:
             if isinstance(out, list):
                 if isinstance(out[0], dict):
-                    tmp = {}
-                    for dd in out:
-                        for item in dd.keys():
-                            if item not in tmp:
-                                tmp[item] = []
-                            tmp[item].append(dd[item])
-                    return tmp
+                    return btorch.utils.dict_operator.dict_combine(out)
                 elif isinstance(out[0], torch.Tensor):
                     return torch.cat(out)
                 else:
@@ -608,6 +605,7 @@ class Module(nn.Module):
     @classmethod
     def add_tensorboard_scalar(cls, writer, tag, data, step, *args, **kwargs):
         """One line code for adding data to tensorboard.
+        
         Args:
             writer (SummaryWriter): the writer object.
               Put ``config['tensorboard']`` to this argument.
@@ -689,10 +687,12 @@ class Module(nn.Module):
         pass
 
     def cuda(self, device=None):
+        """set model to GPU mode, will edit ``config['device']`` to 'cuda'"""
         self._config['device'] = 'cuda'
         return super().cuda(device)
 
     def set_gpu(self):
+        """set model to GPU mode, will edit ``config['device']`` to 'cuda'"""
         if not torch.cuda.is_available():
             warnings.warn("Cuda is not available but you are setting the model to GPU mode. This will change the "
                           "._config['device'] to cuda even though you might recieve an Exception")
@@ -700,10 +700,12 @@ class Module(nn.Module):
         self.to('cuda')
 
     def cpu(self):
+        """set model to CPU mode, will edit ``config['device']`` to 'cpu'"""
         self._config['device'] = 'cpu'
         return super().cpu()
 
     def set_cpu(self):
+        """set model to CPU mode, will edit ``config['device']`` to 'cpu'"""
         self.cpu()
 
     def auto_gpu(self, parallel='auto', on=None):
@@ -711,18 +713,23 @@ class Module(nn.Module):
         self._config['device'] = device
 
     def device(self):
+        """get the device of the model"""
         return next(self.parameters()).device
 
-    def save(self, filepath, include_optimizer=True, include_lr_scheduler=True):
+    def save(self, filepath, include_optimizer=True, include_lr_scheduler=True, extra=None):
         """Saves the model.state_dict and self._history.
 
         Args:
             filepath (str): PATH
+            extra (dict): extra information to save.
         """
         to_save_optim = self._optimizer if include_optimizer else None
         to_save_lrs = self._lr_scheduler if include_lr_scheduler else None
-        save_model(self, filepath, self._history, optimizer=to_save_optim,
-                   lr_scheduler=to_save_lrs)
+        if extra is None:
+            extra = {}
+        extra['_history'] = self.history
+        save_model(self, filepath, extra=extra, 
+                   optimizer=to_save_optim, lr_scheduler=to_save_lrs)
 
     def load(self, filepath, skip_mismatch=False):
         """Load the model.state_dict.
