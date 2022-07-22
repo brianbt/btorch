@@ -802,10 +802,10 @@ def from_pytorch(model):
         >>> from_pytorch.model(model)
         >>> model.summary()
     """
-    class net(Module):
+    class bmodel(Module):
         def __init__(self, model):
-            super(net, self).__init__()
+            super(bmodel, self).__init__()
             self.model = model
         def forward(self, *args, **kwargs):
             return self.model(*args, **kwargs)
-    return net(model)
+    return bmodel(model)
