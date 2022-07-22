@@ -1,3 +1,5 @@
+.. _btorch_nn_GSCV:
+
 btorch.nn.modules.model\_selection module
 =========================================
 

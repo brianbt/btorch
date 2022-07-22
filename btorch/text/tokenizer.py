@@ -1,11 +1,9 @@
-import spacy
-
-
 class SpacyTokenizer:
     """ Tool for tokenize powered by spacy module
     """
 
     def __init__(self, lang: str, disable=['parser', 'tagger', 'ner']):
+        import spacy
         """ Initialize the language type for token
 
         Note: Are you looking for `tokenizer = torchtext.data.utils.get_tokenizer('basic_english')`?

@@ -70,6 +70,7 @@ class GridSearchCV:
               The best parameters.
             
         Examples:
+            >>> from btorch.nn import GridSearchCV
             >>> param_grid = {'hidden_dim':[20,30,40]}
             >>> optim_grid = {'lr':[0.01, 0.1]}
             >>> a = GridSearchCV(Net, param_grid, optim_param_grid=optim_grid, scoring=accuarcy)
@@ -234,9 +235,11 @@ class GridSearchCV:
         """Run fit with all sets of parameters. This will call .fit() and .evaluate().
         
         Args:
-            x: Input data. It could be
+            x: Input data. 
+              It could be:
                 - torch.tensor in batch node, starting with (N, *)
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, targets)``
+                - if input unsupported type, it will be treated as ``torch.utils.data.Dataset``.
               
               Note:
                 ``torch.utils.data.DataLoader`` is NOT supported.

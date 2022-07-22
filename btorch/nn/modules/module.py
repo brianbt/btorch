@@ -125,6 +125,10 @@ class Module(nn.Module):
         self._lr_scheduler = None
         self.init_config()
         self._history = []
+        self.train_dataloader = None
+        self.eval_dataloader = None
+        self.test_dataloader = None
+        self.predict_dataloader = None
 
     def init_config(self):
         """Initialize the config to Default.
@@ -141,8 +145,8 @@ class Module(nn.Module):
             "tensorboard": None,
         }
 
-    def fit(self, x=None, y=None, batch_size=8, epochs=10, shuffle=True, drop_last=False,
-            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=1,
+    def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
+            validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
             scoring=None, initial_epoch=None, workers=1, **kwargs):
         """Trains the model for a fixed number of epochs (iterations on a dataset).
 
@@ -150,10 +154,12 @@ class Module(nn.Module):
         <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`__.
 
         Args:
-            x: Input data. It could be
+            x: Input data. 
+              It could be:
                 - torch.tensor in batch node, starting with (N, *)
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, targets)``
                 - a ``torch.utils.data.Dataloader``. All other dataset related argument will be ignored, if provided.
+                - if input unsupported type, it will be treated as ``torch.utils.data.Dataset``.
             y: Target data. Like the input data ``x``,
               it should be torch.Tensor.
               If ``x`` is a dataset, generator or dataloader, ``y`` should
@@ -208,7 +214,7 @@ class Module(nn.Module):
         # Override config with parameter.
         self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else self._config['start_epoch']
-        self._config['val_freq'] = validation_freq if epochs is not None else self._config['val_freq']
+        self._config['val_freq'] = validation_freq if validation_freq is not None else self._config['val_freq']
 
         pin_memory = True if self._config.get(
             'device', 'cpu') == 'cuda' else False
@@ -256,9 +262,11 @@ class Module(nn.Module):
         else:
             train_loader = DataLoader(x, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
                                       pin_memory=pin_memory, drop_last=drop_last)
+        self.train_dataloader = train_loader
         if x_eval is not None:
             eval_loader = DataLoader(x_eval, batch_size=validation_batch_size, num_workers=workers,
                                      pin_memory=pin_memory, drop_last=drop_last)
+            self.eval_dataloader = eval_loader
         # Call @train_net
         self._history.append(self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
                                             trainloader=train_loader, testloader=eval_loader, scoring=scoring,
@@ -270,12 +278,13 @@ class Module(nn.Module):
         Keras like evaluate method. All arguments follows Keras usage.
         https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate
 
-
         Args:
-            x: Input data. It could be
+            x: Input data. 
+              It could be:
                 - torch.tensor in batch node, starting with (N, *)
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, targets)``
                 - a ``torch.utils.data.Dataloader``. All other dataset related argument will be ignored, if provided.
+                - if input unsupported type, it will be treated as ``torch.utils.data.Dataset``.
             y: Target data. Like the input data ``x``,
               It should be torch.tensor.
               If ``x`` is a dataset, generator or dataloader, ``y`` should
@@ -316,6 +325,7 @@ class Module(nn.Module):
                     f"x might not support {type(x)}. It will treat x as ``Dataset``.")
             test_loader = DataLoader(x, batch_size=batch_size, num_workers=workers,
                                      pin_memory=pin_memory, drop_last=drop_last)
+            self.test_dataloader = test_loader
         return self.test_epoch(net=self, criterion=self._lossfn, testloader=test_loader, scoring=scoring,
                                epoch_idx=0, device=self._config.get("device", "cpu"), config=self._config)
 
@@ -326,10 +336,12 @@ class Module(nn.Module):
         <https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict>`__.
 
         Args:
-            x: Input data. It could be
+            x: Input data. 
+              It could be:
                 - torch.tensor in batch node, starting with (N, *)
                 - a ``torch.utils.data.Dataset`` dataset. Should return a tuple of ``(inputs, _)``
                 - a ``torch.utils.data.Dataloader``. All other dataset related argument will be ignored, if provided.
+                - if input unsupported type, it will be treated as ``torch.utils.data.Dataset``.
             batch_size (int, optional). Defaults to 8.
             return_combined (bool, optional). 
               - if return from ``self.predict_`` is a list. Combine them into a single object.
@@ -358,6 +370,7 @@ class Module(nn.Module):
             loader = x
         else:
             loader = DataLoader(dataset, batch_size=batch_size)
+        self.predict_dataloader = loader
         out = self.predict_(net=self, loader=loader, device=self._config.get(
             'device', 'cpu'), config=self._config)
 
@@ -760,3 +773,39 @@ class Module(nn.Module):
             self.__config.update(d)
         else:
             raise ValueError("``_config`` must be a dict")
+
+    def get_train_dataloader(self):
+        """get the last train dataloader from ``.fit()``"""
+        return self.train_dataloader
+    
+    def get_eval_dataloader(self):
+        """get the last eval dataloader from ``.fit()``"""
+        return self.eval_dataloader
+
+    def get_test_dataloader(self):
+        """get the last test dataloader from ``.evaluate()``"""
+        return self.test_dataloader
+    
+    def get_predict_dataloader(self):
+        """get the last predict dataloader from ``.predict()``"""
+        return self.predict_dataloader
+    
+def from_pytorch(model):
+    """Convert PyTroch model to BTorch model
+    
+    Args:
+        model(torch.nn.Module): pytorch model
+        
+    Example:
+        >>> from btorch.nn import from_pytorch
+        >>> model = torch.nn.Linear(10, 10)
+        >>> from_pytorch.model(model)
+        >>> model.summary()
+    """
+    class net(Module):
+        def __init__(self, model):
+            super(net, self).__init__()
+            self.model = model
+        def forward(self, *args, **kwargs):
+            return self.model(*args, **kwargs)
+    return net(model)

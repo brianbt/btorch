@@ -26,4 +26,5 @@ Indices and tables
 * :ref:`search`
 * :ref:`btorch_main`
 * :ref:`btorch_nn_module`
+* :ref:`btorch_nn_GSCV`
 
