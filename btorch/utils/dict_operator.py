@@ -1,16 +1,17 @@
 import operator
-
+import torch
 
 def dict_operator(ls, op):
     """operator on dicts.
 
-    return ls[0] op ls[1] op ls[2] ... (in this order)
+    return ls[0] op ls[1] op ls[2] ... (in left-to-right order)
     
     Args:
         ls (List[Dict]): list of dicts.
           The first dict is the base dict.
           Expected the first dict contains all the keys in the other dicts.
-        op (str or Callable): supported operators are '+', '-', '*', '/', '//', '@'.
+        op (str or Callable): supported operators are 
+          '+', '-', '*', '/', '//', '@', 'vstack', 'hstack', 'stack'.
           Callable should be ``operator.xxx`` or a function that take in two inputs and return one.
 
     Returns:
@@ -23,7 +24,7 @@ def dict_operator(ls, op):
         >>> # {'a': tensor([5., 5., 5., 5.]), 'b': tensor([6.4238, 4.6137, 4.4428]), 'c': 7}
         >>> a = {'a':torch.randn(1,2),'b':torch.randn(1,3)}
         >>> b = {'a':torch.randn(2,2)}
-        >>> dict_operator([a,b], lambda x, y: torch.vstack([x,y]))
+        >>> dict_operator([a,b], lambda x, y: torch.cat([x,y], axis=1)) # same as hstack
         >>> #{'a': tensor([[ 1.0247, -1.2278],
         >>> #              [ 0.4615, -1.5306],
         >>> #              [ 0.7885, -0.3302]]), 
@@ -38,9 +39,13 @@ def dict_operator(ls, op):
                '*': operator.mul,
                '/': operator.truediv,
                '//': operator.floordiv,
-               '@': operator.matmul}
+               '@': operator.matmul,
+               'vstack': lambda x, y: torch.vstack([x,y]),
+               'hstack': lambda x, y: torch.hstack([x,y]),}
+    if op == 'stack':
+        return dict_stack(ls)
     if isinstance(op, str):
-        if op not in mapping:
+        if op.lower() not in mapping:
             raise ValueError(f'not support `{op}`')
         op = mapping[op]
     out = dict()
@@ -95,3 +100,16 @@ def dict_combine(ls):
                 tmp[item] = []
             tmp[item].append(dd[item])
     return tmp
+
+def dict_stack(ls):
+    """stack all tensors in the list of dicts."""
+    out = dict()
+    tmp = []
+    all_keys = set()
+    for d in ls:
+       all_keys.update(d.keys())
+    for k in all_keys:
+        for d in range(len(ls)):
+            tmp.append(ls[d][k])
+        out[k] = torch.stack(tmp)
+    return out

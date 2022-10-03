@@ -1,5 +1,11 @@
 import torch
 
+def _get_metric_str(string):
+    mapping = {'accuarcy': accuarcy}
+    if string in mapping:
+        return mapping[string]
+    raise ValueError(f"Not supported metric {string}")
+
 def mini_batch_combiner(cached):
     """for mrmse mini-batch combine
 
@@ -117,8 +123,8 @@ def accuarcy(model_output, y_true, reduction='sum', method='multiclass'):
     """scoring function, can be directly used in ``test_epoch()``
     
     Args:
-        model_output (Tensor): should be ``(N,C)`` or ``(N)``
-        y_true (Tensor): should be ``(N)``
+        model_output (Tensor): should be ``(N,C)`` if multiclass or ``(N)`` if binary.
+        y_true (Tensor): should be ``(N)``.
         reduction (str, optional): either ``sum`` or ``mean``. Defaults to 'sum'.
         method (str, optional): either ``multiclass`` or ``binary``. Defaults to 'multiclass'.
           If your loss is CrossEntropyLoss, you should use ``multiclass``.

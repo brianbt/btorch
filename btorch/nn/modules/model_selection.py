@@ -1,4 +1,7 @@
+import copy
 import math
+import warnings
+
 import pandas as pd
 
 import torch
@@ -219,7 +222,7 @@ class GridSearchCV:
         model._optimizer = self._optimizer(model.parameters(), **curr_params['optim_params'])
         model._lr_scheduler = self._lr_scheduler(model._optimizer, **curr_params['lr_s_params'])
         if self._config is not None:
-            model._config = self._config
+            model._config = copy.deepcopy(self._config)
         return model
 
     def score(self, net, x):
@@ -257,8 +260,9 @@ class GridSearchCV:
         if isinstance(x, torch.Tensor) or isinstance(x, (tuple, list)):
             assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
             x = btorch.utils.tensor_to_Dataset(x, y)
-        assert isinstance(x, torch.utils.data.Dataset), 'x cannot be DataLoader'
-        # Split into ``cv`` folds
+        if not isinstance(x, torch.utils.data.Dataset):
+            warnings.warn(f"x might not support {type(x)}. It will treat x as ``Dataset``.")
+        # Split into ``cv`` folds, split_num store the number of datapoint in each fold
         split_num = [len(x) // self.cv for _ in range(self.cv - 1)]
         split_num.append(len(x) - sum(split_num))
         split_data = torch.utils.data.random_split(x, split_num)

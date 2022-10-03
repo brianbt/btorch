@@ -126,7 +126,7 @@ Other high level utils methods are:
 - .save()
 - .load()
 - .summary()
-- .device()
+- .device
 - .number_parameters()
 
 <a name="Common_functions"></a>

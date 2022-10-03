@@ -110,7 +110,7 @@ class Module(nn.Module):
       - .save()
       - .load()
       - .summary()
-      - .device()
+      - .device
       - .number_parameters()
 
     All the classmethods in this class can be taken out and use them alone. 
@@ -131,8 +131,7 @@ class Module(nn.Module):
         self.predict_dataloader = None
 
     def init_config(self):
-        """Initialize the config to Default.
-        """
+        """Initialize the config to Default."""
         self._config = {
             "start_epoch": 0,
             "max_epoch": 10,
@@ -144,6 +143,11 @@ class Module(nn.Module):
             "val_freq": 1,
             "tensorboard": None,
         }
+    def compile(self, optimizer, lossfn, lr_scheduler=None):
+        """Keras like compile function."""
+        self._optimizer = optimizer
+        self._lossfn = lossfn
+        self._lr_scheduler = lr_scheduler
 
     def fit(self, x=None, y=None, batch_size=8, epochs=None, shuffle=True, drop_last=False,
             validation_split=0.0, validation_data=None, validation_batch_size=8, validation_freq=None,
@@ -215,9 +219,9 @@ class Module(nn.Module):
         self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else self._config['start_epoch']
         self._config['val_freq'] = validation_freq if validation_freq is not None else self._config['val_freq']
-
-        pin_memory = True if self._config.get(
-            'device', 'cpu') == 'cuda' else False
+        if isinstance(scoring, str):
+            scoring = btorch.metrics.metrics._get_metric_str(scoring)
+        pin_memory = True if self._config.get('device', 'cpu') == 'cuda' else False
         x_eval = None
         eval_loader = None
 
@@ -230,7 +234,7 @@ class Module(nn.Module):
                 f"x is {type(x)}, y should be not specified and will be ignored.")
         else:
             warnings.warn(
-                f"x might not support {type(validation_data)}. It will treat x as ``Dataset``.")
+                f"x might not support {type(x)}. It will treat x as ``Dataset``.")
 
         # Pre-process eval_data
         if validation_data is not None:
@@ -304,28 +308,25 @@ class Module(nn.Module):
         Note:
             It uses .test_epoch()
         """
-        # Pre-process train_loader
-        pin_memory = True if self._config.get(
-            'device', 'cpu') == 'cuda' else False
+        pin_memory = True if self._config.get('device', 'cpu') == 'cuda' else False
+        # Pre-process train_data
+        if isinstance(x, torch.Tensor) or isinstance(x, (tuple, list)):
+            assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
+            x = btorch.utils.tensor_to_Dataset(x, y)
+        elif isinstance(x, (torch.utils.data.DataLoader, torch.utils.data.Dataset)) and y is not None:
+            warnings.warn(
+                f"x is {type(x)}, y should be not specified and will be ignored.")
+        else:
+            warnings.warn(
+                f"x might not support {type(x)}. It will treat x as ``Dataset``.")
+
+        # Make dataset to dataloader
         if isinstance(x, torch.utils.data.DataLoader):
             test_loader = x
         else:
-            if isinstance(x, torch.Tensor):
-                if y is None:
-                    raise ValueError(
-                        f"x is {type(x)}, expected y to be torch.Tensor")
-                x = TensorDataset(x, y)
-            elif isinstance(x, (tuple, list)):
-                if isinstance(y, (tuple, list)):
-                    x = TensorDataset(*x, *y)
-                else:
-                    x = TensorDataset(*x, y)
-            else:
-                warnings.warn(
-                    f"x might not support {type(x)}. It will treat x as ``Dataset``.")
             test_loader = DataLoader(x, batch_size=batch_size, num_workers=workers,
                                      pin_memory=pin_memory, drop_last=drop_last)
-            self.test_dataloader = test_loader
+        self.test_dataloader = test_loader
         return self.test_epoch(net=self, criterion=self._lossfn, testloader=test_loader, scoring=scoring,
                                epoch_idx=0, device=self._config.get("device", "cpu"), config=self._config)
 
@@ -345,12 +346,16 @@ class Module(nn.Module):
             batch_size (int, optional). Defaults to 8.
             return_combined (bool, optional). 
               - if return from ``self.predict_`` is a list. Combine them into a single object.
-              - if return is list of tensor: Apply torch.cat() on the output from .predict_() .
+              - if return is list of tensor: Apply ``torch.cat()`` on the output from ``.predict_()``.
               - if return is list of dict: combined them into one big dict.
+              
+              Note:
+                Suggest to set ``return_combined=False`` and apply 
+                ``.dict_operator()`` on the return output for flexibility.
               - Defaults to False.
 
         Returns:
-            List[Tensor] or Tensor if return_combined 
+            List[Tensor] or List[Dict] or Tensor if return_combined 
 
         Note:
             It uses .predict_()
@@ -467,13 +472,13 @@ class Module(nn.Module):
             test_loss = "Not Provided"
             if testloader is not None and epoch % val_freq == 0:
                 cls.on_test_epoch_begin(net=net, criterion=criterion, optimizer=optimizer, trainloader=trainloader,
-                                     testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
-                                     config=config, **kwargs)
+                                        testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
+                                        config=config, **kwargs)
                 test_loss = cls.test_epoch(net=net, criterion=criterion, testloader=testloader, scoring=scoring,
                                            epoch_idx=epoch, device=device, config=config, **kwargs)
                 cls.on_test_epoch_end(net=net, criterion=criterion, optimizer=optimizer, trainloader=trainloader,
-                                     testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
-                                     config=config, **kwargs)
+                                      testloader=testloader, epoch_idx=epoch, lr_scheduler=lr_scheduler,
+                                      config=config, **kwargs)
                 test_loss_data.append(test_loss)
                 cls.add_tensorboard_scalar(
                     tensorboard_writer, 'test_loss', test_loss, epoch)
@@ -621,7 +626,7 @@ class Module(nn.Module):
         
         Args:
             writer (SummaryWriter): the writer object.
-              Put ``config['tensorboard']`` to this argument.
+              Put SummaryWriter Object to this argument.
               If input is None, this function will not do anything.
             tag (str): Name of this data
             data (Tensor or dict): the data to add.
@@ -725,9 +730,14 @@ class Module(nn.Module):
         device, _ = btorch.utils.trainer.auto_gpu(self, parallel, on)
         self._config['device'] = device
 
+    @property
     def device(self):
         """get the device of the model"""
         return next(self.parameters()).device
+
+    @device.setter
+    def device(self, value):
+        raise Exception("You should not set device in this way. Use `model.to()` insteads.")
 
     def save(self, filepath, include_optimizer=True, include_lr_scheduler=True, extra=None):
         """Saves the model.state_dict and self._history.
@@ -741,7 +751,7 @@ class Module(nn.Module):
         if extra is None:
             extra = {}
         extra['_history'] = self.history
-        save_model(self, filepath, extra=extra, 
+        save_model(self, filepath, extra=extra,
                    optimizer=to_save_optim, lr_scheduler=to_save_lrs)
 
     def load(self, filepath, skip_mismatch=False):
@@ -777,7 +787,7 @@ class Module(nn.Module):
     def get_train_dataloader(self):
         """get the last train dataloader from ``.fit()``"""
         return self.train_dataloader
-    
+
     def get_eval_dataloader(self):
         """get the last eval dataloader from ``.fit()``"""
         return self.eval_dataloader
@@ -785,11 +795,12 @@ class Module(nn.Module):
     def get_test_dataloader(self):
         """get the last test dataloader from ``.evaluate()``"""
         return self.test_dataloader
-    
+
     def get_predict_dataloader(self):
         """get the last predict dataloader from ``.predict()``"""
         return self.predict_dataloader
-    
+
+
 def from_pytorch(model):
     """Convert PyTroch model to BTorch model
     
@@ -799,13 +810,16 @@ def from_pytorch(model):
     Example:
         >>> from btorch.nn import from_pytorch
         >>> model = torch.nn.Linear(10, 10)
-        >>> from_pytorch.model(model)
+        >>> model = from_pytorch.model(model)
         >>> model.summary()
     """
+
     class bmodel(Module):
         def __init__(self, model):
             super(bmodel, self).__init__()
             self.model = model
+
         def forward(self, *args, **kwargs):
             return self.model(*args, **kwargs)
+
     return bmodel(model)
