@@ -194,12 +194,15 @@ class Module(nn.Module):
               This scoring function should return the **sum** (set ``reduction=sum``) of the score of a batch.
               This will only apply to validation data by default.
               The function signature must be ``scoring(y_true=, model_output=)``.
+              This only work when validation mode is on.
             initial_epoch (optional): start epoch. 
               Return from ``btorch.utils.load_save.resume`` if possible. Defaults to 1.
             workers (optional): num_workers for dataloader. Defaults to 1.
 
         Kwargs:
-            - verbose (optional): verbose level. 0 means print nothings. Defaults to 1.
+            - verbose (optional): verbose level. 0 means print nothing. Defaults to 1.
+            - collate_fn_train (optionals): Use in creating training DataLoader(). Defaults to None.
+            - collate_fn_eval (optionals): Use in creating evaling DataLoader(). Defaults to None.
 
         Note:
             x should be a DataLoader/Dataset that yields two element (inputs, targets).
@@ -215,6 +218,9 @@ class Module(nn.Module):
         if self._lossfn is None or self._optimizer is None:
             raise ValueError(
                 "``self._lossfn`` and ``self._optimizer`` is not set.")
+        # Get kwargs parameters
+        collate_fn_train = kwargs.get('collate_fn_train', None)
+        collate_fn_eval = kwargs.get('collate_fn_eval', None)
         # Override config with parameter.
         self._config['max_epoch'] = epochs if epochs is not None else self._config['max_epoch']
         self._config['start_epoch'] = initial_epoch if initial_epoch is not None else self._config['start_epoch']
@@ -265,11 +271,11 @@ class Module(nn.Module):
             train_loader = x
         else:
             train_loader = DataLoader(x, batch_size=batch_size, shuffle=shuffle, num_workers=workers,
-                                      pin_memory=pin_memory, drop_last=drop_last)
+                                      pin_memory=pin_memory, drop_last=drop_last, collate_fn=collate_fn_train)
         self.train_dataloader = train_loader
         if x_eval is not None:
             eval_loader = DataLoader(x_eval, batch_size=validation_batch_size, num_workers=workers,
-                                     pin_memory=pin_memory, drop_last=drop_last)
+                                     pin_memory=pin_memory, drop_last=drop_last, collate_fn=collate_fn_eval)
             self.eval_dataloader = eval_loader
         # Call @train_net
         self._history.append(self.train_net(net=self, criterion=self._lossfn, optimizer=self._optimizer,
@@ -302,13 +308,19 @@ class Module(nn.Module):
             drop_last (bool, optional): Shuffle the data or not. 
             workers (optional): num_workers for dataloader
 
+        Kwargs:
+            - collate_fn (optionals): Use in creating DataLoader(). Defaults to None.
+
         Returns:
             (float or dict)
 
         Note:
             It uses .test_epoch()
         """
+        collate_fn = kwargs.get('collate_fn', None)
         pin_memory = True if self._config.get('device', 'cpu') == 'cuda' else False
+        if isinstance(scoring, str):
+            scoring = btorch.metrics.metrics._get_metric_str(scoring)
         # Pre-process train_data
         if isinstance(x, torch.Tensor) or isinstance(x, (tuple, list)):
             assert y is not None, f"x is {type(x)}, expected y to be torch.Tensor or List[Tensor]"
@@ -325,12 +337,12 @@ class Module(nn.Module):
             test_loader = x
         else:
             test_loader = DataLoader(x, batch_size=batch_size, num_workers=workers,
-                                     pin_memory=pin_memory, drop_last=drop_last)
+                                     pin_memory=pin_memory, drop_last=drop_last, collate_fn=collate_fn)
         self.test_dataloader = test_loader
         return self.test_epoch(net=self, criterion=self._lossfn, testloader=test_loader, scoring=scoring,
                                epoch_idx=0, device=self._config.get("device", "cpu"), config=self._config)
 
-    def predict(self, x, batch_size=8, return_combined=False):
+    def predict(self, x, batch_size=8, return_combined=False, **kwargs):
         """Generates output predictions for input samples.
 
         Keras like predict method. All arguments follows `Keras usage.
@@ -354,12 +366,16 @@ class Module(nn.Module):
                 ``.dict_operator()`` on the return output for flexibility.
               - Defaults to False.
 
+        Kwargs:
+            - collate_fn (optionals): Use in creating DataLoader(). Defaults to None.
+
         Returns:
             List[Tensor] or List[Dict] or Tensor if return_combined 
 
         Note:
             It uses .predict_()
         """
+        collate_fn = kwargs.get('collate_fn', None)
         if isinstance(x, torch.Tensor):
             _y = torch.zeros(x.shape[0])
             dataset = TensorDataset(x, _y)
@@ -374,7 +390,7 @@ class Module(nn.Module):
         if isinstance(x, torch.utils.data.DataLoader):
             loader = x
         else:
-            loader = DataLoader(dataset, batch_size=batch_size)
+            loader = DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
         self.predict_dataloader = loader
         out = self.predict_(net=self, loader=loader, device=self._config.get(
             'device', 'cpu'), config=self._config)
@@ -504,7 +520,7 @@ class Module(nn.Module):
                                    to_save, optimizer, lr_scheduler)
             if kwargs.get("verbose", 1):
                 print(
-                    f"Epoch {epoch}: Training loss: {train_loss}. Testing loss: {test_loss}")
+                    f"Epoch {epoch+1}: Training loss: {train_loss}. Testing loss: {test_loss}")
             if lr_scheduler is not None:
                 lr_scheduler.step()
         if config.get("tensorboard", None):
